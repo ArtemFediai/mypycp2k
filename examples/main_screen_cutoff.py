@@ -4,7 +4,11 @@ from mypycp2k.dft import set_dft, set_scf, set_nonperiodic_poisson, set_cutoff, 
 from mypycp2k.xc import set_pbe, set_pbe0, add_vdw, add_gw_ver_0
 from mypycp2k.scf import add_ot, add_ot_never_fail
 from mypycp2k.subsys import add_elements, set_unperiodic_cell, set_topology, center_coordinates
-import re
+from check_convergence.check_convergence \
+    import general_convergence, change_calc_abc, change_calc_cutoff, change_calc_rel_cutoff
+
+# from check_convergence.check_convergence import check_abc_convergence, check_cutoff_convergence
+
 """
 Set cp2k input file GW@DFT for the methane
 set_XXX means imperatively set some section
@@ -89,21 +93,12 @@ def main():
         add_vdw(XC, vdw_parameters_file=my_vdw_parameters_file)
     ## END DFT ##
 
-########################################################################################################################
-    # # my_cutoffs = [100, 300, 600, 900]
-    # my_cutoffs = [100, 200]
-    # for my_cutoff in my_cutoffs:
-    #     set_cutoff(DFT, cutoff=my_cutoff)
-    #     # calc.write_input_file(inp_file_name)
-    #     calc.run()
-    # print("I am done")
-
     ######################################## check cutoff ##############################################################
-    if True:
-        my_cutoffs = [50, 100, 200, 300, 400, 500, 600, 700, 800]
-        # my_cutoffs = [50, 100]
+    if False:
+        # my_cutoffs = [50, 100, 200, 300, 400, 500, 600, 700, 800]
+        my_cutoffs = [50, 100]
         my_rel_cutoff = 400
-        my_target_accuracy_eV = 1.E-6
+        my_target_accuracy_eV = 1.E-3
         check_cutoff_convergence(DFT, calc,
                                  cutoffs=my_cutoffs,
                                  rel_cutoff=my_rel_cutoff,
@@ -112,114 +107,22 @@ def main():
 
     # check abc
     if False:
-        my_abcs = [5, 7, 9, 11, 13, 15, 17]
-        my_target_accuracy_eV = 1.E-6
-        check_abc_convergence(SUBSYS, DFT, calc,
+        # my_abcs = [5, 7, 9, 11, 13, 15, 17]
+        my_abcs = [5, 7]
+        my_target_accuracy_eV = 1.E-3
+        check_abc_convergence(SUBSYS, calc,
                                  abcs=my_abcs,
                                  target_accuracy_eV=my_target_accuracy_eV)
 
-
-def check_abc_convergence(SUBSYS, DFT, calc,
-                          abcs,
-                          target_accuracy_eV):
-    print("I will check cutoff convergence")
-    import os
-    energies = []
-
-    all_out_files = list_files1('./', 'out')
-    print(f'found {len(all_out_files)} out files. Will delete them')
-    for file in all_out_files:
-        os.remove(file)
-
-    for i, abc in enumerate(abcs):
-        set_unperiodic_cell(SUBSYS, (str(abc)+' ')*3)
-        calc.output_path = calc.working_directory + "/" + calc.project_name + str(abc) + ".out"
-        calc.write_input_file("test.inp")
-        calc.run()
-        try:
-            os.remove('methane_GW_PBE-RESTART.wfn')
-        except:
-            pass
-        with open(calc.output_path, "r") as fin:
-            regex = re.compile(" ENERGY\| Total FORCE_EVAL \( QS \) energy \(a\.u\.\):\s+(.+)\n")
-            for line in fin:
-                match = regex.match(line)
-                if match:
-                    energies.append(match.groups()[0])
-
-    print(energies)
-    plot_energies(data=energies, cutoffs=abcs, name='ene.png', target_accuracy_ev=target_accuracy_eV)
-
-def check_cutoff_convergence(DFT, calc, cutoffs, rel_cutoff, target_accuracy_eV):
-    print("I will check cutoff convergence")
-    import os
-    energies = []
-
-    set_scf(DFT=DFT, scf_guess='ATOMIC')
-    all_out_files = list_files1('./', 'out')
-    print(f'found {len(all_out_files)} out files. Will delete them')
-    for file in all_out_files:
-        os.remove(file)
-
-    for cutoff in cutoffs:
-        DFT.MGRID.Cutoff = cutoff
-        DFT.MGRID.Rel_cutoff = rel_cutoff
-        calc.output_path = calc.working_directory + "/" + calc.project_name + str(cutoff) + ".out"
-        calc.run()
-        try:
-            os.remove('methane_GW_PBE-RESTART.wfn')
-        except:
-            pass
-        with open(calc.output_path, "r") as fin:
-            regex = re.compile(" ENERGY\| Total FORCE_EVAL \( QS \) energy \(a\.u\.\):\s+(.+)\n")
-            for line in fin:
-                match = regex.match(line)
-                if match:
-                    energies.append(match.groups()[0])
-
-    print(energies)
-    plot_energies(data=energies, cutoffs=cutoffs, name='ene.png', target_accuracy_ev=target_accuracy_eV)
-
-
-def plot_energies(data, cutoffs, name, target_accuracy_ev):
-    """
-    :param data: computed energies
-    :param cutoffs: parameter that has been screened in Ry!
-    :param name: name of the picture that will be generated
-    :param target_accuracy_ev: accuracy that will be checked for: in eV!
-    :return:
-    save the picture
-    return the message about the cutoff to be used
-    """
-    import numpy as np
-    import matplotlib.pyplot as plt
-    from scipy.constants import physical_constants as c
-    eV_to_Hartree = c['hartree-electron volt relationship'][0]
-    ene = [float(string) for string in data]
-    ene = np.array(ene)
-    ene *= eV_to_Hartree
-    plt.figure(figsize=[3, 4])
-    plt.plot(cutoffs[0:-1], np.abs(ene[0:-1]-ene[-1]))
-    plt.xlabel("Cutoff")
-    plt.ylabel("energy, eV")
-    plt.yscale('log')
-    plt.tight_layout()
-    plt.savefig(name)
-
-    ene_diffs = np.abs(ene[0:-1] - ene[-1])
-    print(f"All energy differences: {ene_diffs*eV_to_Hartree}")
-    for i, ene_dif in enumerate(ene_diffs):
-        if ene_dif < target_accuracy_ev:
-            use_cutoff = cutoffs[i]
-            print(f"use cutoff: {use_cutoff}")
-            break
-        else:
-            print("not (yet) reached")
-
-
-def list_files1(directory, extension):
-    from os import listdir
-    return [f for f in listdir(directory) if f.endswith('.' + extension)]
+    # check abc general convergence
+    my_abcs = [5, 7, 8]
+    my_target_accuracy_eV = 1.E-3
+    if True:
+        general_convergence(calc=calc,
+                            params=my_abcs,
+                            func_to_accept_param=change_calc_abc,
+                            target_accuracy_eV=my_target_accuracy_eV,
+                            param_name='abc')
 
 if __name__ == '__main__':
     main()
