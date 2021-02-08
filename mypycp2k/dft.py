@@ -12,9 +12,9 @@ def set_dft(DFT,
     DFT.Charge = charge
 
 
-def set_scf(DFT, eps_scf=1.0E-6, max_scf=100):
+def set_scf(DFT, eps_scf=1.0E-6, max_scf=100, scf_guess='RESTART'):
     SCF = DFT.SCF
-    SCF.Scf_guess = 'RESTART'  # atomic will be used if not exist
+    SCF.Scf_guess = scf_guess  # atomic will be used if not exist
     SCF.Eps_scf = eps_scf
     SCF.Max_scf = max_scf
 
