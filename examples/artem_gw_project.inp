@@ -30,7 +30,7 @@
     &MGRID
       NGRIDS 5
       CUTOFF 900
-      REL_CUTOFF 60
+      REL_CUTOFF 100
     &END MGRID
     &XC
       &XC_FUNCTIONAL PBE
@@ -43,7 +43,7 @@
   &END DFT
   &SUBSYS
     &CELL
-      ABC 8 8 8 
+      ABC 16.0 16.0 16.0
       PERIODIC NONE
     &END CELL
     &TOPOLOGY

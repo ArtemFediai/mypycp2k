@@ -6,6 +6,7 @@ from mypycp2k.scf import add_ot, add_ot_never_fail
 from mypycp2k.subsys import add_elements, set_unperiodic_cell, set_topology, center_coordinates
 from check_convergence.check_convergence \
     import general_convergence, change_calc_abc, change_calc_cutoff, change_calc_rel_cutoff
+import copy
 
 # from check_convergence.check_convergence import check_abc_convergence, check_cutoff_convergence
 
@@ -19,9 +20,7 @@ def main():
     # My input #
     ## base settings ##
     basis_set_base_path = '/home/artem/soft/cp2k/cp2k-7.1/data/'
-
-    ## specific settings ##
-    my_abc = '12.0 12.0 12.0'
+    my_abc = '16.0 16.0 16.0'
     # my_basis_set_file_name = basis_set_base_path + 'BASIS_RI_cc-TZ'G
     my_basis_set_file_name = basis_set_base_path + 'BASIS_def2_QZVP_RI_ALL'
     my_vdw_parameters_file = basis_set_base_path + 'dftd3.dat'
@@ -35,14 +34,9 @@ def main():
     # my_elements = ['H', 'O']  # for test
     # my_element = ['H']  # for test
     my_elements = ['H', 'C']
-    inp_file_name = 'main_screen_cutoff.inp'
     activate_vdw = False
-    activate_outer_scf = False
-    activate_ot = True
-    activate_diagonalization = not activate_outer_scf
-    wf_corr_num_proc = 1  # 16 in the ref paper; -1 to use all
 
-    ####################################################################################################################
+    ############################################# pycp2k ###############################################################
     calc = CP2K()
     calc.working_directory = './'
     calc.project_name = 'artem_gw_project'
@@ -56,7 +50,7 @@ def main():
     DFT = FORCE_EVAL.DFT
     XC = DFT.XC
     SCF = DFT.SCF
-    ####################################################################################################################
+    ################################################ mypycp2k ##########################################################
 
     # GLOBAL #
     # FORCE EVAL #
@@ -79,7 +73,7 @@ def main():
     set_dft(DFT,
             potential_file_name=my_potential_file_name,
             basis_set_file_name=my_basis_set_file_name)
-    set_cutoff(DFT, cutoff=900, rel_cutoff=60, ngrids=5)
+    set_cutoff(DFT, cutoff=900, rel_cutoff=100, ngrids=5)
     set_scf(DFT, max_scf=1)
     add_ot(SCF)
     set_pbe(XC)  # alter: set_pb0, etc.
@@ -93,36 +87,44 @@ def main():
         add_vdw(XC, vdw_parameters_file=my_vdw_parameters_file)
     ## END DFT ##
 
-    ######################################## check cutoff ##############################################################
-    if False:
-        # my_cutoffs = [50, 100, 200, 300, 400, 500, 600, 700, 800]
-        my_cutoffs = [50, 100]
-        my_rel_cutoff = 400
-        my_target_accuracy_eV = 1.E-3
-        check_cutoff_convergence(DFT, calc,
-                                 cutoffs=my_cutoffs,
-                                 rel_cutoff=my_rel_cutoff,
-                                 target_accuracy_eV=my_target_accuracy_eV)
-    ####################################################################################################################
+############################################### CHECK CONVERGENCE ######################################################
 
-    # check abc
-    if False:
-        # my_abcs = [5, 7, 9, 11, 13, 15, 17]
-        my_abcs = [5, 7]
-        my_target_accuracy_eV = 1.E-3
-        check_abc_convergence(SUBSYS, calc,
-                                 abcs=my_abcs,
-                                 target_accuracy_eV=my_target_accuracy_eV)
-
-    # check abc general convergence
-    my_abcs = [5, 7, 8]
+    # check abc (cell size) convergence
     my_target_accuracy_eV = 1.E-3
     if True:
-        general_convergence(calc=calc,
-                            params=my_abcs,
-                            func_to_accept_param=change_calc_abc,
-                            target_accuracy_eV=my_target_accuracy_eV,
-                            param_name='abc')
+        my_abcs = [8, 10, 12, 14, 16]
+        my_cutoff = [100, 200, 300, 400, 500, 600, 700, 800, 900]
+        my_rel_cutoff = [20, 40, 60, 70, 80, 90, 100]
+
+    if False:
+        my_abcs = [6, 8, 10]
+        my_cutoff = [100, 200, 300]
+        my_rel_cutoff = [40, 50, 60]
+
+    print(f"Reference parameters are: \n "
+          f"cutoff = {calc.CP2K_INPUT.FORCE_EVAL_list[0].DFT.MGRID.Cutoff},\n "
+          f"rel_cut = {calc.CP2K_INPUT.FORCE_EVAL_list[0].DFT.MGRID.Rel_cutoff},\n "
+          f"abc = {calc.CP2K_INPUT.FORCE_EVAL_list[0].SUBSYS.CELL.Abc}\n")
+
+    general_convergence(calc=copy.deepcopy(calc),
+                        params=my_abcs,
+                        func_to_accept_param=change_calc_abc,
+                        target_accuracy_eV=my_target_accuracy_eV,
+                        param_name='abc')
+
+    # check cutoff (absolute) convergence
+    general_convergence(calc=copy.deepcopy(calc),
+                        params=my_cutoff,
+                        func_to_accept_param=change_calc_cutoff,
+                        target_accuracy_eV=my_target_accuracy_eV,
+                        param_name='cutoff')
+
+    # check cutoff (relative) convergence
+    general_convergence(calc=copy.deepcopy(calc),
+                        params=my_rel_cutoff,
+                        func_to_accept_param=change_calc_rel_cutoff,
+                        target_accuracy_eV=my_target_accuracy_eV,
+                        param_name='rel_cutoff')
 
 if __name__ == '__main__':
     main()
