@@ -5,7 +5,7 @@ from mypycp2k.xc import set_pbe, set_pbe0, add_vdw, add_gw_ver_0
 from mypycp2k.scf import add_ot, add_ot_never_fail, add_diagonalization, add_mixing, add_smear, add_mos, remove_ot
 from mypycp2k.outer_scf import add_outer_scf
 from mypycp2k.subsys import add_elements, set_unperiodic_cell, set_topology, center_coordinates
-from test_re_homo_lumo import return_homo_lumo
+from mypycp2k.extract_from_output import return_homo_lumo
 """
 Set cp2k input file GW@DFT for the methane
 set_XXX means imperatively set some section
