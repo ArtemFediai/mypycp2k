@@ -12,7 +12,7 @@ def add_ot_never_fail(scf):
 
 def add_diagonalization(scf):
     DIAGONALIZATION = scf.DIAGONALIZATION
-    DIAGONALIZATION = 'ON'
+    DIAGONALIZATION.Section_parameters = 'T'
 
 
 def add_smear(scf, method='FERMI_DIRAC', electronic_temperature=300):
@@ -61,3 +61,21 @@ def add_ot(scf, minimizer='DIIS', preconditioner='FULL_ALL', energy_gap=0.001):
     OT.Minimizer = minimizer
     OT.Preconditioner = preconditioner  # FULL_SINGLE_INVERSE
     OT.Energy_gap = energy_gap
+
+
+def remove_ot(scf):
+    """
+    set all OT nonprotected attr to zero
+    """
+
+    OT = scf.OT
+    OT_dict = OT.__dict__
+    all_keys = list(OT_dict.keys())
+    non_protected_keys = [key for key in all_keys if not key.startswith('_')]
+
+    for key in non_protected_keys:
+        setattr(OT, key, None)
+
+
+def put_all_dict_values_to_zero():
+    pass
