@@ -2,7 +2,8 @@ from pycp2k import CP2K
 from mypycp2k.cp2k_input import set_global
 from mypycp2k.dft import set_dft, set_scf, set_nonperiodic_poisson, set_cutoff, print_mo_cubes, print_mo, set_qs
 from mypycp2k.xc import set_pbe, set_pbe0, add_vdw, add_gw_ver_0
-from mypycp2k.scf import add_ot, add_ot_never_fail
+from mypycp2k.scf import add_ot, add_ot_never_fail, add_diagonalization, add_mixing, add_smear, add_mos
+from mypycp2k.outer_scf import add_outer_scf
 from mypycp2k.subsys import add_elements, set_unperiodic_cell, set_topology, center_coordinates
 """
 Set cp2k input file GW@DFT for the methane
@@ -12,11 +13,14 @@ activate_XXX means activate "add_XXX"
 """
 def main():
     # My input #
+
+    # rel_cutoff: 40; cutoff: 300; abc = 10
+    my_abc = '10.0 10.0 10.0'
+    cutoff = 300
+    rel_cutoff = 40
+
     ## base settings ##
     basis_set_base_path = '/home/artem/soft/cp2k/cp2k-7.1/data/'
-
-    ## specific settings ##
-    my_abc = '12.0 12.0 12.0'
     # my_basis_set_file_name = basis_set_base_path + 'BASIS_RI_cc-TZ'G
     my_basis_set_file_name = basis_set_base_path + 'BASIS_def2_QZVP_RI_ALL'
     my_vdw_parameters_file = basis_set_base_path + 'dftd3.dat'
@@ -33,7 +37,7 @@ def main():
     inp_file_name = 'GW_PBE_for_methane.inp'
     activate_vdw = False
     activate_outer_scf = False
-    activate_ot = True
+    activate_ot = False
     activate_diagonalization = not activate_outer_scf
     wf_corr_num_proc = 4  # 16 in the ref paper; -1 to use all
 
@@ -51,6 +55,7 @@ def main():
     DFT = FORCE_EVAL.DFT
     XC = DFT.XC
     SCF = DFT.SCF
+    OUTER_SCF = DFT.SCF.OUTER_SCF
     ####################################################################################################################
 
     # GLOBAL #
@@ -74,9 +79,17 @@ def main():
     set_dft(DFT,
             potential_file_name=my_potential_file_name,
             basis_set_file_name=my_basis_set_file_name)
-    set_cutoff(DFT, cutoff=900, rel_cutoff=60, ngrids=5)
-    set_scf(DFT)
-    add_ot(SCF)
+    set_cutoff(DFT, cutoff=cutoff, rel_cutoff=rel_cutoff, ngrids=5)
+    set_scf(DFT, eps_scf=1.0E-10)
+    if activate_ot:
+        add_ot(SCF)
+    else:
+        add_diagonalization(SCF)
+        add_smear(SCF)
+        add_mixing(SCF)
+        add_mos(SCF)
+    #
+    add_outer_scf(OUTER_SCF)
     set_pbe(XC)  # alter: set_pb0, etc.
     set_qs(DFT,
            eps_default=1.0E-15,
