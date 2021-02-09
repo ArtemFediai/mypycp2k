@@ -11,7 +11,7 @@ import copy
 # from check_convergence.check_convergence import check_abc_convergence, check_cutoff_convergence
 
 """
-Set cp2k input file GW@DFT for the methane
+check, which values to select for: abc, cutoff, rel_cutoff
 set_XXX means imperatively set some section
 add_XXX means optionally set some section. Optionally == if activate_XXX is set to True
 activate_XXX means activate "add_XXX"
@@ -89,7 +89,6 @@ def main():
 
 ############################################### CHECK CONVERGENCE ######################################################
 
-    # check abc (cell size) convergence
     my_target_accuracy_eV = 1.E-3
     if True:
         my_abcs = [8, 10, 12, 14, 16]
@@ -106,6 +105,7 @@ def main():
           f"rel_cut = {calc.CP2K_INPUT.FORCE_EVAL_list[0].DFT.MGRID.Rel_cutoff},\n "
           f"abc = {calc.CP2K_INPUT.FORCE_EVAL_list[0].SUBSYS.CELL.Abc}\n")
 
+    # check abc (cell size) convergence
     general_convergence(calc=copy.deepcopy(calc),
                         params=my_abcs,
                         func_to_accept_param=change_calc_abc,
@@ -125,6 +125,8 @@ def main():
                         func_to_accept_param=change_calc_rel_cutoff,
                         target_accuracy_eV=my_target_accuracy_eV,
                         param_name='rel_cutoff')
+
+# rel_cutoff: 40; cutoff: 300; abc = 10
 
 if __name__ == '__main__':
     main()
