@@ -5,3 +5,4 @@ __pycache__
 *.wfn
 *.wfn.bak-*
 *.inp
+*.err
