@@ -87,7 +87,7 @@ def list_files1(directory, extension):
 
 def remove_files_with_extension(directory, extension):
     """
-    this version catches only files eded with {extension}. Will ignore "wfn.bak-1. Deprecated"
+    this version catches only files ended with {extension}. Will ignore "wfn.bak-1. Deprecated"
     :param directory:
     :param extension:
     :return:

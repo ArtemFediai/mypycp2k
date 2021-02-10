@@ -2,6 +2,9 @@ def return_homo_lumo(path_to_file):
 
     import re
     """
+    mo_cubes is supposed to output homos and lumos.
+    this script is able to read them out from the path_to_file cp2k output file
+    
     ^       # Match start of string
     [-+]?   # Match a leading + or - (optional)
     [0-9]+  # Match one or more digit
@@ -38,7 +41,7 @@ def return_homo_lumo(path_to_file):
     """
 
 
-    with open('out.out',"r") as fin:
+    with open(path_to_file,"r") as fin:
        all_file = fin.read()
 
     myiter = iter(all_file.splitlines())
@@ -57,9 +60,9 @@ def return_homo_lumo(path_to_file):
     while True:
         line = next(myiter)
         if regex.match(line):
-            print(line)
+            # print(line)
             line = next(myiter)
-            print(line)
+            # print(line)
             while True:
                 line = next(myiter)
                 if any_floating_point_numbers.match(line):
@@ -80,8 +83,7 @@ def return_homo_lumo(path_to_file):
                     break
             break
 
-
-    print(f"All homos: {homos}")
-    print(f"All lumos: {lumos}")
+    # print(f"All homos: {homos}")
+    # print(f"All lumos: {lumos}")
 
     return homos, lumos

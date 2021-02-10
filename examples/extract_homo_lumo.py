@@ -1,3 +1,9 @@
+"""
+Set cp2k input file GW@DFT for the methane
+set_XXX means imperatively set some section
+add_XXX means optionally set some section. Optionally == if activate_XXX is set to True
+activate_XXX means activate "add_XXX"
+"""
 from pycp2k import CP2K
 from mypycp2k.cp2k_input import set_global
 from mypycp2k.dft import set_dft, set_scf, set_nonperiodic_poisson, set_cutoff, print_mo_cubes, print_mo, set_qs
@@ -5,13 +11,12 @@ from mypycp2k.xc import set_pbe, set_pbe0, add_vdw, add_gw_ver_0
 from mypycp2k.scf import add_ot, add_ot_never_fail, add_diagonalization, add_mixing, add_smear, add_mos, remove_ot
 from mypycp2k.outer_scf import add_outer_scf
 from mypycp2k.subsys import add_elements, set_unperiodic_cell, set_topology, center_coordinates
-from mypycp2k.extract_from_output import return_homo_lumo
-"""
-Set cp2k input file GW@DFT for the methane
-set_XXX means imperatively set some section
-add_XXX means optionally set some section. Optionally == if activate_XXX is set to True
-activate_XXX means activate "add_XXX"
-"""
+from extract_functions.extract_from_output import return_homo_lumo
+import os
+from util.units_conversion import eV_to_Hartree
+from cp2k_run.cp2k_run import cp2k_run
+import rdkit
+
 def main():
     # My input #
 
@@ -40,7 +45,7 @@ def main():
     activate_outer_scf = False
     wf_corr_num_proc = 4  # 16 in the ref paper; -1 to use all
 
-    ####################################################################################################################
+    ########################################### CREATE TEMPLATE FOR TWO RUNS ###########################################
     calc = CP2K()
     calc.working_directory = './'
     calc.project_name = 'artem_gw_project'
@@ -95,30 +100,69 @@ def main():
         add_vdw(XC, vdw_parameters_file=my_vdw_parameters_file)
     ## END DFT ##
 
-########################################################################################################################
+######################################## END: CREATE TEMPLATE ##########################################################
 
+    # begin: input
+    cp2k_exe_path = '/home/artem/soft/cp2k/cp2k-7.1/exe/local/cp2k.popt'
+    run_folder = 'my_run_folder'
+    output_file = 'out.out'
+    ot_file_name = 'OT_' + inp_file_name
+    diag_file_name = 'DIAG_' + inp_file_name
+    my_xyz_file_name = 'methane.xyz'
+    threads = 4
+    my_run_type = 'mpi'
+    # end: input
 
-    # SCF.OT.Preconditioner = None
-    calc.write_input_file('OT' + inp_file_name)
-    # calc.run()
-    print("I have finished OT convergence with high accuracy")
-    #  remove the OT method
+    if not os.path.exists(run_folder):
+        os.mkdir(run_folder)
+
+    # OT run to converge quickly
+    calc.write_input_file(run_folder + '/' + ot_file_name)
+    # first run
+    print("Running cp2k with OT ...")
+    cp2k_run(input_file=ot_file_name,
+             xyz_file=my_xyz_file_name,
+             run_type=my_run_type,
+             np=threads,
+             output_file='out1.out',
+             cp2k_executable=cp2k_exe_path,
+             execution_directory=run_folder)
+    # end: first run
+    print("I have finished cp2k with OT")
+
+    # remove the OT method
     remove_ot(SCF)
-    #  change calculations to a diagonalization
+
+    # change calculations to a diagonalization
     add_diagonalization(SCF)
     add_smear(SCF)
     add_mixing(SCF)
     add_mos(SCF)
-    #
-    calc.write_input_file('DIAG' + inp_file_name)
+
+    # DIAGONALIZATION RUN to reliably compute HOMO
+    calc.write_input_file(run_folder + '/' + diag_file_name)
+    # second run
+    print("Running cp2k with DIAG ...")
+    my_out_file2 = 'out2.out'
+    cp2k_run(input_file=diag_file_name,
+             xyz_file=my_xyz_file_name,
+             output_file=my_out_file2,
+             run_type=my_run_type,
+             np=threads,
+             cp2k_executable=cp2k_exe_path,
+             execution_directory=run_folder)
+    print("I have finished cp2k with DIAG")
 
     homos, lumos = [], []
-    homos,lumos = return_homo_lumo('out.out')
-    print("I am done")
+    homos, lumos = return_homo_lumo(run_folder + '/' + my_out_file2)
+
+    print('homo = ', homos[-1]*eV_to_Hartree(), ' eV')
+    print('lumo = ', lumos[0]*eV_to_Hartree(), ' eV')
+
+    print("\nI am done")
 
 ########################################################################################################################
 
 
 if __name__ == '__main__':
     main()
-
