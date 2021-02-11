@@ -1,9 +1,9 @@
-def return_homo_lumo(path_to_file):
-
-    import re
-    """
-    mo_cubes is supposed to output homos and lumos.
-    this script is able to read them out from the path_to_file cp2k output file
+"""
+functions extract something from the out cp2k files using re
+"""
+import re
+"""
+    CRASH COURSE ON REGULAR EXPRESSION:
     
     ^       # Match start of string
     [-+]?   # Match a leading + or - (optional)
@@ -38,6 +38,14 @@ def return_homo_lumo(path_to_file):
     a{1,3} 	between one & three
     a+? a{2,}? 	match as few as possible
     ab|cd 	match ab or cd
+"""
+
+def return_homo_lumo(path_to_file):
+
+    """
+    mo_cubes is supposed to output homos and lumos.
+    this script is able to read them out from the path_to_file cp2k output file
+    
     """
 
 
@@ -87,3 +95,61 @@ def return_homo_lumo(path_to_file):
     # print(f"All lumos: {lumos}")
 
     return homos, lumos
+
+
+def return_gw_energies(path_to_file):
+    with open(path_to_file, "r") as fin:
+        all_file = fin.read()
+
+    myiter = iter(all_file.splitlines())
+
+
+    regex = re.compile("^\s*GW quasiparticle energies")
+    regex1 = re.compile("^\s*[0-9]+ \( occ \)(\s+[-+]?[0-9]*\.[0-9]*\s*)")
+    regex2 = re.compile("^\s*[0-9]+ \( vir \)(\s+[-+]?[0-9]*\.[0-9]*\s*)")
+    # regex1 = re.compile("^\s*[0-9]+\s+\(")
+
+    line_occ = None
+    line_vir = None
+
+    while True:
+        line = next(myiter, -1)
+        if line == -1:
+            break
+        if regex.match(line):
+            for i in range(0,10):
+                line = next(myiter)
+            if regex1.match(line):
+                # print("\nI have detected the first occ! The next line is potentailly vir!")
+                line_vir = line
+                while not regex2.match(line_vir):
+                    # print("This line is not yet virt")
+                    line_occ = line_vir
+                    line_vir = next(myiter)
+                # print("Finally! This is vit line!")
+            # print("Occupied:", line_occ),
+            # print("Virtual:", line_vir)
+
+    if isinstance(line_occ, str) and isinstance(line_vir, str) and \
+            line_occ.split().__len__() == 10 and line_vir.split().__len__() == 10:
+        occ = float(line_occ.split()[9])
+        vir = float(line_vir.split()[9])
+
+        print(f"GW HOMO: {occ} eV")
+        print(f"GW LUMO: {vir} eV")
+        return occ, vir
+    else:
+        print("gs energies were not found")
+        return None, None
+
+def extract_total_energy(path_to_file):
+    import re
+    """
+    returns total energy from file path_to_file
+    """
+    with open(path_to_file, "r") as fin:
+        regex = re.compile(" ENERGY\| Total FORCE_EVAL \( QS \) energy \(a\.u\.\):\s+(.+)\n")
+        for line in fin:
+            match = regex.match(line)
+            if match:
+                return match.groups()[0]
