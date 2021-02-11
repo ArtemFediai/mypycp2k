@@ -72,6 +72,9 @@ def plot_energies_general(energies, params, name, target_accuracy_ev):
 
 
 def extract_total_energy(energies, path_to_file):
+    """
+    takes energy as a list and append it with a new energy extracted from file path_to_file
+    """
     with open(path_to_file, "r") as fin:
         regex = re.compile(" ENERGY\| Total FORCE_EVAL \( QS \) energy \(a\.u\.\):\s+(.+)\n")
         for line in fin:
