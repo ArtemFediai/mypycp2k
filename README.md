@@ -7,7 +7,7 @@ Folders:
 
 1.
 mypycp2k: high level scripts. every file name corresponds to a cp2k section name and takes the respective pycp2k object as a first argumet.
-for instance:
+For instance:
 
 def set_cutoff(DFT, cutoff=900, rel_cutoff=60, ngrids=5):
     MGGRID = DFT.MGRID

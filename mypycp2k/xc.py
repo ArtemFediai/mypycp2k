@@ -24,7 +24,8 @@ def set_pbe0(XC, max_memory=1500):
 
     #### HF ####
     HF = XC.HF_add()
-    HF.Fraction = 0.25
+    #HF.Fraction = 0.25
+    HF.Fraction = 1.00
     HF.SCREENING.Eps_schwarz = 1.0E-11
     HF.SCREENING.Screen_on_initial_p = False
     HF.MEMORY.Max_memory = max_memory
@@ -73,11 +74,11 @@ def add_gw_ver_0(xc,
     RI_RPA.Size_freq_integ_group = size_freq_integ_group
     RI_RPA.Gw = 'TRUE'
     ###### HF ######
-    RI_RPA_HF = RI_RPA.HF_add()
-    RI_RPA_HF.Fraction = 1.0
-    RI_RPA_HF.SCREENING.Eps_schwarz = 1.0E-11
-    RI_RPA_HF.SCREENING.Screen_on_initial_p = 'FALSE'
-    RI_RPA_HF.MEMORY.Max_memory = 1500
+    #RI_RPA_HF = RI_RPA.HF_add()
+    #RI_RPA_HF.Fraction = 1.0
+    #RI_RPA_HF.SCREENING.Eps_schwarz = 1.0E-11
+    #RI_RPA_HF.SCREENING.Screen_on_initial_p = 'FALSE'
+    #RI_RPA_HF.MEMORY.Max_memory = 1500
     ###### RI_G0W0 ######
     RI_G0W0 = RI_RPA.RI_G0W0
     RI_G0W0.Corr_occ = corr_occ
