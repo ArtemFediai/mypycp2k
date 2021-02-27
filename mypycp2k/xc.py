@@ -24,8 +24,7 @@ def set_pbe0(XC, max_memory=1500):
 
     #### HF ####
     HF = XC.HF_add()
-    #HF.Fraction = 0.25
-    HF.Fraction = 1.00
+    HF.Fraction = 0.25
     HF.SCREENING.Eps_schwarz = 1.0E-11
     HF.SCREENING.Screen_on_initial_p = False
     HF.MEMORY.Max_memory = max_memory

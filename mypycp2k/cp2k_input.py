@@ -1,6 +1,6 @@
 def set_global(cp2k_input,
                project_name='my project',
-               print_level='MEDIUM',
+               print_level='LOW',
                run_type='ENERGY'):
     GLOBAL = cp2k_input.GLOBAL
     GLOBAL.Print_level = print_level

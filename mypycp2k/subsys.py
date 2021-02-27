@@ -1,4 +1,23 @@
-def add_elements(subsys, elements, basis, aux_io, aux_basis, pot):
+def add_elements(subsys, elements, basis, aux_basis, pot):
+    """
+    Add chemichal elements sections
+    :param subsys: pycp2k object
+    :param elements: list of chemical elements
+    :param basis: basis set name
+    :param aux_basis: ri axu basis set name
+    :param pot: pseudopotential name
+    :return: add kinds to KIND object
+    """
+    if isinstance(elements, list):
+        elements = list(elements)
+
+    for element in elements:
+        KIND = subsys.KIND_add(element)
+        KIND.Element = element
+        KIND.Potential = pot
+        KIND.Ri_aux_basis_set = aux_basis
+
+def add_elements_J(subsys, elements, basis, aux_io, aux_basis, pot):
     """
     Add chemichal elements sections
     :param subsys: pycp2k object
@@ -24,8 +43,6 @@ def add_elements(subsys, elements, basis, aux_io, aux_basis, pot):
         else:
             KIND.Basis_set = basis
         KIND.Potential = pot
-        #KIND.Ri_aux_basis_set = aux_basis
-
 
 def set_unperiodic_cell(subsys, abc):
     CELL = subsys.CELL
