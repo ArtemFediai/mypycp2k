@@ -11,12 +11,28 @@ def set_dft(DFT,
     DFT.Uks = uks
     DFT.Charge = charge
 
+# This function will take as an argument the Wavefunction file produced by the
+# any diagonalization method and include it in the dft section. This is the
+# only reliable way to restart a calculation as far as I am concern.
+def add_wfn(DFT, wfn_file_name):
+    DFT.Wfn_restart_file_name = wfn_file_name
 
 def set_scf(DFT, eps_scf=1.0E-6, max_scf=100, scf_guess='RESTART'):
     SCF = DFT.SCF
     SCF.Scf_guess = scf_guess  # atomic will be used if not exist
     SCF.Eps_scf = eps_scf
     SCF.Max_scf = max_scf
+
+# This function is almost the same as the original, with extra parameters
+# that tight/ensure the convergence of, for example, the lumo levels.  
+def set_scf_1(DFT, eps_scf=1.0E-6, max_scf=100, scf_guess='RESTART',
+              max_iter_lumo=500, eps_lumo=1E-5):
+    SCF               = DFT.SCF
+    SCF.Scf_guess     = scf_guess  # atomic will be used if not exist
+    SCF.Eps_scf       = eps_scf
+    SCF.Max_scf       = max_scf
+    SCF.Max_iter_lumo = max_iter_lumo
+    SCF.Eps_lumo      = eps_lumo
 
 def set_nonperiodic_poisson(DFT, solver='MT'):
     POISSON = DFT.POISSON
