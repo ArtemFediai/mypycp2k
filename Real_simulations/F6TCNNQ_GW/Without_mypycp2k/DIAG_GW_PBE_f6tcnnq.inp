@@ -1,0 +1,114 @@
+&GLOBAL
+  EXTENDED_FFT_LENGTHS TRUE
+  PRINT_LEVEL LOW
+  PROJECT_NAME f6tcnnq_GW_PBE
+  RUN_TYPE ENERGY
+&END GLOBAL
+&FORCE_EVAL
+  METHOD QUICKSTEP
+  &DFT
+    POTENTIAL_FILE_NAME /shared/software/chem/cp2k/cp2k-7.1/data/POTENTIAL
+    WFN_RESTART_FILE_NAME f6tcnnq_GW_PBE-RESTART.wfn
+    UKS FALSE
+    MULTIPLICITY 1
+    CHARGE 0
+    BASIS_SET_FILE_NAME /shared/software/chem/cp2k/cp2k-7.1/data/BASIS_def2_QZVP_RI_ALL
+    &SCF
+      MAX_ITER_LUMO 5000
+      EPS_LUMO 0.0001
+      MAX_SCF 2000
+      EPS_SCF 5e-06
+      SCF_GUESS RESTART
+      &OT
+        MINIMIZER DIIS
+        PRECONDITIONER FULL_ALL
+        ENERGY_GAP 0.001
+      &END OT
+    &END SCF
+    &QS
+      EPS_DEFAULT 1e-15
+      EPS_PGF_ORB 1e-200
+      METHOD GAPW
+    &END QS
+    &MGRID
+      NGRIDS 5
+      CUTOFF 300
+      REL_CUTOFF 30
+    &END MGRID
+    &XC
+      &XC_FUNCTIONAL PBE
+      &END XC_FUNCTIONAL
+      &WF_CORRELATION
+        METHOD RI_RPA_GPW
+        GROUP_SIZE 4
+        ERI_METHOD OS
+        &RI_RPA
+          QUADRATURE_POINTS 100
+          SIZE_FREQ_INTEG_GROUP 512
+          RI_G0W0 TRUE
+          &RI_G0W0
+            CORR_MOS_OCC 10
+            CORR_MOS_VIRT 10
+            CROSSING_SEARCH NEWTON
+            FERMI_LEVEL_OFFSET 0.1
+            EV_SC_ITER 10
+            ANALYTIC_CONTINUATION PADE
+          &END RI_G0W0
+          &HF
+            FRACTION 1.0
+            &SCREENING
+              EPS_SCHWARZ 1e-11
+              SCREEN_ON_INITIAL_P FALSE
+            &END SCREENING
+            &MEMORY
+              MAX_MEMORY 2500
+            &END MEMORY
+          &END HF
+        &END RI_RPA
+      &END WF_CORRELATION
+    &END XC
+    &POISSON
+      POISSON_SOLVER MT
+      PERIODIC NONE
+    &END POISSON
+    &PRINT
+      &MO_CUBES
+        FILENAME =HOMO.txt
+        WRITE_CUBE FALSE
+        NLUMO 10
+        NHOMO 10
+      &END MO_CUBES
+    &END PRINT
+  &END DFT
+  &SUBSYS
+    &CELL
+      ABC 30.0 30.0 30.0
+      PERIODIC NONE
+    &END CELL
+    &TOPOLOGY
+      COORD_FILE_NAME F6TCNNQ.xyz
+      COORD_FILE_FORMAT xyz
+      &CENTER_COORDINATES 
+          CENTER_POINT 0. 0. 0.
+      &END CENTER_COORDINATES
+    &END TOPOLOGY
+    &KIND C
+      ELEMENT C
+      POTENTIAL ALL
+      BASIS_SET def2-QZVP
+      BASIS_SET RI_AUX RI-5Z
+    &END KIND
+    &KIND N
+      ELEMENT N
+      POTENTIAL ALL
+      BASIS_SET def2-QZVP
+      BASIS_SET RI_AUX RI-5Z
+    &END KIND
+    &KIND F
+      ELEMENT F
+      POTENTIAL ALL
+      BASIS_SET def2-QZVP
+      BASIS_SET RI_AUX RI-5Z
+    &END KIND
+  &END SUBSYS
+&END FORCE_EVAL
