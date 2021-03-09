@@ -15,7 +15,7 @@ from extract_functions.extract_from_output import return_homo_lumo, return_gw_en
 import os
 from util.units_conversion import eV_to_Hartree
 from cp2k_run.cp2k_run import cp2k_run
-import rdkit
+# import rdkit
 
 def main():
     # My input #
@@ -36,10 +36,11 @@ def main():
     my_project_name = "methane_GW_PBE"
     my_xyz_file_name = 'methane.xyz'
     my_ri_aux_basis_set = 'RI-5Z'  #
-    # organic_elements = ['H', 'C', 'N', 'O', 'F', 'P', 'S', 'Cl', 'Br', 'B', 'I']
+    organic_elements = ['H', 'C', 'N', 'O', 'F', 'P', 'S', 'Cl', 'Br', 'B', 'I']
     # my_elements = ['H', 'O']  # for test
     # my_element = ['H']  # for test
     my_elements = ['H', 'C']
+    my_elements = organic_elements
     inp_file_name = 'GW_PBE_for_methane.inp'
     activate_vdw = False
     activate_outer_scf = False
@@ -88,7 +89,8 @@ def main():
     add_ot(SCF)
     #
     add_outer_scf(OUTER_SCF)
-    set_pbe(XC)  # alter: set_pb0, etc.
+    # set_pbe(XC)  # alter: set_pb0, etc.
+    set_pbe0(XC)
     set_qs(DFT,
            eps_default=1.0E-15,
            eps_pgf_orb=1.0E-200)
@@ -103,13 +105,14 @@ def main():
 
 ######################################## BEGIN: RUN CP2K TWO TIMES #####################################################
     # begin: input
-    cp2k_exe_path = '/home/artem/soft/cp2k/cp2k-7.1/exe/local/cp2k.popt'
+    # cp2k_exe_path = '/home/artem/soft/cp2k/cp2k-7.1/exe/local/cp2k.popt'
+    cp2k_exe_path = '/usr/bin/cp2k.popt'
     run_folder = 'my_run_folder'
     output_file = 'out.out'
     ot_file_name = 'OT_' + inp_file_name
     diag_file_name = 'DIAG_' + inp_file_name
     my_xyz_file_name = 'methane.xyz'
-    threads = 4
+    threads = 8
     my_run_type = 'mpi'
     # end: input
 
@@ -141,7 +144,7 @@ def main():
     # plot homo/lumo
     print_mo_cubes(DFT.PRINT, nhomo=10, nlumo=10)  #  all HOMOs are typicall plotted
     # add G0W0!
-    add_gw_ver_0(XC, ev_sc_iter=10)  # GW!
+    add_gw_ver_0(XC, ev_sc_iter=1)  # GW!
 
     # DIAGONALIZATION RUN to reliably compute HOMO
     calc.write_input_file(run_folder + '/' + diag_file_name)

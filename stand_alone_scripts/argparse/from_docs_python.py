@@ -1,4 +1,5 @@
-#!/bin/bash python3
+#!/home/artem/anaconda3/bin/python
+
 import argparse
 
 parser = argparse.ArgumentParser(description='Process some integers.')

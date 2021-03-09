@@ -1,4 +1,7 @@
 def timeit(fn):
+    """
+    measures execution time. used as decorator
+    """
     from time import perf_counter
     from functools import wraps
 
