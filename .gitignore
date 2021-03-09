@@ -6,3 +6,5 @@ __pycache__
 *.wfn.bak-*
 *.inp
 *.err
+examples/2345_run_folder/
+examples/my_run_folder/
