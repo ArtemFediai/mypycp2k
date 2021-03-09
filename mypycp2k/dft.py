@@ -11,6 +11,10 @@ def set_dft(DFT,
     DFT.Uks = uks
     DFT.Charge = charge
 
+def set_basis_set_file_name(DFT,
+            basis_set_file_name):
+    # del DFT.Basis_set_file_name
+    DFT.Basis_set_file_name = basis_set_file_name
 
 def set_scf(DFT, eps_scf=1.0E-6, max_scf=100, scf_guess='RESTART'):
     SCF = DFT.SCF
@@ -46,7 +50,7 @@ def print_mo(PRINT, filename='MO', range='1 10'):
 
 def set_qs(DFT,
            method='GAPW',
-           eps_default=1.0E-15,
+           eps_default=1.0E-10,
            eps_pgf_orb=1.E-200):
     QS = DFT.QS
     QS.Method = method

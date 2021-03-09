@@ -46,12 +46,12 @@ def add_vdw(XC,
 
 
 def add_gw_ver_0(xc,
-                 wf_corr_num_proc=4,
+                 wf_corr_num_proc=1,
                  rpa_num_quad_points=100,
-                 size_freq_integ_group=512,
+                 size_freq_integ_group=-1,
                  corr_occ=10,
                  corr_virt=10,
-                 ev_sc_iter=10):
+                 ev_sc_iter=1):
     """
     my first version of GW settings.
     :param xc:
@@ -77,7 +77,7 @@ def add_gw_ver_0(xc,
     RI_RPA_HF.Fraction = 1.0
     RI_RPA_HF.SCREENING.Eps_schwarz = 1.0E-11
     RI_RPA_HF.SCREENING.Screen_on_initial_p = 'FALSE'
-    RI_RPA_HF.MEMORY.Max_memory = 1500
+    RI_RPA_HF.MEMORY.Max_memory = 1024
     ###### RI_G0W0 ######
     RI_G0W0 = RI_RPA.RI_G0W0
     RI_G0W0.Corr_occ = corr_occ
