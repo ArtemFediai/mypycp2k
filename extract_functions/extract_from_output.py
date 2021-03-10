@@ -1,7 +1,14 @@
 """
 functions extract something from the out cp2k files using re
+Example of 6.1 gw cp2k output in test
 """
 import re
+
+def main():
+    num_o_fun = extract_number_of_independent_orbital_function('test/out.out')
+    print(f'number of independent orbital function: {num_o_fun}')
+
+
 """
     CRASH COURSE ON REGULAR EXPRESSION:
     
@@ -158,3 +165,20 @@ def extract_total_energy(path_to_file):
             match = regex.match(line)
             if match:
                 return match.groups()[0]
+
+def extract_number_of_independent_orbital_function(path_to_file):
+    import re
+    """
+    returns total energy from file path_to_file
+    """
+    with open(path_to_file, "r") as fin:
+
+        regex = re.compile(" Number of independent orbital functions:\s+([0-9]+)\n")
+        for line in fin:
+            match = regex.match(line)
+            if match:
+                return match.groups()[0]
+
+
+if __name__ == '__main__':
+    main()
