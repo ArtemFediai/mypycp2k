@@ -132,12 +132,17 @@ def return_gw_energies(path_to_file):
 
     if isinstance(line_occ, str) and isinstance(line_vir, str) and \
             line_occ.split().__len__() == 10 and line_vir.split().__len__() == 10:
+
+
+        homo = float(line_occ.split()[4])
+        lumo = float(line_vir.split()[4])
+
         occ = float(line_occ.split()[9])
         vir = float(line_vir.split()[9])
 
-        print(f"GW HOMO: {occ} eV")
-        print(f"GW LUMO: {vir} eV")
-        return occ, vir
+        # print(f"GW HOMO: {occ} eV")
+        # print(f"GW LUMO: {vir} eV")
+        return occ, vir, homo, lumo
     else:
         print("gs energies were not found")
         return None, None
