@@ -144,7 +144,7 @@ def main():
     # plot homo/lumo
     print_mo_cubes(DFT.PRINT, nhomo=10, nlumo=10)  #  all HOMOs are typicall plotted
     # add G0W0!
-    add_gw_ver_0(XC, ev_sc_iter=1)  # GW!
+    add_gw_ver_0(XC, ev_sc_iter=1, size_freq_integ_group=threads)  # GW!
 
     # DIAGONALIZATION RUN to reliably compute HOMO
     calc.write_input_file(run_folder + '/' + diag_file_name)

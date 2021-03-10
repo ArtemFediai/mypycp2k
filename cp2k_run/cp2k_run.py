@@ -14,6 +14,7 @@ def cp2k_run(cp2k_executable='cp2k.popt',
     import subprocess
     import shlex
     from shutil import copy
+    import shutil
 
     execution_directory = os.path.abspath(execution_directory)
     outstream = open(execution_directory + '/' + output_file, 'w')
@@ -22,7 +23,10 @@ def cp2k_run(cp2k_executable='cp2k.popt',
 
     if not execution_directory == './':
         if not os.path.exists(execution_directory + '/' + xyz_file):
-            copy(xyz_file, execution_directory, )
+            try:
+                copy(xyz_file, execution_directory, )
+            except shutil.SameFileError:
+                "Same file error: it s okay."
 
     if run_type == 'serial':
         command = f'{cp2k_executable} -i {input_file}'
