@@ -177,7 +177,7 @@ def extract_number_of_independent_orbital_function(path_to_file):
         for line in fin:
             match = regex.match(line)
             if match:
-                return match.groups()[0]
+                return int(match.groups()[0])
 
 
 if __name__ == '__main__':
