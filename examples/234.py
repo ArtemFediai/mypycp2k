@@ -11,7 +11,8 @@ from mypycp2k.xc import set_pbe, set_pbe0, add_vdw, add_gw_ver_0
 from mypycp2k.scf import add_ot, add_ot_never_fail, add_diagonalization, add_mixing, add_smear, add_mos, remove_ot
 from mypycp2k.outer_scf import add_outer_scf
 from mypycp2k.subsys import add_elements, set_unperiodic_cell, set_topology, center_coordinates
-from extract_functions.extract_from_output import return_homo_lumo, return_gw_energies
+from extract_functions.extract_from_output import return_homo_lumo, return_gw_energies, \
+    extract_number_of_independent_orbital_function
 import os
 from util.units_conversion import eV_to_Hartree
 from cp2k_run.cp2k_run import cp2k_run
@@ -21,8 +22,16 @@ from copy import copy
 from copy import deepcopy
 import argparse
 from util.xyz import XYZ
+import yaml
+from stand_alone_scripts.db_create.test_yaml import Cp2kOutput
+
 
 def main():
+
+    general_sim_folder = 'sim'
+    database_file = 'db'
+    my_offset = 20  # from the molecule to a vacuum. 15-20 is recommended!
+    # it has to exist
 
     dummy_run = False  # does not invoke cp2k if true
 
@@ -40,14 +49,9 @@ def main():
     original_xyz_file_name = f'dsgdb9nsd_{rank}.xyz'
 
     db_xyz_file = f'dsgdb9nsd/{original_xyz_file_name}'
-    sim_folder = f'out/{rank}'
-    if not os.path.exists('out'):
-        os.mkdir('out')
-        if not os.path.exists(f'out/{rank}'):
-            os.mkdir(sim_folder)
-    else:
-        if not os.path.exists(f'out/{rank}'):
-            os.mkdir(sim_folder)
+    sim_folder = f'{general_sim_folder}/{rank}'
+    if not os.path.exists(f'{general_sim_folder}/{rank}'):
+        os.mkdir(sim_folder)
 
     my_xyz_file_obj = XYZ.from_file(db_xyz_file)
     my_xyz_file_to_write = sim_folder + '/' + original_xyz_file_name
@@ -55,10 +59,12 @@ def main():
     my_xyz_file = original_xyz_file_name
     # End: My input
 
+    # DB
+    my_new_mol = Cp2kOutput(rank)
+
     # rel_cutoff: 40; cutoff: 300; abc = 10
-    my_abc = str(my_xyz_file_obj.compute_box_size(offset=10.0))[1:-2]
+    my_abc = str(my_xyz_file_obj.compute_box_size(offset=my_offset))[1:-2]
     print(my_abc)
-    #my_abc = '10.0 10.0 10.0'
     cutoff = 300
     rel_cutoff = 40
 
@@ -126,7 +132,7 @@ def main():
             potential_file_name=my_potential_file_name,
             basis_set_file_name=basis_set_file_name)
     set_cutoff(DFT, cutoff=cutoff, rel_cutoff=rel_cutoff, ngrids=5)
-    set_scf(DFT, eps_scf=1.0E-8, max_scf=500)
+    set_scf(DFT, eps_scf=1.0E-10, max_scf=500)
     add_ot(SCF)
     #
     # add_outer_scf(OUTER_SCF)
@@ -233,24 +239,69 @@ def main():
             path_to_out2_file = sim_folder + '/' + my_out_file2
 
             try:
+                num_orb = extract_number_of_independent_orbital_function(path_to_out2_file)
+                print(f'basis set = {suffix}, number of independent orbital functions: {num_orb}')
+            except:
+                print('number of orbatals was not extracted')
+                num_orb = 'not extracted'
+
+            try:
                 homos, lumos = [], []
                 homos, lumos = return_homo_lumo(path_to_out2_file)
                 print(f'basis set = {suffix} ', 'homo = ', homos[-1]*eV_to_Hartree(), ' eV')
                 print(f'basis set = {suffix} ', 'lumo = ', lumos[0]*eV_to_Hartree(), ' eV')
+                homo = homos[-1]*eV_to_Hartree()
+                lumo = lumos[0]*eV_to_Hartree()
             except:
                 print(f'Homo/Lumo were not extracted')
+                homo = 'not extracted'
+                lumo = 'not extracted'
 
             try:
-                gw_occ, gw_vir, homo, lumo = return_gw_energies(path_to_out2_file)
+                gw_occ, gw_vir, homo_, lumo_ = return_gw_energies(path_to_out2_file)
+                if isinstance(homo, str) or isinstance(lumo, str):
+                    homo = homo_
+                    lumo = lumo_
                 print(f'basis set = {suffix} ', 'homo = ', homo, ' eV')
                 print(f'basis set = {suffix} ', 'lumo = ', lumo, ' eV')
                 print(f'basis set = {suffix} ', 'gw homo = ', gw_occ, ' eV')
                 print(f'basis set = {suffix} ', 'gw lumo = ', gw_vir, ' eV')
             except:
                 print("GW energies were not extracted")
+                gw_occ = 'not extracted'
+                gw_vir = 'not extracted'
 
-        print("\nI am done\n")
-        del calc_
+            del calc_
+
+            #
+            my_new_mol.add_energies(int(suffix), homo, lumo, gw_occ, gw_vir)
+            my_new_mol.add_num_orbitals(int(suffix), num_orb)
+            db_record = my_new_mol.yield_dict()
+            #
+
+    print("\nI am done\n")
+    print('saving to DB...')
+
+    # DB.yaml is supposed to exist
+    # it does not work
+    # with open('DB.yaml', 'r') as stream:
+    #     db = yaml.load(stream, Loader=yaml.SafeLoader)
+    #     try:
+    #         db.update(db_record)
+    #     except:
+    #         print("type error")
+    #         db = db_record
+    #     if db:
+    #         with open('DB.yaml', 'w') as stream:
+    #             yaml.safe_dump(db, stream)
+
+
+
+    with open(f'{database_file}/DB_{rank}.yaml', 'w') as stream:
+        yaml.safe_dump(db_record, stream)
+
+    print(f"saved to DB_{rank}")
+
 
 
 ######################################## END: RUN CP2K TWO TIMES #######################################################
