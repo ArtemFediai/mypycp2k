@@ -53,7 +53,10 @@ def main():
         yaml.dump(db_upd, stream, Dumper=yaml.SafeDumper)
         print(yaml.dump(db_upd))
 
-        my_new_molecule.plot_it()
+        my_new_molecule.status()
+        print('status: ', my_new_molecule.status())
+
+        #my_new_molecule.plot_it()
 
 class Cp2kOutput:
     """
@@ -98,6 +101,7 @@ class Cp2kOutput:
         # try:
         # yaml hates numpy ==> float()
         # [0] --> basis function, [1] --> cardinal number
+
         x = [num_orb**-1.0 for num_orb in list(self.num_orbs.values())]
         self.homo[0] = self.get_intersect(X=x, Y=list(self.homos.values()))
         self.lumo[0] = self.get_intersect(X=x, Y=list(self.lumos.values()))
@@ -117,7 +121,11 @@ class Cp2kOutput:
     @staticmethod
     def get_intersect(X, Y):
         import numpy as np
-        return float(np.polyfit(X, Y, deg=1)[1])  # y = a*x+b. b --> [1]
+        if all(isinstance(x, float) for x in X) and all(isinstance(y, float) for y in Y):
+            return float(np.polyfit(X, Y, deg=1)[1])  # y = a*x+b. b --> [1]
+        else:
+            print('could not extrapolate. some are not floating point numbers')
+            return None
 
 
     def yield_dict(self):
@@ -134,6 +142,17 @@ class Cp2kOutput:
                 'vir': self.vir,
             }
         }
+
+    def status(self):
+        status = 'all_extracted'
+        all_self_attr = self.__dict__
+        all_dicts_and_lists = [attr_value for attr_value in all_self_attr.values()
+                               if isinstance(attr_value, list) or isinstance(attr_value, dict)]
+        for my_dict_or_list in all_dicts_and_lists:
+            for item in my_dict_or_list:
+                if not (isinstance(item, float) or isinstance(item, int)):
+                    status = f'not everything is extracted'
+        return status
 
     def plot_it(self):
         import numpy as np
