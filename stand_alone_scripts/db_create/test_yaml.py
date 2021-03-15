@@ -101,23 +101,22 @@ class Cp2kOutput:
         # try:
         # yaml hates numpy ==> float()
         # [0] --> basis function, [1] --> cardinal number
-
-        x = [num_orb**-1.0 for num_orb in list(self.num_orbs.values())]
-        self.homo[0] = self.get_intersect(X=x, Y=list(self.homos.values()))
-        self.lumo[0] = self.get_intersect(X=x, Y=list(self.lumos.values()))
-        self.occ[0] = self.get_intersect(X=x, Y=list(self.occs.values()))
-        self.vir[0] = self.get_intersect(X=x, Y=list(self.virs.values()))
-        #
-        x = [num_orb**-3.0 for num_orb in list(self.num_orbs.keys())]
-        self.homo[1] = self.get_intersect(X=x, Y=list(self.homos.values()))
-        self.lumo[1] = self.get_intersect(X=x, Y=list(self.lumos.values()))
-        self.occ[1] = self.get_intersect(X=x, Y=list(self.occs.values()))
-        self.vir[1] = self.get_intersect(X=x, Y=list(self.virs.values()))
-
-        # except:
-        #     self.homo = 'not computed'
-
-
+        try:
+            x = [num_orb**-1.0 for num_orb in list(self.num_orbs.values())]
+            self.homo[0] = self.get_intersect(X=x, Y=list(self.homos.values()))
+            self.lumo[0] = self.get_intersect(X=x, Y=list(self.lumos.values()))
+            self.occ[0] = self.get_intersect(X=x, Y=list(self.occs.values()))
+            self.vir[0] = self.get_intersect(X=x, Y=list(self.virs.values()))
+            #
+            x = [num_orb**-3.0 for num_orb in list(self.num_orbs.keys())]
+            self.homo[1] = self.get_intersect(X=x, Y=list(self.homos.values()))
+            self.lumo[1] = self.get_intersect(X=x, Y=list(self.lumos.values()))
+            self.occ[1] = self.get_intersect(X=x, Y=list(self.occs.values()))
+            self.vir[1] = self.get_intersect(X=x, Y=list(self.virs.values()))
+        except:
+            # self.homo[0:1], self.lumo[0:1] = 'not_computed', 'not_computed'
+            # self.occ[0:1], self.vir[0:1] = 'not_computed', 'not_computed'
+            pass
     @staticmethod
     def get_intersect(X, Y):
         import numpy as np
