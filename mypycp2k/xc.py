@@ -51,7 +51,10 @@ def add_gw_ver_0(xc,
                  size_freq_integ_group=-1,
                  corr_occ=10,
                  corr_virt=10,
-                 ev_sc_iter=1):
+                 ev_sc_iter=1,
+                 max_memory_hf=500,
+                 max_memory_wf=2000,
+                 eps_schwarz = 1.0E-11):
     """
     my first version of GW settings.
     :param xc:
@@ -67,6 +70,7 @@ def add_gw_ver_0(xc,
     WF_CORRELATION1.Method = 'RI_RPA_GPW'
     WF_CORRELATION1.Eri_method = 'OS'  # for non-periodic
     WF_CORRELATION1.Number_proc = wf_corr_num_proc  # -1 to use all; 16 in the ref paper
+    WF_CORRELATION1.Memory = max_memory_wf
     ##### RI RPA ######
     RI_RPA = WF_CORRELATION1.RI_RPA
     RI_RPA.Rpa_num_quad_points = rpa_num_quad_points
@@ -75,9 +79,9 @@ def add_gw_ver_0(xc,
     ###### HF ######
     RI_RPA_HF = RI_RPA.HF_add()
     RI_RPA_HF.Fraction = 1.0
-    RI_RPA_HF.SCREENING.Eps_schwarz = 1.0E-11
+    RI_RPA_HF.SCREENING.Eps_schwarz = eps_schwarz
     RI_RPA_HF.SCREENING.Screen_on_initial_p = 'FALSE'
-    RI_RPA_HF.MEMORY.Max_memory = 1024
+    RI_RPA_HF.MEMORY.Max_memory = max_memory_hf
     ###### RI_G0W0 ######
     RI_G0W0 = RI_RPA.RI_G0W0
     RI_G0W0.Corr_occ = corr_occ
@@ -86,3 +90,4 @@ def add_gw_ver_0(xc,
     RI_G0W0.Analytic_continuation = 'PADE'
     RI_G0W0.Fermi_level_offset = 0.1
     RI_G0W0.Crossing_search = 'NEWTON'
+    RI_G0W0.Ri_sigma_x = '.TRUE.'  # x with RI: very important!

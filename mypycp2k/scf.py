@@ -48,7 +48,11 @@ def add_broyden_mixing(scf):
     add_mos(scf)
 
 
-def add_ot(scf, minimizer='DIIS', preconditioner='FULL_ALL', energy_gap=0.001):
+def add_ot(scf,
+           minimizer='DIIS',
+           preconditioner='FULL_ALL',
+           energy_gap=0.001,
+           stepsize=0.05):
     """
     seems to perform best for molecules so far
     :param scf:
@@ -61,6 +65,7 @@ def add_ot(scf, minimizer='DIIS', preconditioner='FULL_ALL', energy_gap=0.001):
     OT.Minimizer = minimizer
     OT.Preconditioner = preconditioner  # FULL_SINGLE_INVERSE
     OT.Energy_gap = energy_gap
+    OT.Stepsize = stepsize  # best for mol. 100100
 
 
 def remove_ot(scf):
