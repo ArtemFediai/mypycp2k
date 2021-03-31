@@ -1,4 +1,5 @@
 import yaml
+from sklearn.metrics import r2_score
 
 """
 Structure of the database:
@@ -14,25 +15,24 @@ Mol_number:
   virs:
     ...: ..
   homo:
-    extrapolation_1
-    extrapolation_2
+    extrapolation_method1  (energy vs. basis_functions**-2)
+    extrapolation_method2 (energy vs. cardinal_number**-3)
   lumo:
-    extrapolation_1
-    extrapolation_2
+    extrapolation_method1
+    extrapolation_method2
   vir:
-    extrapolation_1
-    extrapolation_2
+    extrapolation_method1
+    extrapolation_method2
   occ:
-    extrapolation_1
-    extrapolation_2
+    extrapolation_method1
+    extrapolation_method2
 """
 
 
 def main():
     # create dict
-    rank = 1
 
-    with open('my_yaml_db.yaml', 'w+') as stream:
+    with open('test/my_yaml_db.yaml', 'w+') as stream:
         db = yaml.load(stream, Loader=yaml.SafeLoader)
         my_new_molecule = Cp2kOutput(12345)
         #
@@ -56,10 +56,12 @@ def main():
         my_new_molecule.status()
         print('status: ', my_new_molecule.status())
 
-        #my_new_molecule.plot_it()
+        my_new_molecule.plot_it()
 
 class Cp2kOutput:
     """
+    class for handling cp2k output, namely HOMO/LUMO energies for various basis set.
+    The purpose is to be used in GW for the basis set extrapolation
     this must produce a library
     """
 
@@ -100,7 +102,7 @@ class Cp2kOutput:
 
         # try:
         # yaml hates numpy ==> float()
-        # [0] --> basis function, [1] --> cardinal number
+        # extrapolation method: [0] --> basis function, [1] --> cardinal number
         try:
             x = [num_orb**-1.0 for num_orb in list(self.num_orbs.values())]
             self.homo[0] = self.get_intersect(X=x, Y=list(self.homos.values()))
@@ -119,15 +121,20 @@ class Cp2kOutput:
             pass
     @staticmethod
     def get_intersect(X, Y):
+        """
+        returns the energy extrapolated to the basis set limit (n_basis_func = Inf) == intersect with y axis
+        """
         import numpy as np
         if all(isinstance(x, float) for x in X) and all(isinstance(y, float) for y in Y):
             return float(np.polyfit(X, Y, deg=1)[1])  # y = a*x+b. b --> [1]
         else:
-            print('could not extrapolate. some are not floating point numbers')
+            print('could not extrapolate. some entries are not floating point numbers')
             return None
 
-
     def yield_dict(self):
+        """
+        turn the content of the instance cp2k_output into a dictionary
+        """
         return {self.mol_num:
             {
                 'homos': self.homos,
