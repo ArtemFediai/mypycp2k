@@ -6,10 +6,9 @@ aug-cc-pV
 """
 from pycp2k import CP2K
 from mypycp2k.cp2k_input import set_global
-from mypycp2k.dft import set_dft, set_scf, set_nonperiodic_poisson, set_cutoff, print_mo_cubes, print_mo, set_qs
-from mypycp2k.xc import set_pbe, set_pbe0, add_vdw, add_gw_ver_0
-from mypycp2k.scf import add_ot, add_ot_never_fail, add_diagonalization, add_mixing, add_smear, add_mos, remove_ot
-from mypycp2k.outer_scf import add_outer_scf
+from mypycp2k.dft import set_dft, set_scf, set_nonperiodic_poisson, set_cutoff, print_mo_cubes, set_qs
+from mypycp2k.xc import set_pbe, add_vdw, add_gw_ver_0
+from mypycp2k.scf import add_ot, add_diagonalization, add_mixing, add_mos, remove_ot
 from mypycp2k.subsys import add_elements, set_unperiodic_cell, set_topology, center_coordinates
 from extract_functions.extract_from_output import return_homo_lumo, return_gw_energies, \
     extract_number_of_independent_orbital_function
@@ -22,9 +21,9 @@ from copy import deepcopy
 import argparse
 from util.xyz import XYZ
 import yaml
-from stand_alone_scripts.db_create.test_yaml import Cp2kOutput
-from shutil import rmtree, copy, copytree
-from os import remove
+from extract_functions.basis_set_extrapolation import Cp2kOutput
+from shutil import rmtree, copytree
+
 
 def main():
 
@@ -38,6 +37,9 @@ def main():
     basis_set_file_name = 'BASIS_CC_AUG_RI_NEW'  # RI5, 2-5 cc, all aug-cc, RIFIT-all
     my_basis_sets = ['aug-cc-pVDZ', 'aug-cc-pVTZ', 'aug-cc-pVQZ', 'aug-cc-pV5Z']
     my_ri_basis_sets = ['aug-cc-pVDZ-RIFIT', 'aug-cc-pVTZ-RIFIT', 'aug-cc-pVQZ-RIFIT', 'aug-cc-pV5Z-RIFIT']
+
+    debug = True
+
     #  end: main settings
 
     dummy_run = False  # does not invoke cp2k if true
@@ -50,11 +52,12 @@ def main():
     #  parser end
 
     #  parsing input
-    threads = args.num_cpus  # cpus used to compute
+    threads = int(args.num_cpus)  #-1  # cpus used to compute
     rank = '{:0>6}'.format(args.rank)  # transform rank from '1' to '000001' format
     xyz_file_name = f'dsgdb9nsd_{rank}.xyz'
     xyz_file_location = f'dsgdb9nsd/{xyz_file_name}'
     sim_folder_scratch = f'/scratch/{bh5670}/{sim}/{rank}'
+    sim_folder_home = f'{sim}/{rank}'  # sim folder at home exists. you create later {rank} folder
     if not os.path.exists(sim_folder_scratch):
         os.mkdir(sim_folder_scratch)
     else:
@@ -123,8 +126,8 @@ def main():
             potential_file_name=my_potential_file_name,
             basis_set_file_name=basis_set_file_name)
     set_cutoff(DFT, cutoff=cutoff, rel_cutoff=rel_cutoff, ngrids=5)
-    set_scf(DFT, eps_scf=1.0E-9, max_scf=500, scf_guess='ATOMIC')
-    add_ot(SCF)
+    set_scf(DFT, eps_scf=1.0E-8, max_scf=500, scf_guess='ATOMIC')
+    add_ot(SCF, stepsize=0.05)
     #
     # add_outer_scf(OUTER_SCF)
     set_pbe(XC)  # we start with pbe
@@ -197,13 +200,13 @@ def main():
 
         # change calculations to a diagonalization
         add_diagonalization(SCF_)
-        add_smear(SCF_)  # add or not?
+        # add_smear(SCF_)  # uses final T.
         add_mixing(SCF_)  # add or not?
-        add_mos(SCF_,added_mos=200)  # add or not?
+        add_mos(SCF_, added_mos=1000)  # add or not?
         # plot homo/lumo
 
         #set_pbe0(XC_)  # we want G0W0@PBE0. no pbe0 in the beginning
-        print_mo_cubes(DFT_.PRINT, nhomo=10, nlumo=10)  # all HOMOs are typicall plotted
+        print_mo_cubes(DFT_.PRINT, nhomo=1, nlumo=1)  # all HOMOs are typicall plotted
         set_scf(DFT_, eps_scf=1E-6, max_scf=200)
         # add G0W0!
         add_gw_ver_0(XC_,
@@ -285,11 +288,14 @@ def main():
     # Clean up before leave
     status = my_new_mol.status()
     if status == 'all_extracted':  # all quantities are extracted
-        print(f'status: {status} ==> will remove {sim_folder_scratch}')
-        try_to_remove_folder(sim_folder_scratch)
+        if debug:
+            print(f'status: {status}, but debug is on ==> will move {sim_folder_scratch} to {sim_folder_home}')
+            copytree(sim_folder_scratch, sim_folder_home)  # will rewrite the folder
+        else:
+            print(f'status: {status} ==> will remove {sim_folder_scratch}')
+            try_to_remove_folder(sim_folder_scratch)
     else:
         print(f'status: {status} ==> will copy failed sim folder from scratch')
-        sim_folder_home = f'{sim}/{rank}'  # sim folder at home exists. you create {rank} folder
         #if not os.path.exists(sim_folder_home):
         #os.mkdir(sim_folder_home)   # will overwrite if exists
         copytree(sim_folder_scratch, sim_folder_home)  # will rewrite the folder

@@ -1,4 +1,5 @@
 """
+here, the output for the TZ is the initial guess for DZ wfn, etc.
 !!! Edit, test, push only at int-nano !!!
 2,3,4-cc-pV
 or
@@ -6,10 +7,9 @@ aug-cc-pV
 """
 from pycp2k import CP2K
 from mypycp2k.cp2k_input import set_global
-from mypycp2k.dft import set_dft, set_scf, set_nonperiodic_poisson, set_cutoff, print_mo_cubes, print_mo, set_qs
-from mypycp2k.xc import set_pbe, set_pbe0, add_vdw, add_gw_ver_0
-from mypycp2k.scf import add_ot, add_ot_never_fail, add_diagonalization, add_mixing, add_smear, add_mos, remove_ot
-from mypycp2k.outer_scf import add_outer_scf
+from mypycp2k.dft import set_dft, set_scf, set_nonperiodic_poisson, set_cutoff, print_mo_cubes, set_qs
+from mypycp2k.xc import set_pbe, add_vdw, add_gw_ver_0
+from mypycp2k.scf import add_ot, add_diagonalization, add_mixing, add_mos, remove_ot
 from mypycp2k.subsys import add_elements, set_unperiodic_cell, set_topology, center_coordinates
 from extract_functions.extract_from_output import return_homo_lumo, return_gw_energies, \
     extract_number_of_independent_orbital_function
@@ -22,9 +22,9 @@ from copy import deepcopy
 import argparse
 from util.xyz import XYZ
 import yaml
-from stand_alone_scripts.db_create.test_yaml import Cp2kOutput
+from extract_functions.basis_set_extrapolation import Cp2kOutput
 from shutil import rmtree, copy, copytree
-from os import remove
+
 
 def main():
 
@@ -229,7 +229,7 @@ def main():
                      ev_sc_iter=1,
                      wf_corr_num_proc=wf_corr_num_proc,
                      rpa_num_quad_points=100,
-                     max_memory_wf=2000,
+                     max_memory_wf=4000,
                      max_memory_hf=500,
                      corr_occ=1,
                      corr_virt=1)  # GW!
