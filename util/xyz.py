@@ -1,6 +1,5 @@
 """
-this shows the usage of the class XYZ parser that is used to read xyz file into named tuple etc.
-the main file shows the usage of it
+the object corresponding to the xyz file: initializes, reads, writes, etc
 """
 
 import numpy as np
@@ -9,6 +8,9 @@ from collections import namedtuple
 
 
 def main():
+    """
+    this serves as the test
+    """
     # import the molecule (xyz)
     xyz_object = XYZ.from_file('test/H2O.xyz')
     # check the box size
