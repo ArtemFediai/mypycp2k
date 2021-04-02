@@ -1,0 +1,22 @@
+---
+# example: 2,3,4 zeta for basis set extrapolation GW
+basis_set_file: BASIS_CC_AUG_RI_NEW
+basis_set_list:
+  - aug-cc-pVDZ
+  - aug-cc-pVTZ
+  - aug-cc-pVQZ
+ri_basis_set_list:
+  - aug-cc-pVDZ-RIFIT
+  - aug-cc-pVTZ-RIFIT
+  - aug-cc-pVQZ-RIFIT
+cutoff: 500
+rel_cutoff: 50
+molecule_vacuum_offset: 15
+folder_names:
+  simulations: sim
+  database: db
+  scratch: bh5670
+debug: False
+dummy_run: False
+prefix_xyz_file_name: dsgdb9nsd  # --> {}_{rank}.xyz
+cp2k_exe_path: /home/ws/bh5670/cp2k/cp2k-7.1/exe/local/cp2k.popt
