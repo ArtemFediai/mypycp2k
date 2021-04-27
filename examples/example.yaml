@@ -1,6 +1,10 @@
 ---
 # example: 2,3,4 zeta for basis set extrapolation GW
 basis_set_file: BASIS_CC_AUG_RI_NEW
+basis_set_suffix:
+  - 2
+  - 3
+  - 4
 basis_set_list:
   - aug-cc-pVDZ
   - aug-cc-pVTZ
@@ -16,7 +20,10 @@ folder_names:
   simulations: sim
   database: db
   scratch: bh5670
-debug: False
-dummy_run: False
+debug: True
+dummy_run: True
 prefix_xyz_file_name: dsgdb9nsd  # --> {}_{rank}.xyz
 cp2k_exe_path: /home/ws/bh5670/cp2k/cp2k-7.1/exe/local/cp2k.popt
+potential_file_name: 'POTENTIAL'
+potential: 'ALL'
+elements: ['H', 'C', 'N', 'O', 'F', 'P', 'S', 'Cl', 'Br', 'B', 'I']
