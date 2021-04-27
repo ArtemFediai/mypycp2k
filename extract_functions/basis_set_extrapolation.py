@@ -2,6 +2,40 @@ import yaml
 from sklearn.metrics import r2_score
 
 """
+IDEA:
+(BEGIN)
+
+lumos: 
+    2: ...,
+    3: ..., 
+    4: ...
+    extrapolated: 
+        -: ... (method1)
+        -: ... (method2)
+    err:
+        -: ...
+        -: ...
+    r_2:
+        -: ...
+        -: ...
+homos:
+
+    ...
+
+occs:
+
+    ...
+
+virs:
+
+    ...
+
+        
+(END)    
+"""
+
+
+"""
 Structure of the database:
 Mol_number:
   homos:
@@ -26,14 +60,14 @@ Mol_number:
   occ:
     extrapolation_method1
     extrapolation_method2
-  r_lumo:
+  lumo_r:
     method1
     method2
-  r_homo:
+  homo_r:
   ...
-  r_occ:
+  occ_r:
   ...
-  r_vir:
+  vir_r:
   ...
   homo_err:
   ...
