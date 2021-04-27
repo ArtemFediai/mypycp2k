@@ -6,10 +6,9 @@ aug-cc-pV
 """
 from pycp2k import CP2K
 from mypycp2k.cp2k_input import set_global
-from mypycp2k.dft import set_dft, set_scf, set_nonperiodic_poisson, set_cutoff, print_mo_cubes, print_mo, set_qs
+from mypycp2k.dft import set_dft, set_scf, set_nonperiodic_poisson, set_cutoff, print_mo_cubes, set_qs
 from mypycp2k.xc import set_pbe, set_pbe0, add_vdw, add_gw_ver_0
-from mypycp2k.scf import add_ot, add_ot_never_fail, add_diagonalization, add_mixing, add_smear, add_mos, remove_ot
-from mypycp2k.outer_scf import add_outer_scf
+from mypycp2k.scf import add_ot, add_diagonalization, add_mixing, add_smear, add_mos, remove_ot
 from mypycp2k.subsys import add_elements, set_unperiodic_cell, set_topology, center_coordinates
 from extract_functions.extract_from_output import return_homo_lumo, return_gw_energies, \
     extract_number_of_independent_orbital_function
@@ -23,8 +22,8 @@ import argparse
 from util.xyz import XYZ
 import yaml
 from stand_alone_scripts.db_create.test_yaml import Cp2kOutput
-from shutil import rmtree, copy, copytree
-from os import remove
+from shutil import rmtree, copytree
+
 
 def main():
 
@@ -117,7 +116,7 @@ def main():
     set_nonperiodic_poisson(DFT)
     set_topology(SUBSYS, xyz_file_name=xyz_file_name)
     # add_elements(SUBSYS,
-    #              elements=my_elements,
+    #              elements=elements,
     #              basis=my_basis_set,
     #              aux_basis=my_ri_aux_basis_set,
     #              pot=my_potential)
@@ -266,8 +265,8 @@ def main():
                 print(f'basis set = {suffix} ', 'gw lumo = ', gw_vir, ' eV')
             except:
                 print("GW energies were not extracted")
-                gw_occ = 'not extracted'
-                gw_vir = 'not extracted'
+                # gw_occ = 'not extracted'
+                # gw_vir = 'not extracted'
 
             del calc_
 

@@ -19,25 +19,32 @@ import numpy as np
 from copy import copy
 from copy import deepcopy
 def main():
-    # My input #
+    # My input_from_yaml #
 
     # rel_cutoff: 40; cutoff: 300; abc = 10
     my_abc = '10.0 10.0 10.0'
     cutoff = 300
     rel_cutoff = 40
 
+    # GLOBAL SETTINGS
+    threads = 121  # cpus used to compute
+    #
+
+
     ## base settings ##
-    basis_set_base_path = '/home/artem/soft/cp2k/cp2k-7.1/data/'
+    #basis_set_base_path = '/home/artem/soft/cp2k/cp2k-7.1/data/'
+    basis_set_base_path = ''
     # my_basis_set_file_name = basis_set_base_path + 'BASIS_RI_cc-TZ'G
     #my_basis_set_file_name = basis_set_base_path + 'BASIS_def2_QZVP_RI_ALL'
     basis_set_file_name = 'BASIS_CC_AUG_RI'  # RI5, 2-5 cc, all aug-cc
     my_vdw_parameters_file = basis_set_base_path + 'dftd3.dat'
-    my_basis_set = 'def2-QZVP'  # not used
+    #my_basis_set = 'def2-QZVP'  # not used
     # my_basis_sets = ['cc-pVDZ', 'cc-pVTZ', 'cc-pVQZ', 'cc-pV5Z']
     my_basis_sets = ['aug-cc-pVDZ', 'aug-cc-pVTZ', 'aug-cc-pVQZ', 'aug-cc-pV5Z']
-    my_potential_file_name = basis_set_base_path + 'POTENTIAL'
+    # my_potential_file_name = basis_set_base_path + 'POTENTIAL'
+    my_potential_file_name = 'POTENTIAL'
     my_potential = 'ALL'
-    my_project_name = "methane_GW_PBE"
+    my_project_name = "this_is_template"
     my_xyz_file_name = 'H2O.xyz'
     my_ri_aux_basis_set = 'RI-5Z'  #
     organic_elements = ['H', 'C', 'N', 'O', 'F', 'P', 'S', 'Cl', 'Br', 'B', 'I']
@@ -74,7 +81,7 @@ def main():
     set_nonperiodic_poisson(DFT)
     set_topology(SUBSYS, xyz_file_name=my_xyz_file_name)
     # add_elements(SUBSYS,
-    #              elements=my_elements,
+    #              elements=elements,
     #              basis=my_basis_set,
     #              aux_basis=my_ri_aux_basis_set,
     #              pot=my_potential)
@@ -107,14 +114,13 @@ def main():
 ######################################## BEGIN: RUN CP2K TWO TIMES #####################################################
     suffix = ['2', '3', '4', '5']  # of out folde
 
-    # begin: input
+    # begin: input_from_yaml
     # cp2k_exe_path = '/home/artem/soft/cp2k/cp2k-7.1/exe/local/cp2k.popt'
-    cp2k_exe_path = '/usr/bin/cp2k.popt'
+    cp2k_exe_path = '/home/ws/bh5670/cp2k/cp2k-7.1/exe/local/cp2k.popt' 
     run_folder = '2345_run_folder'
     if not os.path.exists(run_folder):
         os.mkdir(run_folder)
     my_xyz_file_name = 'H2O.xyz'
-    threads = 8
     my_run_type = 'mpi'
 
     for i_bs, suffix in enumerate(suffix):
@@ -142,7 +148,7 @@ def main():
         output_file = f'out_{suffix}.out'
         ot_file_name = 'OT_' + f'{suffix}_' + inp_file_name
         diag_file_name = 'DIAG_' + f'{suffix}_' + inp_file_name
-        # end: input
+        # end: input_from_yaml
 
         # OT run to converge quickly
         calc_.write_input_file(run_folder + '/' + ot_file_name)
