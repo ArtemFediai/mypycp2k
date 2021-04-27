@@ -31,7 +31,7 @@ def main():
     #  main settings
     # todo: has to be inherited from the sh file:
     sim = 'sim'  # simulation folder name
-    database_file = 'db'
+    database_folder = 'db'
     # todo: this must be inherited
     bh5670 = 'bh5670'  # the outermost folder in the scratch where all other data are put
     # todo yaml or predict
@@ -57,8 +57,9 @@ def main():
     #  parsing input
     threads = int(args.num_cpus)-1  # cpus used to compute
     rank = '{:0>6}'.format(args.rank)  # transform rank from '1' to '000001' format
-    xyz_file_name = f'dsgdb9nsd_{rank}.xyz'
-    xyz_file_location = f'dsgdb9nsd/{xyz_file_name}'
+    prefix_xyz_file_name = 'dsgdb9nsd'
+    xyz_file_name = f'{prefix_xyz_file_name}_{rank}.xyz'
+    xyz_file_location = f'{prefix_xyz_file_name}/{xyz_file_name}'
     sim_folder_scratch = f'/scratch/{bh5670}/{sim}/{rank}'
     sim_folder_home = f'{sim}/{rank}'  # sim folder at home exists. you create later {rank} folder
     if not os.path.exists(sim_folder_scratch):
@@ -150,7 +151,7 @@ def main():
 ######################################## BEGIN: RUN CP2K TWO TIMES #####################################################
     suffix = ['2', '3', '4']  # cardinal numbers of the database
 
-    # begin: input
+    # begin: input_from_yaml
     # cp2k_exe_path = '/home/artem/soft/cp2k/cp2k-7.1/exe/local/cp2k.popt'
     cp2k_exe_path = '/home/ws/bh5670/cp2k/cp2k-7.1/exe/local/cp2k.popt' 
     my_run_type = 'mpi'
@@ -184,7 +185,7 @@ def main():
 
 
 
-        if suffix != '2':
+        if i_bs != 0:
             set_scf(DFT_, eps_scf=1.0E-8, max_scf=500, scf_guess='RESTART')  # TZ,QZ will start from RESTART of the DZ,QZ
             try:
                 copy(sim_folder_scratch + '/' + f'{int(suffix)-1}-RESTART.wfn',
@@ -192,7 +193,7 @@ def main():
                 print('copied restart file 2->3 or 3->4')
             except:
                 print('not succesfull copy of the restart file')
-        elif suffix == '2':
+        elif i_bs == 0:
             set_scf(DFT_, eps_scf=1.0E-8, max_scf=500, scf_guess='ATOMIC')  # DZ with ATOMIC guess
 
         # OT run to converge quickly
@@ -297,10 +298,10 @@ def main():
     print("\nI am done\n")
     print('saving to DB...')
 
-    with open(f'{database_file}/DB_{rank}.yaml', 'w') as stream:
+    with open(f'{database_folder}/DB_{rank}.yaml', 'w') as stream:
         yaml.safe_dump(db_record, stream)
 
-    print(f"saved to {database_file}/DB_{rank}.yaml")
+    print(f"saved to {database_folder}/DB_{rank}.yaml")
     print('I will remove the content the sim folder')
 
     # Clean up before leave
