@@ -1,6 +1,6 @@
 """
 functions extract something from the out cp2k files using re
-Example of 6.1 gw cp2k output in test
+Example of 7.1 gw cp2k output in test
 """
 import re
 
