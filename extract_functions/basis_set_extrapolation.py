@@ -188,6 +188,10 @@ class Cp2kOutput:
         method 2: cardinal number. Energy vs. CN**-3
         """
 
+        if self.num_orb.values()[0] == None:
+            print("not a number number of orbs")
+            return 0
+
         # try:
         #  extrapolation method: [0] --> basis function, [1] --> cardinal number
         x = []
