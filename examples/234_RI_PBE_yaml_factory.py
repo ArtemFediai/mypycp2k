@@ -65,7 +65,15 @@ def main():
     rank = '{:0>6}'.format(args.rank)  # transform rank from '1' to '000001' format. This is not a general thing
     xyz_file_name = f'{prefix_xyz_file_name}_{rank}.xyz'
     xyz_file_location = f'{prefix_xyz_file_name}/{xyz_file_name}'
-    if not dummy_run:
+
+    db_record_path = f'{db}/DB_{rank}.yaml'  # file where the results will be saved todo: raeum es alles auf!
+    #  check is the output exists
+    if os.path.exists(db_record_path):
+        print(f'The simulation results of mol. {rank} is already in the folder of reference')
+        exit()
+    #  end: check if the output exists
+
+    if True: #not dummy_run:
         sim_folder_scratch = f'/scratch/{bh5670}/{sim}/{rank}'
     else:
         sim_folder_scratch = f'scratch/{bh5670}/{sim}/{rank}'
@@ -78,10 +86,10 @@ def main():
         os.mkdir(sim_folder_scratch)  # and the new folder will be created
 
 
-    # xyz object created, normal xyz file is created at scratch
+    #  xyz object created, normal xyz file is created at scratch
     try:
         my_xyz_file_obj = XYZ.from_file(xyz_file_location)  # object created using the file from home
-    except:  #test
+    except:  #  test
         my_xyz_file_obj = XYZ.from_file('H2O.xyz')  # object created using the file from home
 
     xyz_at_scratch = sim_folder_scratch + '/' + xyz_file_name  #
@@ -241,8 +249,11 @@ def main():
         print(f'status: {status} ==> will copy failed sim folder from scratch')
         #if not os.path.exists(sim_folder_home):
         #os.mkdir(sim_folder_home)   # will overwrite if exists
-        copytree(sim_folder_scratch, sim_folder_home, dirs_exist_ok=True)  # will rewrite the folder?
-        print(f"I have copied {sim_folder_scratch} to {sim_folder_home}")
+        try:
+            copytree(sim_folder_scratch, sim_folder_home)  # will rewrite the folder?
+            print(f"I have copied {sim_folder_scratch} to {sim_folder_home}")
+        except:
+            print(f"I could not copy {sim_folder_scratch} to {sim_folder_home}")
         try_to_remove_folder(sim_folder_scratch)
 
 
@@ -253,6 +264,7 @@ def try_to_remove_folder(folder):
     except OSError as e:
         print("Error: %s : %s" % (folder, e.strerror))
         print(f"Folder {folder} could not be deleted")
+
 
 class InputFactory:
     @classmethod
