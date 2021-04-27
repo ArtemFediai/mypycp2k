@@ -6,10 +6,9 @@ aug-cc-pV
 """
 from pycp2k import CP2K
 from mypycp2k.cp2k_input import set_global
-from mypycp2k.dft import set_dft, set_scf, set_nonperiodic_poisson, set_cutoff, print_mo_cubes, print_mo, set_qs
+from mypycp2k.dft import set_dft, set_scf, set_nonperiodic_poisson, set_cutoff, print_mo_cubes, set_qs
 from mypycp2k.xc import set_pbe, set_pbe0, add_vdw, add_gw_ver_0
-from mypycp2k.scf import add_ot, add_ot_never_fail, add_diagonalization, add_mixing, add_smear, add_mos, remove_ot
-from mypycp2k.outer_scf import add_outer_scf
+from mypycp2k.scf import add_ot, add_diagonalization, add_mixing, add_smear, add_mos, remove_ot
 from mypycp2k.subsys import add_elements, set_unperiodic_cell, set_topology, center_coordinates
 from extract_functions.extract_from_output import return_homo_lumo, return_gw_energies, \
     extract_number_of_independent_orbital_function
@@ -18,7 +17,6 @@ from util.units_conversion import eV_to_Hartree
 from cp2k_run.cp2k_run import cp2k_run
 import numpy as np
 # import rdkit
-from copy import copy
 from copy import deepcopy
 import argparse
 from util.xyz import XYZ
@@ -30,7 +28,7 @@ def main():
 
     general_sim_folder = 'sim'
     database_file = 'db'
-    my_offset = 20  # from the molecule to a vacuum. 15-20 is recommended!
+    my_offset = 10  # from the molecule to a vacuum. 15-20 is recommended!
     # it has to exist
 
     dummy_run = False  # does not invoke cp2k if true
@@ -50,14 +48,26 @@ def main():
 
     db_xyz_file = f'dsgdb9nsd/{original_xyz_file_name}'
     sim_folder = f'{general_sim_folder}/{rank}'
-    if not os.path.exists(f'{general_sim_folder}/{rank}'):
+    sim_folder_scratch = f'/scratch/bh5670/{rank}'
+    if not os.path.exists(sim_folder):
         os.mkdir(sim_folder)
+    if not os.path.exists(sim_folder_scratch):
+        os.mkdir(sim_folder_scratch)
 
-    my_xyz_file_obj = XYZ.from_file(db_xyz_file)
-    my_xyz_file_to_write = sim_folder + '/' + original_xyz_file_name
+    # use scratch
+    sim_folder = sim_folder_scratch
+    #
+
+    # xyz object, normal xyz file
+    my_xyz_file_obj = XYZ.from_file(db_xyz_file)  # home
+    my_xyz_file_to_write = sim_folder + '/' + original_xyz_file_name  # home
     my_xyz_file_obj.write(my_xyz_file_to_write)  # this written file will be called
-    my_xyz_file = original_xyz_file_name
-    # End: My input
+    my_xyz_file = original_xyz_file_name  # just a name
+    # scratch
+    my_xyz_file_to_write_to_scratch = sim_folder_scratch + '/' + original_xyz_file_name
+    my_xyz_file_obj.write(my_xyz_file_to_write_to_scratch)  # writes to scratch
+
+    # End: My input_from_yaml
 
     # DB
     my_new_mol = Cp2kOutput(rank)
@@ -72,13 +82,9 @@ def main():
     #
 
     ## base settings ##
-    #basis_set_base_path = '/home/artem/soft/cp2k/cp2k-7.1/data/'
-    basis_set_base_path = ''
-    # my_basis_set_file_name = basis_set_base_path + 'BASIS_RI_cc-TZ'G
     #my_basis_set_file_name = basis_set_base_path + 'BASIS_def2_QZVP_RI_ALL'
     basis_set_file_name = 'BASIS_CC_AUG_RI'  # RI5, 2-5 cc, all aug-cc
-    my_vdw_parameters_file = basis_set_base_path + 'dftd3.dat'
-    #my_basis_set = 'def2-QZVP'  # not used
+    my_vdw_parameters_file = 'dftd3.dat'
     # my_basis_sets = ['cc-pVDZ', 'cc-pVTZ', 'cc-pVQZ', 'cc-pV5Z']
     my_basis_sets = ['aug-cc-pVDZ', 'aug-cc-pVTZ', 'aug-cc-pVQZ', 'aug-cc-pV5Z']
     # my_potential_file_name = basis_set_base_path + 'POTENTIAL'
@@ -120,7 +126,7 @@ def main():
     set_nonperiodic_poisson(DFT)
     set_topology(SUBSYS, xyz_file_name=my_xyz_file)
     # add_elements(SUBSYS,
-    #              elements=my_elements,
+    #              elements=elements,
     #              basis=my_basis_set,
     #              aux_basis=my_ri_aux_basis_set,
     #              pot=my_potential)
@@ -276,26 +282,12 @@ def main():
             #
             my_new_mol.add_energies(int(suffix), homo, lumo, gw_occ, gw_vir)
             my_new_mol.add_num_orbitals(int(suffix), num_orb)
+            my_new_mol.extrapolate_energy()
             db_record = my_new_mol.yield_dict()
             #
 
     print("\nI am done\n")
     print('saving to DB...')
-
-    # DB.yaml is supposed to exist
-    # it does not work
-    # with open('DB.yaml', 'r') as stream:
-    #     db = yaml.load(stream, Loader=yaml.SafeLoader)
-    #     try:
-    #         db.update(db_record)
-    #     except:
-    #         print("type error")
-    #         db = db_record
-    #     if db:
-    #         with open('DB.yaml', 'w') as stream:
-    #             yaml.safe_dump(db, stream)
-
-
 
     with open(f'{database_file}/DB_{rank}.yaml', 'w') as stream:
         yaml.safe_dump(db_record, stream)
