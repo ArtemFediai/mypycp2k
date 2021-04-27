@@ -112,7 +112,8 @@ def main():
 
     # begin: input_from_yaml
     # cp2k_exe_path = '/home/artem/soft/cp2k/cp2k-7.1/exe/local/cp2k.popt'
-    cp2k_exe_path = '/home/ws/bh5670/cp2k/cp2k-7.1/exe/local/cp2k.popt' 
+    #cp2k_exe_path = '/home/ws/bh5670/cp2k/cp2k-7.1/exe/local/cp2k.popt'
+    cp2k_exe_path = input_from_yaml['cp2k_exe_path']
     my_run_type = 'mpi'
 
     suffix = input['basis_set_suffix']  # todo: fix DZ --> 2, TZ --> 3, QZ --> 4
