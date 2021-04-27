@@ -188,7 +188,7 @@ class Cp2kOutput:
         method 2: cardinal number. Energy vs. CN**-3
         """
 
-        if self.num_orb.values()[0] == None:
+        if self.num_orbs.values()[0] == None:
             print("not a number number of orbs")
             return 0
 
