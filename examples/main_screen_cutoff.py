@@ -17,7 +17,7 @@ add_XXX means optionally set some section. Optionally == if activate_XXX is set 
 activate_XXX means activate "add_XXX"
 """
 def main():
-    # My input #
+    # My input_from_yaml #
     ## base settings ##
     basis_set_base_path = '/home/artem/soft/cp2k/cp2k-7.1/data/'
     my_abc = '16.0 16.0 16.0'
@@ -31,7 +31,7 @@ def main():
     my_xyz_file_name = 'methane.xyz'
     my_ri_aux_basis_set = 'RI-5Z'  #
     # organic_elements = ['H', 'C', 'N', 'O', 'F', 'P', 'S', 'Cl', 'Br', 'B', 'I']
-    # my_elements = ['H', 'O']  # for test
+    # elements = ['H', 'O']  # for test
     # my_element = ['H']  # for test
     my_elements = ['H', 'C']
     activate_vdw = False
