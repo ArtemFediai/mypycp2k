@@ -1,5 +1,5 @@
 """
-Set cp2k input file GW@DFT for the methane
+Set cp2k input_from_yaml file GW@DFT for the methane
 set_XXX means imperatively set some section
 add_XXX means optionally set some section. Optionally == if activate_XXX is set to True
 activate_XXX means activate "add_XXX"
@@ -18,10 +18,10 @@ from cp2k_run.cp2k_run import cp2k_run
 # import rdkit
 
 def main():
-    # My input #
+    # My input_from_yaml #
 
     # rel_cutoff: 40; cutoff: 300; abc = 10
-    my_abc = '10.0 10.0 10.0'
+    my_abc = '15.0 15.0 15.0'
     cutoff = 300
     rel_cutoff = 40
 
@@ -29,15 +29,18 @@ def main():
     basis_set_base_path = '/home/artem/soft/cp2k/cp2k-7.1/data/'
     # my_basis_set_file_name = basis_set_base_path + 'BASIS_RI_cc-TZ'G
     my_basis_set_file_name = basis_set_base_path + 'BASIS_def2_QZVP_RI_ALL'
+    my_basis_set_file_name = basis_set_base_path + 'BASIS_CC_AUG_RI_NEW'
     my_vdw_parameters_file = basis_set_base_path + 'dftd3.dat'
     my_basis_set = 'def2-QZVP'
+    my_basis_set = 'cc-pVQZ'
     my_potential_file_name = basis_set_base_path + 'POTENTIAL'
     my_potential = 'ALL'
     my_project_name = "methane_GW_PBE"
     my_xyz_file_name = 'methane.xyz'
     my_ri_aux_basis_set = 'RI-5Z'  #
+    my_ri_aux_basis_set = 'cc-pVQZ-RIFIT'  #
     organic_elements = ['H', 'C', 'N', 'O', 'F', 'P', 'S', 'Cl', 'Br', 'B', 'I']
-    # my_elements = ['H', 'O']  # for test
+    # elements = ['H', 'O']  # for test
     # my_element = ['H']  # for test
     my_elements = ['H', 'C']
     my_elements = organic_elements
@@ -89,11 +92,11 @@ def main():
     add_ot(SCF)
     #
     add_outer_scf(OUTER_SCF)
-    # set_pbe(XC)  # alter: set_pb0, etc.
-    set_pbe0(XC)
+    set_pbe(XC)  # alter: set_pb0, etc.
+    #set_pbe0(XC)
     set_qs(DFT,
-           eps_default=1.0E-15,
-           eps_pgf_orb=1.0E-200)
+           eps_default=1.0E-10,
+           eps_pgf_orb=1.0E-5)
 
     # print_mo(DFT.PRINT)
     if activate_vdw:
@@ -104,9 +107,10 @@ def main():
 
 
 ######################################## BEGIN: RUN CP2K TWO TIMES #####################################################
-    # begin: input
-    # cp2k_exe_path = '/home/artem/soft/cp2k/cp2k-7.1/exe/local/cp2k.popt'
-    cp2k_exe_path = '/usr/bin/cp2k.popt'
+    # begin: input_from_yaml
+    cp2k_exe_path = '/home/artem/soft/cp2k_test/cp2k-7.1/exe/local/cp2k.popt'
+    # cp2k_exe_path = '/usr/bin/cp2k.popt'
+    #cp2k_exe_path = 'cp2k.popt'
     run_folder = 'my_run_folder'
     output_file = 'out.out'
     ot_file_name = 'OT_' + inp_file_name
@@ -114,7 +118,7 @@ def main():
     my_xyz_file_name = 'methane.xyz'
     threads = 8
     my_run_type = 'mpi'
-    # end: input
+    # end: input_from_yaml
 
     if not os.path.exists(run_folder):
         os.mkdir(run_folder)
@@ -169,7 +173,7 @@ def main():
     print('homo = ', homos[-1]*eV_to_Hartree(), ' eV')
     print('lumo = ', lumos[0]*eV_to_Hartree(), ' eV')
 
-    gw_occ, gw_vir = return_gw_energies(path_to_out2_file)
+    gw_occ, gw_vir, homo, lumo = return_gw_energies(path_to_out2_file)
 
 
     print('gw homo = ', gw_occ, ' eV')
