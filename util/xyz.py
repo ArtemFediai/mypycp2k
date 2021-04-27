@@ -18,7 +18,7 @@ def main():
     print('box sizes: ', box_size)
     xyz_object.write('testfile.xyz')
     print('I am done')
-    # set up the input file
+    # set up the input_from_yaml file
 
 
 class XYZ:
