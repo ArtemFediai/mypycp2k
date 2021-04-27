@@ -188,21 +188,22 @@ class Cp2kOutput:
         method 2: cardinal number. Energy vs. CN**-3
         """
 
-        if self.num_orbs.values()[0] == None:
-            print("not a number number of orbs")
-            return 0
+        # if self.num_orbs.values()[0] == None:
+        #     print("not a number number of orbs")
+        #     return 0
 
-        # try:
+        try:
         #  extrapolation method: [0] --> basis function, [1] --> cardinal number
-        x = []
-        x.append([num_orb**-1.0 for num_orb in list(self.num_orbs.values())])  # num orbs
-        x.append([num_orb**-3.0 for num_orb in list(self.num_orbs.keys())])  # cardinal number
-        for i, xx in enumerate(x):
-            self.homo[i], self.homo_r2[i], self.homo_err[i] = self.my_linregress(xx, list(self.homos.values()))
-            self.lumo[i], self.lumo_r2[i], self.lumo_err[i] = self.my_linregress(xx, list(self.lumos.values()))
-            self.occ[i], self.occ_r2[i], self.occ_err[i] = self.my_linregress(xx, list(self.occs.values()))
-            self.vir[i], self.vir_r2[i], self.vir_err[i] = self.my_linregress(xx, list(self.virs.values()))
-        # except:
+            x = []
+            x.append([num_orb**-1.0 for num_orb in list(self.num_orbs.values())])  # num orbs
+            x.append([num_orb**-3.0 for num_orb in list(self.num_orbs.keys())])  # cardinal number
+            for i, xx in enumerate(x):
+                self.homo[i], self.homo_r2[i], self.homo_err[i] = self.my_linregress(xx, list(self.homos.values()))
+                self.lumo[i], self.lumo_r2[i], self.lumo_err[i] = self.my_linregress(xx, list(self.lumos.values()))
+                self.occ[i], self.occ_r2[i], self.occ_err[i] = self.my_linregress(xx, list(self.occs.values()))
+                self.vir[i], self.vir_r2[i], self.vir_err[i] = self.my_linregress(xx, list(self.virs.values()))
+        except:
+            pass
         #     self.homo[0:1], self.lumo[0:1] = [None, None], [None, None]
         #     self.occ[0:1], self.vir[0:1] = [None, None], [None, None]
         #     self.homo_r2[0:1], self.lumo_r2[0:1] = [None, None], [None, None]
