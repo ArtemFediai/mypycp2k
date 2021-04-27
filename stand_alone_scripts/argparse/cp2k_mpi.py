@@ -20,7 +20,7 @@ print(f'the following argument is passed: {args.rank}')
 
 print('Now I will be doing cp2k...')
 
-run_folder = f'{args.rank}'  # will be created to copy there input file and run cp2k
+run_folder = f'{args.rank}'  # will be created to copy there input_from_yaml file and run cp2k
 
 if not os.path.exists(run_folder):
     os.mkdir(run_folder)
@@ -28,7 +28,7 @@ if not os.path.exists(run_folder):
 cp2k_run(cp2k_executable='cp2k.popt',
          run_type='mpi',
          np=args.num_cpus,
-         xyz_file='input.inp',
+         xyz_file='input_from_yaml.inp',
          output_file=f'out_{args.rank}.out',
          error_file=f'err_{args.rank}.err',
          execution_directory=f'{args.rank}',
