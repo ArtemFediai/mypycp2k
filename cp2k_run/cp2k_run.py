@@ -9,7 +9,8 @@ def cp2k_run(cp2k_executable='cp2k.popt ',
              xyz_file='coord.xyz',
              output_file='out.out',
              error_file='err.err',
-             execution_directory='./'):
+             execution_directory='./',
+             type_mpi='openmpi'):
     import os
     import subprocess
     import shlex
@@ -31,7 +32,11 @@ def cp2k_run(cp2k_executable='cp2k.popt ',
     if run_type == 'serial':
         command = f'{cp2k_executable} -i {input_file}'
     elif run_type == 'mpi':
-        command = f'mpirun -np {str(np)} --oversubscribe --bind-to none {cp2k_executable} -i {input_file}'
+        if type_mpi == 'openmpi':
+            command = f'mpirun -np {str(np)} --oversubscribe --bind-to none {cp2k_executable} -i {input_file}'
+        elif type_mpi == 'mpich':
+            command = f'mpirun -np {str(np)} {cp2k_executable} -i {input_file}'
+
 
     process = subprocess.Popen(shlex.split(command),
                                stdin=subprocess.PIPE,
