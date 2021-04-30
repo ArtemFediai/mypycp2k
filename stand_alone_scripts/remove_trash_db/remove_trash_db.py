@@ -39,16 +39,17 @@ def main():
     trash_files, trash_numbers = identify_trash_db_files(all_db_files=valid_db_files, use_cashe_if_exists=False)
     print("trash_files: ", trash_files)
 
-
-    print(f"(number of trash files = {len(trash_files)} which is {100 * len(trash_files) / len(valid_db_files)} \% of all files)")
-
+    try:
+        print(f"(number of trash files = {len(trash_files)} which is {100 * len(trash_files) / len(valid_db_files)} \% of all files)")
+    except ZeroDivisionError:
+        print("No valid db files found. Probably you are in a wrong folder. Go to a folder with the simulation results (db/)")
     write_list_of_trash_db(list_of_trash_db=trash_files, list_of_trash_numbers=trash_numbers)
 
     move_files_to_trash_folder(file_names_to_put_there=trash_files)
 
     min_max_tuple, missing_db, missing_numbers = get_range_and_missing_items(valid_db_files=valid_db_files,
                                                                              numbers=numbers)
-    print('missing numbers:', missing_numbers)
+    print('missing numbers:', np.sort(np.array(missing_numbers)))
 
 
 @timeit
