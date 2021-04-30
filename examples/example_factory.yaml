@@ -27,3 +27,4 @@ cp2k_exe_path: /home/ws/bh5670/cp2k/cp2k-7.1/exe/local/cp2k.popt
 potential_file_name: 'POTENTIAL'
 potential: 'ALL'
 elements: ['H', 'C', 'N', 'O', 'F', 'P', 'S', 'Cl', 'Br', 'B', 'I']
+mpi: openmpi
