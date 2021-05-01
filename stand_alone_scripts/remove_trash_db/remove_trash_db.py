@@ -152,6 +152,7 @@ def get_range_and_missing_items(valid_db_files,
     wish_list = np.linspace(smallest_number, largest_number, largest_number-smallest_number+1, dtype=int)
     actual_list = numbers
     missing_numbers = list(set(wish_list) - set(actual_list))
+    missing_numbers = np.sort(missing_numbers)
     # print(set(actual_list).__len__())
     # print(set(wish_list).__len__())
     # print(len(missing_numbers))
