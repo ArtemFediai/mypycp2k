@@ -59,6 +59,7 @@ def main():
         'scratch']  # the outermost folder in the scratch folder where all other data are put
     prefix_xyz_file_name = input['prefix_xyz_file_name']
     my_offset = input['molecule_vacuum_offset']
+    type_mpi = input['mpi']
 
     #  parsing input_from_yaml
     threads = int(args.num_cpus)  # cpus used to compute. I do not subtract 1. This does not help
@@ -155,7 +156,8 @@ def main():
                      np=threads,
                      output_file=f'out_ot_{suffix}.out',
                      cp2k_executable=cp2k_exe_path,
-                     execution_directory=sim_folder_scratch)
+                     execution_directory=sim_folder_scratch,
+                     type_mpi=type_mpi)
             # end: first run
         print(f"I have finished cp2k with OT (basis set = {suffix})")
 
@@ -175,7 +177,8 @@ def main():
                      run_type=my_run_type,
                      np=threads,
                      cp2k_executable=cp2k_exe_path,
-                     execution_directory=sim_folder_scratch)
+                     execution_directory=sim_folder_scratch,
+                     type_mpi=type_mpi)
             print(f"I have finished cp2k with DIAG (basis set = {suffix})")
 
             # extract homo/lumo and gw homo/lumo from the cp2k output file:
