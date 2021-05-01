@@ -59,7 +59,10 @@ def main():
         'scratch']  # the outermost folder in the scratch folder where all other data are put
     prefix_xyz_file_name = input['prefix_xyz_file_name']
     my_offset = input['molecule_vacuum_offset']
-    type_mpi = input['mpi']
+    try:
+        type_mpi = input['mpi']
+    except:
+        type_mpi = 'openmpi'
 
     #  parsing input_from_yaml
     threads = int(args.num_cpus)  # cpus used to compute. I do not subtract 1. This does not help
