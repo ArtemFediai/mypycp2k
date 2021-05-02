@@ -21,5 +21,22 @@ def timeit(fn):
         #                                               elapsed))
         print('{0} took {1:.6f}s to run.'.format(fn.__name__, elapsed))
         return result
-
     return inner
+
+
+def parse_mixed_list(input_str):
+    """
+    '2-5,7,15-17,12' --> [2, 3, 4, 5, 7, 12, 15, 16, 17]
+    str --> list
+    """
+    single_frames = set()
+
+    for element in input_str.split(','):
+        parts = [int(x) for x in element.split('-')]
+        if len(parts) == 1:
+            single_frames.add(parts[0])
+        else:
+            for frame in range(min(parts), max(parts) + 1):
+                single_frames.add(frame)
+
+    return list(single_frames)
