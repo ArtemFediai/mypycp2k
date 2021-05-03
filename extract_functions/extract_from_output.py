@@ -1,3 +1,5 @@
+from util.exceptions import SCQPSolutionNotFound
+
 """
 functions extract something from the out cp2k files using re
 Example of 7.1 gw cp2k output in test
@@ -7,6 +9,8 @@ import re
 def main():
     num_o_fun = extract_number_of_independent_orbital_function('test/out.out')
     print(f'number of independent orbital function: {num_o_fun}')
+
+    my_gw_energies = return_gw_energies('test/out_gw_no_solution_found.out')
 
 
 """
@@ -109,7 +113,7 @@ def return_gw_energies(path_to_file):
         all_file = fin.read()
 
     myiter = iter(all_file.splitlines())
-
+    reason = None
 
     regex = re.compile("^\s*GW quasiparticle energies")
     regex1 = re.compile("^\s*[0-9]+ \( occ \)(\s+[-+]?[0-9]*\.[0-9]*\s*)")
@@ -151,8 +155,24 @@ def return_gw_energies(path_to_file):
         # print(f"GW LUMO: {vir} eV")
         return occ, vir, homo, lumo
     else:
+        str_to_find = "Self-consistent quasi-particle solution not found"
+        regex = re.compile(str_to_find)
+        # with open(path_to_file, "r") as fin:
+        #     all_file = fin.read()
+        myiter = iter(all_file.splitlines())
+        while True:
+            line = next(myiter, -1)
+            if line == -1:
+                break
+            if regex.match(line):
+                print('SCQPSol!')
+                raise SCQPSolutionNotFound 
+
+        # if True:  # here it checks if the scqp solution is not found. if yes, return the exception that will be processed accordingly in the calling script.
+        #     raise SCQPSolutionNotFound
+        # else:
         print("gs energies were not found")
-        return None, None
+        return None, None, None, None
 
 def extract_total_energy(path_to_file):
     import re
@@ -165,6 +185,7 @@ def extract_total_energy(path_to_file):
             match = regex.match(line)
             if match:
                 return match.groups()[0]
+
 
 def extract_number_of_independent_orbital_function(path_to_file):
     import re

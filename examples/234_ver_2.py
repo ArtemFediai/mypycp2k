@@ -33,6 +33,7 @@ from extract_functions.basis_set_extrapolation import Cp2kOutput
 from shutil import rmtree, copy, copytree
 from util.general import parse_mixed_list
 import csv
+from util.exceptions import SCQPSolutionNotFound
 
 def main():
 
@@ -69,9 +70,9 @@ def main():
     prefix_xyz_file_name = input['prefix_xyz_file_name']
     my_offset = input['molecule_vacuum_offset']
     try:
-        type_mpi = input['mpi']
+        mpi = input['mpi']
     except:
-        type_mpi = 'openmpi'
+        mpi = 'openmpi'
 
 
     #  parsing input_from_yaml
@@ -93,7 +94,7 @@ def main():
     #  end: check if the output exists
 
     if not dummy_run:
-        sim_folder_scratch = f'/scratch/{bh5670}/{sim}/{rank}'
+        sim_folder_scratch = f'scratch/{bh5670}/{sim}/{rank}'
     else:
         sim_folder_scratch = f'scratch/{bh5670}/{sim}/{rank}'
 
@@ -137,83 +138,75 @@ def main():
 
     suffix = input['basis_set_suffix']  # todo: fix DZ --> 2, TZ --> 3, QZ --> 4
 
+    #  this will initialize class variables (that is the class) according to the input
+    #  actually, this is probably a bad idea to make it like that, because if one forgets doing so,
+    #  class functions will not work
     InputFactory.set_constants(input_from_yaml=input)
 
-    for i_bs, suffix in enumerate(suffix):
+    # --> my_cp2k_run: condensed function with just 2 argument.
+    # my_inp_file, my_out_file: return names
+    # reason: its other parameters are the same for all 6 (or more runs)
+    # this is nothing more than a shorthand, this is why it is ugly
+    def my_inp_file(suf, ot_or_diag):
+        return f'{ot_or_diag}_{suf}.inp'
 
-        # start: ot dft
-        # I/O
-        output_file = f'out_{suffix}.out'
-        ot_file_name = 'OT_' + f'{suffix}_' + inp_file_name  # for DFT (OT)
-        diag_file_name = 'DIAG_' + f'{suffix}_' + inp_file_name  # for GW (DIAG)
-        # end: I/O
+    def my_out_file(suf, ot_or_diag):
+        return f'out_{ot_or_diag}_{suf}.out'
 
-        # OT dft simulation to converge quickly: create the simulation object
+    def my_cp2k_run(suf='2', ot_or_diag='ot'):
+        cp2k_run(input_file=my_inp_file(suf, ot_or_diag),
+                 output_file=my_out_file(suf, ot_or_diag),
+                 xyz_file=xyz_file_name,
+                 run_type=my_run_type,
+                 np=threads,
+                 cp2k_executable=cp2k_exe_path,
+                 execution_directory=sim_folder_scratch,
+                 type_mpi=mpi)
+    # <-- my_cp2k_run
+
+    # ot_file_names = [f'OT_{suffix}_{inp_file_name}' for suffix in suffix]
+    # diag_file_names =[f'DIAG_{suffix}_{inp_file_name}' for suffix in suffix]
+    # out_ot_file_names = [f'out_ot_{suffix}.out' for suffix in suffix]
+    # out_diag_file_names =[f'out_diag_{suffix}.out' for suffix in suffix]
+
+    print('I am HERE')
+
+    for i_bs, suf in enumerate(suffix):
+
+        # --> OT dft. (OT = orbital transformation)
         dft_ot_simulation = InputFactory.new_dft_ot(i_bs)
-        # OT dft: write input file
-        dft_ot_simulation.write_input_file(sim_folder_scratch + '/' + ot_file_name)
+        dft_ot_simulation.write_input_file(f"{sim_folder_scratch}/{my_inp_file(suf=suf, ot_or_diag='ot')}")
         # OT dft run below ...
-
         # ... but before, we copy the RESTART from the previous basis set (it exists unless for the smallest basis set)
-        if i_bs != 0:
-            try:
-                copy(sim_folder_scratch + '/' + f'{int(suffix) - 1}-RESTART.wfn',
-                     sim_folder_scratch + '/' + f'{suffix}-RESTART.wfn')
-                print('copied restart file 2->3 or 3->4')
-            except:
-                print('not succesfull copy of the restart file')
-        elif i_bs == 0:
-            pass
-        #
-
-        print(f"Running PBE with OT (basis set = {suffix})...")
+        try_to_copy_previous_restart_file(i_bs=i_bs, sim_folder_scratch=sim_folder_scratch, suf=suf)
+        print(f"Running PBE with OT (basis set = {suf})...")
         if not dummy_run:
-            cp2k_run(input_file=ot_file_name,
-                     xyz_file=xyz_file_name,
-                     run_type=my_run_type,
-                     np=threads,
-                     output_file=f'out_ot_{suffix}.out',
-                     cp2k_executable=cp2k_exe_path,
-                     execution_directory=sim_folder_scratch,
-                     type_mpi=type_mpi)
-            # end: first run
-        print(f"I have finished cp2k with OT (basis set = {suffix})")
+            my_cp2k_run(suf=suf, ot_or_diag='ot')
+        print(f"I have finished cp2k with OT (basis set = {suf})")
+        # <-- OT dft
 
-        # DIAGONALIZATION RUN to reliably compute HOMO and then GW
 
-        # gw: create the simulation object
+        # --> GW following DIAG dft. (DIAG = diagonalization)
+        diag_out_file = f"{sim_folder_scratch}/{my_out_file(suf=suf, ot_or_diag='diag')}"
+        diag_inp_file = f"{sim_folder_scratch}/{my_inp_file(suf=suf, ot_or_diag='diag')}"
         gw_diag_simulations = InputFactory.new_gw(i_bs)
-        # gw: write the input file
-        gw_diag_simulations.write_input_file(sim_folder_scratch + '/' + diag_file_name)
-        # gw run
-        print(f"Running G0W0 with DIAG (basis set = {suffix})...")
-        my_out_file2 = f'out_diag_{suffix}.out'
+        gw_diag_simulations.write_input_file(diag_inp_file)
+        print(f"Running G0W0 with DIAG (basis set = {suf})...")
         if not dummy_run:
-            cp2k_run(input_file=diag_file_name,
-                     xyz_file=xyz_file_name,
-                     output_file=my_out_file2,
-                     run_type=my_run_type,
-                     np=threads,
-                     cp2k_executable=cp2k_exe_path,
-                     execution_directory=sim_folder_scratch,
-                     type_mpi=type_mpi)
-            print(f"I have finished cp2k with DIAG (basis set = {suffix})")
-
-            # extract homo/lumo and gw homo/lumo from the cp2k output file:
-            path_to_out2_file = sim_folder_scratch + '/' + my_out_file2
-
-            # the method to extract?
-            # extract from the output
+            my_cp2k_run(suf=suf, ot_or_diag='diag')
+            print(f"I have finished cp2k with DIAG (basis set = {suf})")
+            # --> extract (from diag out)
+            # extract number of orbitals:
             try:
-                num_orb = extract_number_of_independent_orbital_function(path_to_out2_file)
+                num_orb = extract_number_of_independent_orbital_function(diag_out_file)
                 print(f'basis set = {suffix}, number of independent orbital functions: {num_orb}')
             except:
                 print('number of orbitals was not extracted')
                 num_orb = 'not extracted'
-
+            # extract energies:
             try:
                 homos, lumos = [], []
-                homos, lumos = return_homo_lumo(path_to_out2_file)
+                homos, lumos = return_homo_lumo(diag_out_file)
                 print(f'basis set = {suffix} ', 'homo = ', homos[-1]*eV_to_Hartree(), ' eV')
                 print(f'basis set = {suffix} ', 'lumo = ', lumos[0]*eV_to_Hartree(), ' eV')
                 homo = homos[-1]*eV_to_Hartree()
@@ -224,29 +217,35 @@ def main():
                 lumo = 'not extracted'
 
             try:
-                gw_occ, gw_vir, homo_, lumo_ = return_gw_energies(path_to_out2_file)
-                if isinstance(homo, str) and isinstance(lumo, str):
-                    homo = homo_
-                    lumo = lumo_
-                print(f'basis set = {suffix} ', 'homo = ', homo, ' eV')
-                print(f'basis set = {suffix} ', 'lumo = ', lumo, ' eV')
-                print(f'basis set = {suffix} ', 'gw homo = ', gw_occ, ' eV')
-                print(f'basis set = {suffix} ', 'gw lumo = ', gw_vir, ' eV')
-            except:
-                print("GW energies were not extracted")
-                gw_occ = 'not extracted'
-                gw_vir = 'not extracted'
+                gw_occ, gw_vir, homo_, lumo_ = return_gw_energies(diag_out_file)
+                homo, lumo = redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo)
+                print_extracted_energies(suffix, homo, lumo, gw_occ, gw_vir) # on a screen
+            except SCQPSolutionNotFound:  # we know how to handle this error
+                print("GW is not extracted, because SCQPSolutionNotFound. Calling fallback ...")
+                # --> of the solution not found, it could be that the number of quad points is insufficent
+                gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.Rpa_num_quad_points = 500
+                print("I write the fallback input file where num of q points = 500. It has the same name as before?")
+                gw_diag_simulations.write_input_file(diag_inp_file)
+                my_cp2k_run(suf=suf, ot_or_diag='diag')
+                try:
+                    gw_occ, gw_vir, homo_, lumo_ = return_gw_energies(diag_out_file)
+                    homo, lumo = redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo)
+                    print_extracted_energies(suffix, homo, lumo, gw_occ, gw_vir)  # on a screen
+                # <---
+                except:
+                    print("GW energies were not extracted even in the fallback")
+                    gw_occ = 'not extracted'
+                    gw_vir = 'not extracted'
 
             del dft_ot_simulation, gw_diag_simulations
 
             #  put computed data into the molecule object
-            my_new_mol.add_energies(int(suffix), homo, lumo, gw_occ, gw_vir)
-            my_new_mol.add_num_orbitals(int(suffix), num_orb)
+            my_new_mol.add_energies(int(suf), homo, lumo, gw_occ, gw_vir)
+            my_new_mol.add_num_orbitals(int(suf), num_orb)
             my_new_mol.extrapolate_energy()  # level up?
             db_record = my_new_mol.yield_dict()  # this dict will be written into yaml. it will be a record in the global library
-            #
-
-    ######################################## END: RUN CP2K TWO TIMES #######################################################
+        # <-- EMD: GW run and extraction
+    ####################################### END: RUN CP2K TWO TIMES #####################################################
     print("\nI am done\n")
 
     if not dummy_run:
@@ -278,6 +277,25 @@ def main():
             print(f"I could not copy {sim_folder_scratch} to {sim_folder_home}")
         try_to_remove_folder(sim_folder_scratch)
 
+####################################################
+#                                                  #
+#                     END                          #
+#                                                  #
+####################################################
+
+
+def redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo):
+    if isinstance(homo, str) and isinstance(lumo, str):
+        return homo_, lumo_  #  todo: actually, not only string has it to be but also "not extracted"
+    else:  # todo: actually, one has to check if these are floats...
+        return homo, lumo
+
+
+def print_extracted_energies(suffix, homo, lumo, gw_occ, gw_vir):
+    print(f'basis set = {suffix} ', 'homo = ', homo, ' eV')
+    print(f'basis set = {suffix} ', 'lumo = ', lumo, ' eV')
+    print(f'basis set = {suffix} ', 'gw homo = ', gw_occ, ' eV')
+    print(f'basis set = {suffix} ', 'gw lumo = ', gw_vir, ' eV')
 
 def try_to_remove_folder(folder):
     try:
@@ -443,6 +461,16 @@ class InputFactory:
             i_bs=i_bs)
 
 
+def try_to_copy_previous_restart_file(i_bs, sim_folder_scratch, suf):
+    if i_bs != 0:
+        try:
+            copy(sim_folder_scratch + '/' + f'{int(suf) - 1}-RESTART.wfn',
+                 sim_folder_scratch + '/' + f'{suf}-RESTART.wfn')
+            print('copied restart file 2->3 or 3->4')
+        except:
+            print('not succesfull copy of the restart file')
+    elif i_bs == 0:
+        pass
 ######################################## END: CREATE TEMPLATE ##########################################################
 
 
