@@ -92,7 +92,7 @@ def main():
         exit()
     #  end: check if the output exists
 
-    if True: #not dummy_run:
+    if not dummy_run:
         sim_folder_scratch = f'/scratch/{bh5670}/{sim}/{rank}'
     else:
         sim_folder_scratch = f'scratch/{bh5670}/{sim}/{rank}'
@@ -313,12 +313,17 @@ class InputFactory:
         cls.elements = input_from_yaml['elements']
         cls.my_abc = input_from_yaml['my_abc']  # added afterwards
         cls.xyz_file_name = input_from_yaml['xyz_file_name']  # added afterwards
+        try:
+            cls.eps_scf_dft = input_from_yaml['eps_scf_dft']
+        except KeyError:
+            cls.eps_scf_dft = [1.0E-8, 1.0E-8, 1.0E-8]
+        print('here')
 
     ################################## CREATE CONSTANTS FOR ALL TEMPLATES ###############################################
 
     ########################################### CREATE GW TEMPLATE ######################################################
     @classmethod
-    def dft_prototype(cls):
+    def dft_prototype(cls, i_bs=0):
         #  creates CP2K object from scratch. Note that gw prototype takes dft_prototype as a starting point
         calc_dft = CP2K()  # cp2k object
         calc_dft.working_directory = './'
@@ -347,7 +352,7 @@ class InputFactory:
                 potential_file_name=cls.potential_file_name,
                 basis_set_file_name=cls.basis_set_file_name)
         set_cutoff(DFT, cutoff=cls.cutoff, rel_cutoff=cls.rel_cutoff, ngrids=5)
-        set_scf(DFT, eps_scf=1.0E-8, max_scf=500, scf_guess='RESTART')
+        set_scf(DFT, eps_scf=cls.eps_scf_dft[i_bs], max_scf=500, scf_guess='RESTART')
         # <-- even if no actual wfn saved, will not collapse, but start with ATOMIC guess
         add_ot(SCF, stepsize=0.05)
         #
@@ -428,7 +433,7 @@ class InputFactory:
     @classmethod
     def new_dft_ot(cls, i_bs):
         return InputFactory.__new_simulation(
-            prototype=cls.dft_prototype(),
+            prototype=cls.dft_prototype(i_bs=i_bs),
             i_bs=i_bs)
 
     @classmethod
