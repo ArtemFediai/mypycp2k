@@ -10,7 +10,10 @@ def main():
     num_o_fun = extract_number_of_independent_orbital_function('test/out.out')
     print(f'number of independent orbital function: {num_o_fun}')
 
-    my_gw_energies = return_gw_energies('test/out_gw_no_solution_found.out')
+    try:
+        my_gw_energies = return_gw_energies('test/out_gw_no_solution_found.out')
+    except SCQPSolutionNotFound:
+        print("I got the SCQPSolutionNotFoundError. This is a correct result")
 
 
 """
@@ -155,7 +158,8 @@ def return_gw_energies(path_to_file):
         # print(f"GW LUMO: {vir} eV")
         return occ, vir, homo, lumo
     else:
-        str_to_find = "Self-consistent quasi-particle solution not found"
+        print("gw energies not extracted. I will check, if the reason is: Self-consistent quasi-particle solution not found")
+        str_to_find = "^.*Self-consistent quasi-particle solution not found.*$"
         regex = re.compile(str_to_find)
         # with open(path_to_file, "r") as fin:
         #     all_file = fin.read()
@@ -165,7 +169,7 @@ def return_gw_energies(path_to_file):
             if line == -1:
                 break
             if regex.match(line):
-                print('SCQPSol!')
+                print('The run crashes because the self-consistent quasi-particle solution not found')
                 raise SCQPSolutionNotFound 
 
         # if True:  # here it checks if the scqp solution is not found. if yes, return the exception that will be processed accordingly in the calling script.

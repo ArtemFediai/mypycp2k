@@ -42,7 +42,7 @@ def main():
     parser.add_argument('-rank')  # array job number
     parser.add_argument('-num_cpus')  # number of cpus you request for every array job
     parser.add_argument('-i')  # input_from_yaml yaml file
-    parser.add_argument('-mol_ids')  # mol_ids to simulate (without prefix and suffix)
+    parser.add_argument('-mol_ids')  # mol_ids to simulate (without prefix and suffix) todo: not used?
     args = parser.parse_args()
     #  parser end
 
@@ -78,10 +78,21 @@ def main():
     #  parsing input_from_yaml
     threads = int(args.num_cpus)  # cpus used to compute. I do not subtract 1. This does not help
     # mol_id = parse_mixed_list()
-    with open('db/missing_num.csv', 'r') as stream:
-        csv_reader = csv.reader(stream)
-        all_numbers = csv_reader.__next__()  # only one line in this csv format file, so we do not loop over
-        rank = all_numbers[int(args.rank)-1]
+    path_to_mol_ids_default = 'db/trash_db_numbers.csv'  # simulate mols that did not fully converged
+    # path_to_mol_ids_default = 'db/missing_num.csv'  #  simulate mols that are missing in the range of the simulated mols
+
+    # by default: missing_numbers
+    try:
+        path_to_mol_ids = args.mol_ids
+        print("I take from args.mol_ids")
+    except:
+        path_to_mol_ids = path_to_mol_ids_default
+    finally:
+        with open(path_to_mol_ids, 'r') as stream:
+            csv_reader = csv.reader(stream)
+            all_numbers = csv_reader.__next__()  # only one line in this csv format file, so we do not loop over
+            rank = all_numbers[int(args.rank)-1]
+
     # rank = '{:0>6}'.format(mol_id)  # transform rank from '1' to '000001' format. This is not a general thing
     xyz_file_name = f'{prefix_xyz_file_name}_{rank}.xyz'
     xyz_file_location = f'{prefix_xyz_file_name}/{xyz_file_name}'
@@ -94,7 +105,7 @@ def main():
     #  end: check if the output exists
 
     if not dummy_run:
-        sim_folder_scratch = f'scratch/{bh5670}/{sim}/{rank}'
+        sim_folder_scratch = f'/scratch/{bh5670}/{sim}/{rank}'
     else:
         sim_folder_scratch = f'scratch/{bh5670}/{sim}/{rank}'
 
@@ -199,7 +210,7 @@ def main():
             # extract number of orbitals:
             try:
                 num_orb = extract_number_of_independent_orbital_function(diag_out_file)
-                print(f'basis set = {suffix}, number of independent orbital functions: {num_orb}')
+                print(f'basis set = {suf}, number of independent orbital functions: {num_orb}')
             except:
                 print('number of orbitals was not extracted')
                 num_orb = 'not extracted'
@@ -219,7 +230,7 @@ def main():
             try:
                 gw_occ, gw_vir, homo_, lumo_ = return_gw_energies(diag_out_file)
                 homo, lumo = redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo)
-                print_extracted_energies(suffix, homo, lumo, gw_occ, gw_vir) # on a screen
+                print_extracted_energies(suf, homo, lumo, gw_occ, gw_vir) # on a screen
             except SCQPSolutionNotFound:  # we know how to handle this error
                 print("GW is not extracted, because SCQPSolutionNotFound. Calling fallback ...")
                 # --> of the solution not found, it could be that the number of quad points is insufficent
@@ -291,11 +302,11 @@ def redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo):
         return homo, lumo
 
 
-def print_extracted_energies(suffix, homo, lumo, gw_occ, gw_vir):
-    print(f'basis set = {suffix} ', 'homo = ', homo, ' eV')
-    print(f'basis set = {suffix} ', 'lumo = ', lumo, ' eV')
-    print(f'basis set = {suffix} ', 'gw homo = ', gw_occ, ' eV')
-    print(f'basis set = {suffix} ', 'gw lumo = ', gw_vir, ' eV')
+def print_extracted_energies(suf, homo, lumo, gw_occ, gw_vir):
+    print(f'basis set = {suf} ', 'homo = ', homo, ' eV')
+    print(f'basis set = {suf} ', 'lumo = ', lumo, ' eV')
+    print(f'basis set = {suf} ', 'gw homo = ', gw_occ, ' eV')
+    print(f'basis set = {suf} ', 'gw lumo = ', gw_vir, ' eV')
 
 def try_to_remove_folder(folder):
     try:
