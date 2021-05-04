@@ -1,4 +1,4 @@
-from util.exceptions import SCQPSolutionNotFound
+from util.exceptions import SCQPSolutionNotFound, SCFNotConvergedNotPossibleToRunMP2
 
 """
 functions extract something from the out cp2k files using re
@@ -10,11 +10,16 @@ def main():
     num_o_fun = extract_number_of_independent_orbital_function('test/out.out')
     print(f'number of independent orbital function: {num_o_fun}')
 
-    try:
-        my_gw_energies = return_gw_energies('test/out_gw_no_solution_found.out')
-    except SCQPSolutionNotFound:
-        print("I got the SCQPSolutionNotFoundError. This is a correct result")
+    # try:
+    #     my_gw_energies = return_gw_energies('test/out_gw_no_solution_found.out')
+    # except SCQPSolutionNotFound:
+    #     print("I got the SCQPSolutionNotFoundError. This is a correct result")
 
+
+    try:
+        my_gw_energies = return_gw_energies('test/scf_not_converged_not_possible_mp2.out')
+    except SCFNotConvergedNotPossibleToRunMP2:
+        print("I got the SCFNotConvergedNotPossibleToRunMP2. This is a correct result")
 
 """
     CRASH COURSE ON REGULAR EXPRESSION:
@@ -158,25 +163,33 @@ def return_gw_energies(path_to_file):
         # print(f"GW LUMO: {vir} eV")
         return occ, vir, homo, lumo
     else:
-        print("gw energies not extracted. I will check, if the reason is: Self-consistent quasi-particle solution not found")
-        str_to_find = "^.*Self-consistent quasi-particle solution not found.*$"
-        regex = re.compile(str_to_find)
-        # with open(path_to_file, "r") as fin:
-        #     all_file = fin.read()
-        myiter = iter(all_file.splitlines())
-        while True:
-            line = next(myiter, -1)
-            if line == -1:
-                break
-            if regex.match(line):
-                print('The run crashes because the self-consistent quasi-particle solution not found')
-                raise SCQPSolutionNotFound 
-
-        # if True:  # here it checks if the scqp solution is not found. if yes, return the exception that will be processed accordingly in the calling script.
-        #     raise SCQPSolutionNotFound
-        # else:
-        print("gs energies were not found")
+        print('GW energies were not extracted.')
+        _through_an_exception_if_the_string_is_found(string='Self-consistent quasi-particle solution not found',
+                                                     exception=SCQPSolutionNotFound,
+                                                     all_file=all_file)
+        _through_an_exception_if_the_string_is_found(string='SCF not converged: not possible to run MP2',
+                                                     exception=SCFNotConvergedNotPossibleToRunMP2,
+                                                     all_file=all_file)
+        print("gs energies were not found")  # if neither of those
         return None, None, None, None
+
+
+def _through_an_exception_if_the_string_is_found(string, exception, all_file):
+    print(f"I will check, if the reason is: {string}")
+    str_to_find = f"^.*{string}.*$"
+    regex = re.compile(str_to_find)
+    # with open(path_to_file, "r") as fin:
+    #     all_file = fin.read()
+    myiter = iter(all_file.splitlines())
+    while True:
+        line = next(myiter, -1)
+        if line == -1:
+            break
+        if regex.match(line):
+            print(f'The run crashes because indeed: {string}')
+            raise exception
+    print("No, this is not the reason indicated above. ")
+
 
 def extract_total_energy(path_to_file):
     import re

@@ -11,3 +11,9 @@ class SCQPSolutionNotFound(Error):
         super().__init__(message)
 
 
+class SCFNotConvergedNotPossibleToRunMP2(Error):
+    """SCF not converged: not possible to run MP2"""
+
+    def __init__(self, message='SCF not converged: not possible to run MP2'):
+        # self.message = message
+        super().__init__(message)

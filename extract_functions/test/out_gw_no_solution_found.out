@@ -1,0 +1,231 @@
+ DBCSR| CPU Multiplication driver                                           XSMM
+ DBCSR| Multrec recursion limit                                              512
+ DBCSR| Multiplication stack size                                           1000
+ DBCSR| Maximum elements for images                                    UNLIMITED
+ DBCSR| Multiplicative factor virtual images                                   1
+ DBCSR| Use multiplication densification                                       T
+ DBCSR| Multiplication size stacks                                             3
+ DBCSR| Number of 3D layers                                               SINGLE
+ DBCSR| Use MPI memory allocation                                              T
+ DBCSR| Use RMA algorithm                                                      F
+ DBCSR| Use Communication thread                                               T
+ DBCSR| Communication thread load                                             87
+
+
+  **** **** ******  **  PROGRAM STARTED AT               2021-05-03 10:57:04.386
+ ***** ** ***  *** **   PROGRAM STARTED ON           nano11.int-nano.int.kit.edu
+ **    ****   ******    PROGRAM STARTED BY                                bh5670
+ ***** **    ** ** **   PROGRAM PROCESS ID                                 95854
+  **** **  *******  **  PROGRAM STARTED IN /home/ws/bh5670/work/21032021/sim/101
+                                           556/diag_3
+
+ CP2K| version string:                                          CP2K version 7.1
+ CP2K| source code revision number:                                  git:e635599
+ CP2K| cp2kflags: libint fftw3 libxc elpa parallel mpi3 scalapack xsmm spglib   
+ CP2K| is freely available from                            https://www.cp2k.org/
+ CP2K| Program compiled at                          Fr 26. Feb 13:01:05 CET 2021
+ CP2K| Program compiled on                                              int-nano
+ CP2K| Program compiled for                                                local
+ CP2K| Data directory path                    /home/ws/bh5670/cp2k/cp2k-7.1/data
+ CP2K| Input file name                                      DIAG_3_test_2345.inp
+
+ GLOBAL| Force Environment number                                              1
+ GLOBAL| Basis set file name                                 BASIS_CC_AUG_RI_NEW
+ GLOBAL| Potential file name                                           POTENTIAL
+ GLOBAL| MM Potential file name                                     MM_POTENTIAL
+ GLOBAL| Coordinate file name                               dsgdb9nsd_101556.xyz
+ GLOBAL| Method name                                                        CP2K
+ GLOBAL| Project name                                                          3
+ GLOBAL| Preferred FFT library                                             FFTW3
+ GLOBAL| Preferred diagonalization lib.                                     ELPA
+ GLOBAL| Run type                                                         ENERGY
+ GLOBAL| All-to-all communication in single precision                          F
+ GLOBAL| FFTs using library dependent lengths                                  T
+ GLOBAL| Global print level                                                  LOW
+ GLOBAL| MPI I/O enabled                                                       T
+ GLOBAL| Total number of message passing processes                           121
+ GLOBAL| Number of threads for this process                                    1
+ GLOBAL| This output is from process                                           0
+ GLOBAL| CPU model name                          AMD EPYC 7702 64-Core Processor
+ GLOBAL| CPUID                                                              1002
+
+ MEMORY| system memory details [Kb]
+ MEMORY|                        rank 0           min           max       average
+ MEMORY| MemTotal            264028732     264028732     264028732     264028732
+ MEMORY| MemFree             255248572     255248572     255248572     255248572
+ MEMORY| Buffers                117384        117384        117384        117384
+ MEMORY| Cached                1614308       1614308       1614308       1614308
+ MEMORY| Slab                  1208764       1208764       1208764       1208764
+ MEMORY| SReclaimable           232500        232500        232500        232500
+ MEMORY| MemLikelyFree       257212764     257212764     257212764     257212764
+
+
+ GENERATE|  Preliminary Number of Bonds generated:                             0
+ GENERATE|  Achieved consistency in connectivity generation.
+
+ *******************************************************************************
+ *******************************************************************************
+ **                                                                           **
+ **     #####                         ##              ##                      **
+ **    ##   ##            ##          ##              ##                      **
+ **   ##     ##                       ##            ######                    **
+ **   ##     ##  ##   ##  ##   #####  ##  ##   ####   ##    #####    #####    **
+ **   ##     ##  ##   ##  ##  ##      ## ##   ##      ##   ##   ##  ##   ##   **
+ **   ##  ## ##  ##   ##  ##  ##      ####     ###    ##   ######   ######    **
+ **    ##  ###   ##   ##  ##  ##      ## ##      ##   ##   ##       ##        **
+ **     #######   #####   ##   #####  ##  ##  ####    ##    #####   ##        **
+ **           ##                                                    ##        **
+ **                                                                           **
+ **                                                ... make the atoms dance   **
+ **                                                                           **
+ **            Copyright (C) by CP2K developers group (2000 - 2019)           **
+ **                                                                           **
+ *******************************************************************************
+
+ *** WARNING in qs_environment.F:1310 :: More added MOs requested than ***
+ *** available. The full set of unoccupied MOs will be used.           ***
+
+
+
+ TOTAL NUMBERS AND MAXIMUM NUMBERS
+
+  Total number of            - Atomic kinds:                                   4
+                             - Atoms:                                         20
+                             - Shell sets:                                   138
+                             - Shells:                                       225
+                             - Primitive Cartesian functions:                319
+                             - Cartesian basis functions:                    770
+                             - Spherical basis functions:                    667
+
+  Maximum angular momentum of the orbital basis functions:                     3
+
+
+ SCF PARAMETERS         Density guess:                                   RESTART
+                        --------------------------------------------------------
+                        max_scf:                                             200
+                        max_scf_history:                                       0
+                        max_diis:                                              4
+                        --------------------------------------------------------
+                        eps_scf:                                        1.00E-06
+                        eps_scf_history:                                0.00E+00
+                        eps_diis:                                       1.00E-01
+                        eps_eigval:                                     1.00E-05
+                        --------------------------------------------------------
+                        level_shift [a.u.]:                                 0.00
+                        added MOs                                       632    0
+                        --------------------------------------------------------
+                        Mixing method:                            BROYDEN_MIXING
+                                                charge density mixing in g-space
+                        --------------------------------------------------------
+                        No outer SCF
+ 
+ RI-RPA| using GPW style
+ 
+
+ Number of electrons:                                                         70
+ Number of occupied orbitals:                                                 35
+ Number of molecular orbitals:                                               667
+
+ Number of orbital functions:                                                667
+ Number of independent orbital functions:                                    667
+
+ Extrapolation method: initial_guess
+
+
+ SCF WAVEFUNCTION OPTIMIZATION
+
+  Step     Update method      Time    Convergence         Total energy    Change
+  ------------------------------------------------------------------------------
+     1 NoMix/Diag. 0.20E+00    1.5     0.00000058      -440.0448488794 -4.40E+02
+
+  *** SCF run converged in     1 steps ***
+
+
+  Electronic density on regular grids:        -53.3292781393       16.6707218607
+  Core density on regular grids:               70.0000000000       -0.0000000000
+  Hard and soft densities (Lebedev):         -460.8575438056     -444.1868235511
+  Total Rho_soft + Rho1_hard - Rho1_soft      -69.9999983938
+  Total charge density (r-space):               0.0000016062
+  Total Rho_soft + Rho0_soft (g-space):         0.0000013797
+
+  Overlap energy of the core charge distribution:               0.00001238986930
+  Self energy of the core charge distribution:               -383.81151046079225
+  Core Hamiltonian energy:                                    -58.30029477473512
+  Hartree energy:                                             133.71556805506168
+  Exchange-correlation energy:                                -24.84325041388663
+
+  GAPW| Exc from hard and soft atomic rho1:                   -35.31338366381713
+  GAPW| local Eh = 1 center integrals:                        -71.49199001113351
+
+  Total energy:                                              -440.04484887943363
+  
+  Eigenvalues of the occupied subspace spin            1
+ ---------------------------------------------
+     -18.77966738     -18.77324065     -14.01459280      -9.98480349
+      -9.98450338      -9.92814327      -9.92335555      -9.91325852
+      -9.88496930      -0.99220077      -0.97831490      -0.86685213
+      -0.70725975      -0.67620683      -0.62308536      -0.60014290
+      -0.53647261      -0.49620731      -0.45989067      -0.45338447
+      -0.43264661      -0.42406273      -0.40272976      -0.40223621
+      -0.38535837      -0.37598961      -0.36322186      -0.34745666
+      -0.33951094      -0.33517833      -0.33201601      -0.31221978
+      -0.27008070      -0.21802344      -0.19529658
+ Fermi Energy [eV] :   -5.314290
+  
+  Lowest eigenvalues of the unoccupied subspace spin            1
+ ---------------------------------------------
+      -0.13243386      -0.02932063      -0.02316124      -0.00718226
+      -0.00235413      -0.00144844       0.01193363       0.01852455
+       0.02138849       0.02353640
+
+
+ RI-RPA section
+ --------------
+
+  Used number of processes per group:                                          1
+  Maximum allowed memory usage per MPI processes:                    4000.00 MiB
+  GPW_INFO| Density cutoff [a.u.]:                                         150.0
+  GPW_INFO| Relative density cutoff [a.u.]:                                 25.0
+  RI_INFO| Cholesky decomposition group size:                                121
+  RI_INFO| Number of groups for auxiliary basis functions                    121
+  RI_INFO| Occupied  basis set size:                                          35
+  RI_INFO| Virtual   basis set size:                                         632
+  RI_INFO| Auxiliary basis set size:                                        1460
+  RI_INFO| Total memory for (ia|K) integrals:                         246.39 MiB
+  RI_INFO| Total memory for G0W0-(nm|K) integrals:                     14.86 MiB
+  RI_INFO| Minimum required memory per MPI process:                     4.39 MiB
+  RI_INFO| Available memory per MPI process:                         3670.00 MiB
+  RI_INFO| Group size for frequency integration:                             121
+  INTEG_INFO| Clenshaw-Curtius quadrature
+  INTEG_INFO| Number of integration points:                                  100
+  INTEG_INFO| Number of integration points per RPA group:                    100
+  MATRIX_INFO| Number row processes:                                          11
+  MATRIX_INFO| Number column processes:                                       11
+  MATRIX_INFO| Row block size:                                              1005
+  MATRIX_INFO| Column block size:                                             66
+  INTEG_INFO| Scaling parameter:                                         0.20000
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                        7.17
+
+ *******************************************************************************
+ *   ___                                                                       *
+ *  /   \                                                                      *
+ * [ABORT]                                                                     *
+ *  \___/            Self-consistent quasi-particle solution not found         *
+ *    |                                                                        *
+ *  O/|                                                                        *
+ * /| |                                                                        *
+ * / \                                                           rpa_gw.F:4162 *
+ *******************************************************************************
+
+
+ ===== Routine Calling Stack ===== 
+
+            9 get_sigma_c_newton_pade
+            8 continuation_pade
+            7 GW_postprocessing
+            6 rpa_num_int
+            5 rpa_ri_compute_en
+            4 mp2_gpw_main
+            3 mp2_main
+            2 qs_energies
+            1 CP2K
