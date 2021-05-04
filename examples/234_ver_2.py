@@ -33,7 +33,7 @@ from extract_functions.basis_set_extrapolation import Cp2kOutput
 from shutil import rmtree, copy, copytree
 from util.general import parse_mixed_list
 import csv
-from util.exceptions import SCQPSolutionNotFound
+from util.exceptions import SCQPSolutionNotFound, SCFNotConvergedNotPossibleToRunMP2
 
 def main():
 
@@ -84,8 +84,9 @@ def main():
     # by default: missing_numbers
     try:
         path_to_mol_ids = args.mol_ids
-        print("I take from args.mol_ids")
-    except:
+        if path_to_mol_ids is None:
+            raise TypeError
+    except TypeError:
         path_to_mol_ids = path_to_mol_ids_default
     finally:
         with open(path_to_mol_ids, 'r') as stream:
@@ -238,6 +239,12 @@ def main():
                 print("I write the fallback input file where num of q points = 500. It has the same name as before?")
                 gw_diag_simulations.write_input_file(diag_inp_file)
                 my_cp2k_run(suf=suf, ot_or_diag='diag')
+            except SCFNotConvergedNotPossibleToRunMP2:
+                print("GW is not extracted, because SCFNotConvergedNotPossibleToRunMP2. Calling fallback ...")
+
+
+                print('NOT IMPLEMENTED')
+            finally:
                 try:
                     gw_occ, gw_vir, homo_, lumo_ = return_gw_energies(diag_out_file)
                     homo, lumo = redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo)
