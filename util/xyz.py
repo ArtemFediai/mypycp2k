@@ -20,6 +20,8 @@ def main():
     print('I am done')
     # set up the input_from_yaml file
 
+    xyz_object_error = XYZ.from_file('test/H2O_error.xyz')
+    xyz_object_error.write('cured_xyzfile.xyz')
 
 class XYZ:
     @classmethod
@@ -32,8 +34,32 @@ class XYZ:
             for x in coords:
                 line = fin.readline().split()
                 atom_types.append(line[0])
-                x[0:3] = list(map(float, line[1:4]))
-
+                try:
+                    x[0:3] = list(map(float, line[1:4]))
+                except ValueError:
+                    import re
+                    print('I have captured an error in xyz file format, but I think I know how to cure it!')
+                    xyz_broken = line[1:4]
+                    print(xyz_broken)
+                    #--> float pattern
+                    f_begin = '(^\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)'  # f = float. expr: any float
+                    f_middle = '(\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)*'
+                    f_end = '(\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s*$)'
+                    any_float = re.compile(f_begin + f_middle + f_end)
+                    #<-- float pattern
+                    broken_float = re.compile('^.*\*\^.*$')
+                    pattern_with_3_groups = r'(^.*)(\*\^)(.*$)'
+                    x = []
+                    for i in xyz_broken:
+                        if any_float.match(i):
+                            x.append(i)
+                        elif broken_float.match(i):
+                            i_new = re.sub(pattern_with_3_groups, r'\1E\3', i)
+                            x.append(i_new)
+                            print("I have cured the problem")
+                        else:
+                            print('Unexpected format of a corrdinate. Exiting!')
+                            raise Exception
         return cls(coords=coords, atom_types=atom_types, title=title)
 
     def __init__(self, coords, atom_types, title):
