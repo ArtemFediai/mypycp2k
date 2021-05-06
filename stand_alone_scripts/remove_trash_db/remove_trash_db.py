@@ -36,7 +36,7 @@ def main():
     print('list of db: ', valid_db_files)
     print('numbers: ', *numbers)
 
-    trash_files, trash_numbers = identify_trash_db_files(all_db_files=valid_db_files, use_cashe_if_exists=False)
+    trash_files, trash_numbers = identify_trash_db_files(all_db_files=valid_db_files, use_cashe_if_exists=False)  #  TODO cash is broken
     print("trash_files: ", trash_files)
 
     try:
@@ -51,6 +51,8 @@ def main():
                                                                              numbers=numbers)
     print('missing numbers:', np.sort(np.array(missing_numbers)))
 
+    broken_num = get_broken_items(min_max_tuple)
+    print("Numbers of broken xyz file of the original db", broken_num)
 
 @timeit
 def move_files_to_trash_folder(file_names_to_put_there,
@@ -113,7 +115,6 @@ def identify_trash_db_files(all_db_files,
         trash_db_numbers = make_nums_from_name(names=trash_db_files)
         return trash_db_files, trash_db_numbers
 
-
 def write_list_of_trash_db(list_of_trash_db, list_of_trash_numbers, fname_list_db='trash_db.csv', fname_list_numbers='trash_db_numbers.csv'):
     with open(fname_list_db, 'w') as stream:
         csv_writer = csv.writer(stream)
@@ -125,9 +126,9 @@ def write_list_of_trash_db(list_of_trash_db, list_of_trash_numbers, fname_list_d
         csv_writer.writerow(list_of_trash_numbers)
 
 
-def make_name_from_number(number:int, num_digits=6, with_prefix=True, prefix='DB_'):
+def make_name_from_number(number, num_digits=6, with_prefix=True, prefix='DB_'):
     if not with_prefix:
-        return '{:0>num_digits}'.format(number)  # example: '1' --> '000001'
+        return '{:0>{}}'.format(number, num_digits)  # example: '1' --> '000001'
     elif with_prefix:
         return '{}{:0>{}}'.format(prefix, number, num_digits)  # example: 1 --> DB_000001  # todo does not work
 
@@ -166,6 +167,49 @@ def get_range_and_missing_items(valid_db_files,
         csv_writer.writerow(missing_numbers)
 
     return (smallest_number, largest_number), missing_dbs, missing_numbers
+
+@timeit
+def get_broken_items(small_large_number, db='dsgdb9nsd'):
+    """
+    small_large_number = (num_smallest, num_largest)
+    """
+
+    min_num, max_num = small_large_number
+    broken_num = []
+
+    for number in range(min_num, max_num+1):
+        six_digits_number = make_name_from_number(number, with_prefix=False)
+        path_to_orig_xyz_file = f'../{db}/{db}_{six_digits_number}.xyz'
+        if exception_found(path_to_orig_xyz_file):
+            broken_num.append(six_digits_number)
+
+    fname_list_numbers = 'broken_xyz_files.csv'
+
+    with open(fname_list_numbers, 'w') as stream:
+        csv_writer = csv.writer(stream)
+        print(f"Write list of broken xyz numbers into {fname_list_numbers}")
+        csv_writer.writerow(broken_num)
+    print(f"I wrote the numbers of broken xyz files into {fname_list_numbers}")
+
+    return broken_num
+    
+
+def exception_found(fin_name):
+    """
+    folder is normally outside the folder we run the program from
+    """
+    import re
+    broken_float = re.compile('^.*\*\^.*$')
+    with open(fin_name) as fin:
+        natoms = int(fin.readline())  # name
+        _ = fin.readline()[:-1]  # n_atoms
+        for _ in range(natoms):
+            line = fin.readline().split()
+            for i in line[1:4]:
+                if broken_float.match(i):
+                    print('this mol contains a broken float. I will add it to the list list_of_broken_floats')
+                    return True
+    return False
 
 
 def get_recursively(search_dict, field):

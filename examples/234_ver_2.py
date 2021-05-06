@@ -241,8 +241,6 @@ def main():
                 my_cp2k_run(suf=suf, ot_or_diag='diag')
             except SCFNotConvergedNotPossibleToRunMP2:
                 print("GW is not extracted, because SCFNotConvergedNotPossibleToRunMP2. Calling fallback ...")
-
-
                 print('NOT IMPLEMENTED')
             finally:
                 try:

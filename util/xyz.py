@@ -20,8 +20,9 @@ def main():
     print('I am done')
     # set up the input_from_yaml file
 
-    xyz_object_error = XYZ.from_file('test/H2O_error.xyz')
-    xyz_object_error.write('cured_xyzfile.xyz')
+    xyz_object_error = XYZ.from_file('test/dsgdb9nsd_104557.xyz')
+    print('I have saved to: test/cured_xyzfile.xyz')
+    xyz_object_error.write('test/cured_xyzfile.xyz')
 
 class XYZ:
     @classmethod
@@ -29,6 +30,7 @@ class XYZ:
         with open(fin_name) as fin:
             natoms = int(fin.readline())
             title = fin.readline()[:-1]
+            # noinspection SpellCheckingInspection
             coords = np.zeros([natoms, 3], dtype="float64")
             atom_types = []
             for x in coords:
@@ -49,17 +51,18 @@ class XYZ:
                     #<-- float pattern
                     broken_float = re.compile('^.*\*\^.*$')
                     pattern_with_3_groups = r'(^.*)(\*\^)(.*$)'
-                    x = []
+                    x_string = []
                     for i in xyz_broken:
                         if any_float.match(i):
-                            x.append(i)
+                            x_string.append(i)
                         elif broken_float.match(i):
                             i_new = re.sub(pattern_with_3_groups, r'\1E\3', i)
-                            x.append(i_new)
+                            x_string.append(i_new)
                             print("I have cured the problem")
                         else:
-                            print('Unexpected format of a corrdinate. Exiting!')
+                            print('I cannot cure the problem. Fix your xyz format! Exiting!')
                             raise Exception
+                    x[0:3] = list(map(float, x_string[0:3]))
         return cls(coords=coords, atom_types=atom_types, title=title)
 
     def __init__(self, coords, atom_types, title):
