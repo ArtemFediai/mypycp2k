@@ -27,7 +27,7 @@ from shutil import rmtree, copy, copytree
 
 
 def main():
-
+    scratch = os.environ['SCRATCH']  # SCRATCH has to be in the env var dict. Normally, it is.
     #  parser begin
     parser = argparse.ArgumentParser(description='rank and num of cpus')
     parser.add_argument('-rank')  # array job number
@@ -78,7 +78,7 @@ def main():
     #  end: check if the output exists
 
     if True: #not dummy_run:
-        sim_folder_scratch = f'/scratch/{bh5670}/{sim}/{rank}'
+        sim_folder_scratch = f'{scratch}/{bh5670}/{sim}/{rank}'
     else:
         sim_folder_scratch = f'scratch/{bh5670}/{sim}/{rank}'
 
