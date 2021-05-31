@@ -36,7 +36,10 @@ import csv
 from util.exceptions import SCQPSolutionNotFound, SCFNotConvergedNotPossibleToRunMP2
 
 def main():
-
+    try:
+       scratch = os.environ['SCRATCH']  # SCRATCH has to be in the env var dict. Normally, it is.
+    except:
+        scratch = 'scratch'
     #  parser begin
     parser = argparse.ArgumentParser(description='rank and num of cpus')
     parser.add_argument('-rank')  # array job number
@@ -94,7 +97,7 @@ def main():
             all_numbers = csv_reader.__next__()  # only one line in this csv format file, so we do not loop over
             rank = all_numbers[int(args.rank)-1]
 
-    # rank = '{:0>6}'.format(mol_id)  # transform rank from '1' to '000001' format. This is not a general thing
+    rank = '{:0>6}'.format(rank)  # transform rank from '1' to '000001' format. This is not a general thing
     xyz_file_name = f'{prefix_xyz_file_name}_{rank}.xyz'
     xyz_file_location = f'{prefix_xyz_file_name}/{xyz_file_name}'
 
@@ -106,9 +109,9 @@ def main():
     #  end: check if the output exists
 
     if not dummy_run:
-        sim_folder_scratch = f'/scratch/{bh5670}/{sim}/{rank}'
+        sim_folder_scratch = f'/{scratch}/{bh5670}/{sim}/{rank}'
     else:
-        sim_folder_scratch = f'scratch/{bh5670}/{sim}/{rank}'
+        sim_folder_scratch = f'{scratch}/{bh5670}/{sim}/{rank}'
 
     sim_folder_home = f'{sim}/{rank}'  # sim folder at home exists. you create later {rank} folder
     if not os.path.exists(sim_folder_scratch):
