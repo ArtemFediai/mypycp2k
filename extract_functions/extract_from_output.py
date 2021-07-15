@@ -15,11 +15,27 @@ def main():
     # except SCQPSolutionNotFound:
     #     print("I got the SCQPSolutionNotFoundError. This is a correct result")
 
-
+    # TEST: capture the exeption: reason of failed run: "SCF Not Converged. Not Possible to Run MP2"
+    print('\nTEST: I test that I capture the exception: "SCF Not Converged. Not Possible to Run MP2"')
     try:
         my_gw_energies = return_gw_energies('test/scf_not_converged_not_possible_mp2.out')
+        print('TEST IS FAILED. Everythingg was extracted\n')
     except SCFNotConvergedNotPossibleToRunMP2:
-        print("I got the SCFNotConvergedNotPossibleToRunMP2. This is a correct result")
+        print("I got the SCFNotConvergedNotPossibleToRunMP2. This is a correct result \nTEST IS PASSED \n")
+    except FileNotFoundError:
+        print('TEST NOT PASSED because of FileNotFoundError')
+    except:
+        print('TEST NOT PASSED')
+
+    # TEST: scf DFT
+    print('this should work -->')
+    my_gw_energies = return_gw_energies_advanced('test/out_scf_gw.out')
+
+    print('this should fail -->')
+    my_gw_energies = return_gw_energies_advanced('test/scf_not_converged_not_possible_mp2.out')
+
+    # print('This is the last line')
+
 
 """
     CRASH COURSE ON REGULAR EXPRESSION:
@@ -117,6 +133,56 @@ def return_homo_lumo(path_to_file):
 
 
 def return_gw_energies(path_to_file):
+    """
+    at present, it goes through the all occurences of the GW energies that looks like that -->
+
+  GW quasiparticle energies
+  -------------------------
+
+  The GW quasiparticle energies are calculated according to:
+  E_GW = E_SCF + Z * ( Sigc(E_SCF) + Sigx - vxc )
+
+  The energy unit of the following table is eV.  Sigc_fit is a very conservative
+  estimate of the statistical error of the fitting.
+
+            MO      E_SCF       Sigc   Sigc_fit   Sigx-vxc          Z       E_GW
+    20 ( occ )    -12.173      2.843      0.000     -6.007      1.000    -15.338
+    21 ( occ )    -11.506      3.444      0.000     -5.781      1.000    -13.844
+    22 ( occ )    -11.117      3.766      0.000     -6.847      1.000    -14.198
+    23 ( occ )    -10.526      1.933      0.000     -4.335      1.000    -12.928
+    24 ( occ )     -9.587      3.129      0.000     -6.135      1.000    -12.594
+    25 ( occ )     -8.926      2.603      0.000     -5.521      1.000    -11.844
+    26 ( occ )     -8.763      2.142      0.000     -4.872      1.000    -11.494
+    27 ( occ )     -7.568      2.576      0.000     -5.395      1.000    -10.388
+    28 ( occ )     -6.978      0.832      0.000     -3.496      1.000     -9.641
+    29 ( occ )     -6.765      1.888      0.000     -4.853      1.000     -9.730
+    30 ( vir )     -4.257     -2.675      0.000      5.399      1.000     -1.533
+    31 ( vir )     -1.921     -3.047      0.000      5.737      1.000      0.768
+    32 ( vir )     -1.062     -1.351      0.000      3.130      1.000      0.717
+    33 ( vir )     -0.209     -1.072      0.000      2.539      1.000      1.258
+    34 ( vir )      0.196     -3.106      0.000      5.618      1.000      2.708
+    35 ( vir )      0.527     -1.207      0.000      2.765      1.000      2.085
+    36 ( vir )      0.608     -2.120      0.000      3.816      1.000      2.304
+    37 ( vir )      0.726     -2.840      0.000      4.714      1.000      2.599
+    38 ( vir )      0.740     -0.645      0.000      1.805      1.000      1.900
+    39 ( vir )      1.372     -0.587      0.000      1.596      1.000      2.381
+
+  GW HOMO-LUMO gap (eV)                                                     8.20
+
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                       26.64
+
+    <--
+    and focus on the last last occurence of that, more specifically on the HOMO and LUMO in their initial order (DFT).
+    In this case: -->
+    29 ( occ )     -6.765      1.888      0.000     -4.853      1.000     -9.730
+    30 ( vir )     -4.257     -2.675      0.000      5.399      1.000     -1.533
+    <--
+    and it takes HOMO as -6.765, LUMO as -4.257, occ as -9.73 and vir as -1.533.
+
+    This is only what we need if HOMO/LUMO order is retained in vir/occ order and if there is only one GW iteration!
+    Otherwise, one may need: HOMO LUMO from the first iteration (initial DFT value) and:
+    occ/vir from the first (G0W0) or the last (ev-GW) iteration.
+    """
     with open(path_to_file, "r") as fin:
         all_file = fin.read()
 
@@ -172,6 +238,157 @@ def return_gw_energies(path_to_file):
                                                      all_file=all_file)
         print("gs energies were not found")  # if neither of those
         return None, None, None, None
+
+
+def return_gw_energies_advanced(path_to_file):
+    """
+
+
+  GW quasiparticle energies
+  -------------------------
+
+  The GW quasiparticle energies are calculated according to:
+  E_GW = E_SCF + Z * ( Sigc(E_SCF) + Sigx - vxc )
+
+  The energy unit of the following table is eV.  Sigc_fit is a very conservative
+  estimate of the statistical error of the fitting.
+
+            MO      E_SCF       Sigc   Sigc_fit   Sigx-vxc          Z       E_GW
+    20 ( occ )    -12.173      2.843      0.000     -6.007      1.000    -15.338
+    21 ( occ )    -11.506      3.444      0.000     -5.781      1.000    -13.844
+    22 ( occ )    -11.117      3.766      0.000     -6.847      1.000    -14.198
+    23 ( occ )    -10.526      1.933      0.000     -4.335      1.000    -12.928
+    24 ( occ )     -9.587      3.129      0.000     -6.135      1.000    -12.594
+    25 ( occ )     -8.926      2.603      0.000     -5.521      1.000    -11.844
+    26 ( occ )     -8.763      2.142      0.000     -4.872      1.000    -11.494
+    27 ( occ )     -7.568      2.576      0.000     -5.395      1.000    -10.388
+    28 ( occ )     -6.978      0.832      0.000     -3.496      1.000     -9.641
+    29 ( occ )     -6.765      1.888      0.000     -4.853      1.000     -9.730
+    30 ( vir )     -4.257     -2.675      0.000      5.399      1.000     -1.533
+    31 ( vir )     -1.921     -3.047      0.000      5.737      1.000      0.768
+    32 ( vir )     -1.062     -1.351      0.000      3.130      1.000      0.717
+    33 ( vir )     -0.209     -1.072      0.000      2.539      1.000      1.258
+    34 ( vir )      0.196     -3.106      0.000      5.618      1.000      2.708
+    35 ( vir )      0.527     -1.207      0.000      2.765      1.000      2.085
+    36 ( vir )      0.608     -2.120      0.000      3.816      1.000      2.304
+    37 ( vir )      0.726     -2.840      0.000      4.714      1.000      2.599
+    38 ( vir )      0.740     -0.645      0.000      1.805      1.000      1.900
+    39 ( vir )      1.372     -0.587      0.000      1.596      1.000      2.381
+
+  GW HOMO-LUMO gap (eV)                                                     8.20
+
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                       26.64
+
+    and it takes HOMO as -6.765, LUMO as -4.257, occ as -9.73 and vir as -1.533.
+
+    return:
+
+
+    """
+    with open(path_to_file, "r") as fin:
+        all_file = fin.read()
+
+    myiter = iter(all_file.splitlines())
+    reason = None
+    header_list = None
+    num_gw_iter = None
+
+    occ, vir, homo, lumo, occ_0, vir_0, occ_scf, vir_scf = None, None, None, None, None, None, None, None
+
+    regex = re.compile("^\s*GW quasiparticle energies")
+    regex1 = re.compile("^\s*[0-9]+ \( occ \)(\s+[-+]?[0-9]*\.[0-9]*\s*)")  # 12 (occ) <one number>
+    reg_occ_groups = re.compile("^\s*([0-9]+) \( (occ) \) ((?:\s*[-+]?[0-9]*\.[0-9]*\s*)*)")
+    reg_vir_groups = re.compile("^\s*([0-9]+) \( (vir) \) ((?:\s*[-+]?[0-9]*\.[0-9]*\s*)*)")
+
+    regex2 = re.compile("^\s*[0-9]+ \( vir \)(\s+[-+]?[0-9]*\.[0-9]*\s*)")
+    # regex1 = re.compile("^\s*[0-9]+\s+\(")
+
+    line_occ = None
+    line_vir = None
+
+    num_gw_iter = 0
+    # from collections import namedtuple
+    import pandas as pd
+
+    header_is_extracted = False
+    list_of_gw_output = []
+    while True:
+        line = next(myiter, -1)
+        if line == -1:
+            break
+        if regex.match(line):  # GW header
+            for i in range(0, 8):  # 10 is the number of lines to the actual data
+                line = next(myiter)
+            if not header_is_extracted:
+                header_txt = next(myiter)  # header of the table
+                header_list = header_txt.split()
+                header_list.insert(1, *['occ_or_vir'])  # type of the orbital: virtual or occupied
+                header_list.append(*['num_gw_iter'])  # type of the orbital: virtual or occupied
+                # print(f'this is the header: {header_list}')
+                header_is_extracted = True
+            else:
+                next(myiter)  # all headers are the same
+            line = next(myiter)
+            occ_line = []
+            vir_line = []
+            while regex1.match(line):  # first group (occ)
+                tmp = re.search(reg_occ_groups, line).groups()
+                list_of_str = ' '.join(tmp).split()
+                single_line = [int(list_of_str[0]), list_of_str[1], *[float(x) for x in list_of_str[2:]], num_gw_iter]
+                occ_line.append(single_line)
+                line = next(myiter)
+                # now we check if this line is not vir
+                while regex2.match(line):  # match virs
+                    tmp = re.search(reg_vir_groups, line).groups()
+                    list_of_str = ' '.join(tmp).split()
+                    single_line = [int(list_of_str[0]), list_of_str[1], *[float(x) for x in list_of_str[2:]], num_gw_iter]
+                    vir_line.append(single_line)
+                    line = next(myiter)
+
+            # list_of_gw_output.append(occ_line)
+            list_of_gw_output.extend([*occ_line, *vir_line])
+            num_gw_iter += 1
+    my_e_df = pd.DataFrame.from_records(data=list_of_gw_output, columns=header_list)
+    print(my_e_df)
+
+    # why there are two G0W0: because orbitals sometimes change their order
+    # DFT part
+    if header_is_extracted:
+        homo = max(my_e_df.loc[(my_e_df['num_gw_iter'] == 0) & (my_e_df['occ_or_vir'] == 'occ')]['E_SCF'])
+        lumo = min(my_e_df.loc[(my_e_df['num_gw_iter'] == 0) & (my_e_df['occ_or_vir'] == 'vir')]['E_SCF'])
+
+        # G0W0 part
+        occ_0 = max(my_e_df.loc[(my_e_df['num_gw_iter'] == 0) & (my_e_df['occ_or_vir'] == 'occ')]['E_GW'])
+        vir_0 = min(my_e_df.loc[(my_e_df['num_gw_iter'] == 0) & (my_e_df['occ_or_vir'] == 'vir')]['E_GW'])
+
+        # GW part
+        occ_scf = max(my_e_df.loc[(my_e_df['num_gw_iter'] == num_gw_iter-1) & (my_e_df['occ_or_vir'] == 'occ')]['E_GW'])
+        vir_scf = min(my_e_df.loc[(my_e_df['num_gw_iter'] == num_gw_iter-1) & (my_e_df['occ_or_vir'] == 'vir')]['E_GW'])
+
+        # wrong G0W0 part (correct if order of HOMO/LUMO and occ/vir are same)
+        occ = list(my_e_df.loc[(my_e_df['num_gw_iter'] == 0) & (my_e_df['occ_or_vir'] == 'occ')]['E_GW'])[-1]
+        vir = list(my_e_df.loc[(my_e_df['num_gw_iter'] == 0) & (my_e_df['occ_or_vir'] == 'vir')]['E_GW'])[0]
+    else:
+        pass
+
+    if isinstance(occ, float) and isinstance(vir, float) and isinstance(homo, float) and isinstance(lumo, float) :
+        print(f"G0W0 HOMO wrong: {occ} eV")
+        print(f"G0W0 LUMO wrong: {vir} eV")
+        print(f"GW HOMO scf: {occ_scf} eV")
+        print(f"GW LUMO scf: {vir_scf} eV")
+        print(f"G0W0 HOMO: {occ_0} eV")
+        print(f"G0W0 LUMO: {vir_0} eV")
+        print(f"HOMO: {homo} eV")
+        print(f"LUMO: {lumo} eV")
+        return occ, vir, homo, lumo, occ_scf, vir_scf, occ_0, vir_0
+    else:
+        print('GW energies were not extracted.')
+        _through_an_exception_if_the_string_is_found(string='Self-consistent quasi-particle solution not found',
+                                                     exception=SCQPSolutionNotFound,
+                                                     all_file=all_file)
+        _through_an_exception_if_the_string_is_found(string='SCF not converged: not possible to run MP2',
+                                                     exception=SCFNotConvergedNotPossibleToRunMP2,
+                                                     all_file=all_file)
 
 
 def _through_an_exception_if_the_string_is_found(string, exception, all_file):
