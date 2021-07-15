@@ -88,6 +88,6 @@ def add_gw_ver_0(xc,
     RI_G0W0.Corr_virt = corr_virt
     RI_G0W0.Ev_sc_iter = ev_sc_iter
     RI_G0W0.Analytic_continuation = 'PADE'
-    RI_G0W0.Fermi_level_offset = 0.1
+    #RI_G0W0.Fermi_level_offset = 0.1  #  this was a serious problem. put to default
     RI_G0W0.Crossing_search = 'NEWTON'
     RI_G0W0.Ri_sigma_x = '.TRUE.'  # x with RI: very important!
