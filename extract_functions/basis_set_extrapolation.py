@@ -1,78 +1,17 @@
+import os
+from os import listdir
 import yaml
 from sklearn.metrics import r2_score
 
-"""
-IDEA:
-(BEGIN)
-
-lumos: 
-    2: ...,
-    3: ..., 
-    4: ...
-    extrapolated: 
-        -: ... (method1)
-        -: ... (method2)
-    err:
-        -: ...
-        -: ...
-    r_2:
-        -: ...
-        -: ...
-homos:
-
-    ...
-
-occs:
-
-    ...
-
-virs:
-
-    ...
-
-        
-(END)    
-"""
-
+# todo: this file contains the class Cp2kOutput around which everything is centered.
+#  Yes, its main goal is to extrapolate, but also add_orbitals, gather energies from the simulations.
+#  Maybe rename it.
 
 """
-Structure of the database:
-Mol_number:
-  homos:
-    cardinal_number_1: its_ value_of_homo
-    cardinal_number_2: its_ value_of_homo
-    cardinal_number_3: its_ value_of_homo
-  lumos:
-    ...: ...
-  occs:
-    ...: ...
-  virs:
-    ...: ..
-  homo:
-    extrapolation_method1  (energy vs. basis_functions**-2)
-    extrapolation_method2 (energy vs. cardinal_number**-3)
-  lumo:
-    extrapolation_method1
-    extrapolation_method2
-  vir:
-    extrapolation_method1
-    extrapolation_method2
-  occ:
-    extrapolation_method1
-    extrapolation_method2
-  lumo_r:
-    method1
-    method2
-  homo_r:
-  ...
-  occ_r:
-  ...
-  vir_r:
-  ...
-  homo_err:
-  ...
-  vir_err:
-  ...
+functions to read the yaml file with SZ, TZ,... energies and compute the extrapolated energies thereof.
+SZ, TZ energies are extracted elsewhere.
+It works in a way that I create a Cp2kOutput object and I can add there energies (instance.add_energies) and other
+ things, as well as return the dictionary 
 """
 
 
@@ -105,6 +44,7 @@ def main():
 
         my_new_molecule.plot_it()
 
+
 class Cp2kOutput:
     """
     class for handling cp2k output, namely HOMO/LUMO energies for various basis set.
@@ -112,31 +52,63 @@ class Cp2kOutput:
     this must produce a library
     """
 
-    def __init__(self, mol_num):
-        self.mol_num = mol_num
-        self.homos = {}
-        self.lumos = {}
-        self.occs = {}
-        self.virs = {}
-        self.num_orbs = {}
-        self.homo = [None, None]
-        self.lumo = [None, None]
-        self.occ = [None, None]
-        self.vir = [None, None]
-        self.homo_err = [None, None]
-        self.lumo_err = [None, None]
-        self.occ_err = [None, None]
-        self.vir_err = [None, None]
-        self.homo_r2 = [None, None]
-        self.lumo_r2 = [None, None]
-        self.occ_r2 = [None, None]
-        self.vir_r2 = [None, None]
+    def __init__(self, mol_num=None, **kwargs):
+        if not kwargs:
+            self.mol_num = mol_num
+            self.homos = {}
+            self.lumos = {}
+            self.occs = {}
+            self.virs = {}
+            self.num_orb = {}
+            self.homo = [None, None]
+            self.lumo = [None, None]
+            self.occ = [None, None]
+            self.vir = [None, None]
+            self.homo_err = [None, None]
+            self.lumo_err = [None, None]
+            self.occ_err = [None, None]
+            self.vir_err = [None, None]
+            self.homo_r2 = [None, None]
+            self.lumo_r2 = [None, None]
+            self.occ_r2 = [None, None]
+            self.vir_r2 = [None, None]
+        else:
+            # in the ideal world, one has to make smth. like:
+            # if key in allowed_keys: ...
+            # where allowed_keys are above. But the World is not perfect
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+            # self.mol_num = mol_num
+            # self.homos = homos
+            # self.lumos = lumos
+            # self.occs = occs
+            # self.virs = virs
+            # self.num_orb = num_orb
+            # self.homo = homo
+            # self.lumo = lumo
+            # self.occ = occ
+            # self.vir = vir
+            # self.homo_err = homo_err
+            # self.lumo_err = lumo_err
+            # self.occ_err = occ_err
+            # self.vir_err = vir_err
+            # self.homo_r2 = homo_r2
+            # self.lumo_r2 = lumo_r2
+            # self.occ_r2 = occ_r2
+            # self.vir_r2 = vir_r2
 
-        @classmethod
-        def from_class(cls):
-            #  todo: make the object from the yaml file
-            #  maybe only a part of it ...
-            pass
+    @classmethod
+    def from_class(cls):
+        #  todo: make the object from the yaml file
+        #  maybe only a part of it ...
+        pass
+
+    @classmethod
+    def from_yaml(cls, yaml_file_name):
+        with open(yaml_file_name, 'r') as stream:
+            dict_from_yaml = yaml.safe_load(stream=stream)
+            mol_num = list(dict_from_yaml.keys())[0]
+        return cls(mol_num=mol_num, **dict_from_yaml[mol_num])
 
     def add_energies(self, cardinal_number, homo, lumo, occ, vir):
         """
@@ -144,7 +116,7 @@ class Cp2kOutput:
         cardinal number of cc-pvDZ = 2; cc-pvTZ = 3, etc.
         """
         assert cardinal_number in (
-        1, 2, 3, 4, 5), "Cardinal Number is different from 1,2,3,4, or 5. Did you expect this?"
+            1, 2, 3, 4, 5), "Cardinal Number is different from 1,2,3,4, or 5. Did you expect this?"
         # assert is too rude. Warning would suffice
         self.homos[cardinal_number] = homo
         self.lumos[cardinal_number] = lumo
@@ -152,7 +124,7 @@ class Cp2kOutput:
         self.virs[cardinal_number] = vir
 
     def add_num_orbitals(self, cardinal_number, num_orb):
-        self.num_orbs[cardinal_number] = num_orb
+        self.num_orb[cardinal_number] = num_orb
         pass
 
     def extrapolate_energy_old(self):
@@ -165,13 +137,13 @@ class Cp2kOutput:
         # yaml hates numpy ==> float()
         # extrapolation method: [0] --> basis function, [1] --> cardinal number
         try:
-            x = [num_orb**-1.0 for num_orb in list(self.num_orbs.values())]
+            x = [num_orb_ ** -1.0 for num_orb_ in list(self.num_orb.values())]
             self.homo[0] = self.get_intersect(X=x, Y=list(self.homos.values()))
             self.lumo[0] = self.get_intersect(X=x, Y=list(self.lumos.values()))
             self.occ[0] = self.get_intersect(X=x, Y=list(self.occs.values()))
             self.vir[0] = self.get_intersect(X=x, Y=list(self.virs.values()))
             #
-            x = [num_orb**-3.0 for num_orb in list(self.num_orbs.keys())]
+            x = [num_orb_ ** -3.0 for num_orb_ in list(self.num_orb.keys())]
             self.homo[1] = self.get_intersect(X=x, Y=list(self.homos.values()))
             self.lumo[1] = self.get_intersect(X=x, Y=list(self.lumos.values()))
             self.occ[1] = self.get_intersect(X=x, Y=list(self.occs.values()))
@@ -181,22 +153,21 @@ class Cp2kOutput:
             # self.occ[0:1], self.vir[0:1] = 'not_computed', 'not_computed'
             pass
 
-
     def extrapolate_energy(self):
         """
         method 1: basis_functions. Energy vs. BF**-1
         method 2: cardinal number. Energy vs. CN**-3
         """
 
-        # if self.num_orbs.values()[0] == None:
+        # if self.num_orb.values()[0] == None:
         #     print("not a number number of orbs")
         #     return 0
 
         try:
-        #  extrapolation method: [0] --> basis function, [1] --> cardinal number
+            #  extrapolation method: [0] --> basis function, [1] --> cardinal number
             x = []
-            x.append([num_orb**-1.0 for num_orb in list(self.num_orbs.values())])  # num orbs
-            x.append([num_orb**-3.0 for num_orb in list(self.num_orbs.keys())])  # cardinal number
+            x.append([num_orb_ ** -1.0 for num_orb_ in list(self.num_orb.values())])  # num orbs
+            x.append([num_orb_ ** -3.0 for num_orb_ in list(self.num_orb.keys())])  # cardinal number
             for i, xx in enumerate(x):
                 self.homo[i], self.homo_r2[i], self.homo_err[i] = self.my_linregress(xx, list(self.homos.values()))
                 self.lumo[i], self.lumo_r2[i], self.lumo_err[i] = self.my_linregress(xx, list(self.lumos.values()))
@@ -224,13 +195,11 @@ class Cp2kOutput:
         if all(isinstance(x, float) for x in X) and all(isinstance(y, float) for y in Y):
             # _, energy, r, _, energy_error = linregress(X, Y)
             result = linregress(X, Y)
-            return float(result.intercept), float(result.rvalue)**2, float(result.intercept_stderr)
+            return float(result.intercept), float(result.rvalue) ** 2, float(result.intercept_stderr)
             # return float(energy), float(r)**2.0, float(energy_error)
         else:
             print('could not extrapolate. some entries are not floating point numbers')
             return None, None, None
-
-
 
     @staticmethod
     def get_intersect(X, Y):
@@ -255,7 +224,7 @@ class Cp2kOutput:
                 'lumos': self.lumos,
                 'occs': self.occs,
                 'virs': self.virs,
-                'num_orb': self.num_orbs,
+                'num_orb': self.num_orb,
                 'homo': self.homo,
                 'lumo': self.lumo,
                 'occ': self.occ,
@@ -288,13 +257,13 @@ class Cp2kOutput:
 
         # occ vs num_orb
         plt.plot()
-        x = [num_orb**-1.0 for num_orb in list(self.num_orbs.values())]
+        x = [num_orb_ ** -1.0 for num_orb_ in list(self.num_orb.values())]
         y = list(self.occs.values())
         [a, b] = np.polyfit(x, y, deg=1)
         plt.plot(x, y, color='C0')
         plt.plot(0, b, '*', color='C0', label='orb')
         # occ vs card_num
-        x = [n**-3.0 for n in list(self.num_orbs.keys())]
+        x = [n ** -3.0 for n in list(self.num_orb.keys())]
         y = list(self.occs.values())
         [a, b] = np.polyfit(x, y, deg=1)
         plt.plot(x, y, color='C1', label='car')
@@ -305,14 +274,14 @@ class Cp2kOutput:
 
         # vir vs num_orb
         plt.plot()
-        x = [num_orb ** -1.0 for num_orb in list(self.num_orbs.values())]
+        x = [num_orb_ ** -1.0 for num_orb_ in list(self.num_orb.values())]
         y = list(self.virs.values())
         try:
             [a, b] = np.polyfit(x, y, deg=1)
             plt.plot(x, y, color='C0')
             plt.plot(0, b, '*', color='C0', label='orb')
             # occ vs card_num
-            x = [n ** -3.0 for n in list(self.num_orbs.keys())]
+            x = [n ** -3.0 for n in list(self.num_orb.keys())]
             y = list(self.virs.values())
             [a, b] = np.polyfit(x, y, deg=1)
             plt.plot(x, y, color='C1', label='car')
@@ -321,6 +290,7 @@ class Cp2kOutput:
             plt.savefig('virs.png')
         except:
             print("Cannot create extrapolation figure. Probably, some entries are not floats")
+
 
 if __name__ == '__main__':
     main()
