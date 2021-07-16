@@ -230,13 +230,10 @@ def main():
                 print(f'Homo/Lumo were not extracted')
                 homo = 'not extracted'
                 lumo = 'not extracted'
-
             try:
-                gw_occ, gw_vir, homo_, lumo_ = return_gw_energies(diag_out_file)
-
-
+                occ, vir, homo_, lumo_, occ_scf, vir_scf, occ_0, vir_0 = return_gw_energies_advanced(diag_out_file)
                 homo, lumo = redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo)
-                print_extracted_energies(suf, homo, lumo, gw_occ, gw_vir)  # on a screen
+                print_extracted_energies(suf, homo, lumo, occ, vir)  # on a screen
             except SCQPSolutionNotFound:  # we know how to handle this error
                 print("GW is not extracted, because SCQPSolutionNotFound. Calling fallback ...")
                 # --> of the solution not found, it could be that the number of quad points is insufficent
@@ -250,23 +247,21 @@ def main():
                 print('NOT IMPLEMENTED')
             finally:
                 try:
-
-                    gw_occ, gw_vir, homo_, lumo_ = return_gw_energies(diag_out_file)
-
+                    occ, vir, homo_, lumo_, occ_scf, vir_scf, occ_0, vir_0 = return_gw_energies_advanced(diag_out_file)
                     homo, lumo = redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo)
-                    print_extracted_energies(suffix, homo, lumo, gw_occ, gw_vir)  # on a screen
+                    print_extracted_energies(suffix, homo, lumo, occ, vir)  # on a screen
                 # <---
                 except:
                     print("GW energies were not extracted even in the fallback")
-                    gw_occ = 'not extracted'
-                    gw_vir = 'not extracted'
-
+                    # occ = 'not extracted'
+                    # vir = 'not extracted'
+                    occ, vir, occ_scf, vir_scf, occ_0, vir_0 = ['not extracted']*6
             del dft_ot_simulation, gw_diag_simulations
 
             #  put computed data into the molecule object
-            my_new_mol.add_energies(int(suf), homo, lumo, gw_occ, gw_vir)
+            my_new_mol.add_energies_advanced(int(suf), homo, lumo, occ, vir, occ_0, vir_0, occ_scf, vir_scf)
             my_new_mol.add_num_orbitals(int(suf), num_orb)
-            my_new_mol.extrapolate_energy()  # level up?
+            my_new_mol.extrapolate_energy_advanced()  # level up?
             db_record = my_new_mol.yield_dict()  # this dict will be written into yaml. it will be a record in the global library
         # <-- EMD: GW run and extraction
     ####################################### END: RUN CP2K TWO TIMES #####################################################
