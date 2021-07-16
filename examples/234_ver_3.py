@@ -107,6 +107,7 @@ def main():
     if os.path.exists(db_record_path):
         print(f'The simulation results of mol. {rank} is already in the folder of reference')
         exit()
+    #  here one can check if the DB_ file is not broken
     #  end: check if the output exists
 
     if not dummy_run:
@@ -118,8 +119,13 @@ def main():
     if not os.path.exists(sim_folder_scratch):
         os.mkdir(sim_folder_scratch)
     else:
+        print(f"I have found the folder {sim}/{rank} in the sim folder and will try to copy it to scratch ....")
+        copytree(sim_folder_home, sim_folder_scratch, dirs_exist_ok=True)  # will rewrite the folder
+        print('...done!')
+        print(f'now I will remove the sim/{rank} folder at home and create a new empty folder at its place...')
         rmtree(sim_folder_scratch)  # leftovers from previous simulations will be removed
         os.mkdir(sim_folder_scratch)  # and the new folder will be created
+        print('...done')
 
     #  xyz object created, normal xyz file is created at scratch
     try:
@@ -237,9 +243,11 @@ def main():
             except SCQPSolutionNotFound:  # we know how to handle this error
                 print("GW is not extracted, because SCQPSolutionNotFound. Calling fallback ...")
                 # --> of the solution not found, it could be that the number of quad points is insufficent
-                gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[
-                    0].RI_RPA.Rpa_num_quad_points = 500
-                print("I write the fallback input file where num of q points = 500. It has the same name as before?")
+                # gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[
+                #     0].RI_RPA.Rpa_num_quad_points = 500
+                gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.RI_G0W0.Crossing_search = 'BISECTION'
+                # print("I write the fallback input file where num of q points = 500. It has the same name as before?")
+                print("I write the fallback input file the crossing search is set to BISECTION")
                 gw_diag_simulations.write_input_file(diag_inp_file)
                 my_cp2k_run(suf=suf, ot_or_diag='diag')
             except SCFNotConvergedNotPossibleToRunMP2:
@@ -431,11 +439,11 @@ class InputFactory:
 
         # set_pbe0(XC_)  # we want G0W0@PBE0. no pbe0 in the beginning
         print_mo_cubes(DFT.PRINT, nhomo=10, nlumo=10)  # all HOMOs are typicall plotted
-        set_scf(DFT, eps_scf=1E-7, max_scf=400)
+        set_scf(DFT, eps_scf=1E-6, max_scf=400)
         # add G0W0!
         add_gw_ver_0(XC,
                      ev_sc_iter=20,
-                     rpa_num_quad_points=500,
+                     rpa_num_quad_points=50,
                      max_memory_wf=4000,
                      max_memory_hf=500,
                      corr_occ=20,
