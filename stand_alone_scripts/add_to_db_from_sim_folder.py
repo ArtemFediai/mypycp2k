@@ -4,6 +4,9 @@ you have folders in sim folder with non-converged results.
 you converged it there.
 now you need to extract gw/homo/lumo energies and put them to db
 
+Very important script
+works only with 234_ver_2
+
 """
 import os
 from os import path
