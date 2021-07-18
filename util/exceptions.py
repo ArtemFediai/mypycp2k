@@ -17,3 +17,11 @@ class SCFNotConvergedNotPossibleToRunMP2(Error):
     def __init__(self, message='SCF not converged: not possible to run MP2'):
         # self.message = message
         super().__init__(message)
+
+
+class NaNInGW(Error):
+    """NaN in GW table (last frame)"""
+
+    def __init__(self, message='SCF GW is not extracted: NaN in GW energies'):
+        # self.message = message
+        super().__init__(message)
