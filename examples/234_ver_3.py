@@ -32,7 +32,7 @@ from mypycp2k.dft import set_dft, set_scf, set_nonperiodic_poisson, set_cutoff, 
 from mypycp2k.scf import add_ot, add_diagonalization, add_mixing, add_mos, remove_ot
 from mypycp2k.subsys import add_elements, set_unperiodic_cell, set_topology, center_coordinates
 from mypycp2k.xc import set_pbe, add_gw_ver_0
-from util.exceptions import SCQPSolutionNotFound, SCFNotConvergedNotPossibleToRunMP2
+from util.exceptions import SCQPSolutionNotFound, SCFNotConvergedNotPossibleToRunMP2, NaNInGW
 from util.units_conversion import eV_to_Hartree
 from util.xyz import XYZ
 
@@ -197,7 +197,8 @@ def main():
 
         # --> OT dft. (OT = orbital transformation)
         dft_ot_simulation = InputFactory.new_dft_ot(i_bs)
-        dft_ot_simulation.write_input_file(f"{sim_folder_scratch}/{my_inp_file(suf=suf, ot_or_diag='ot')}")
+        ot_inp_file = f"{sim_folder_scratch}/{my_inp_file(suf=suf, ot_or_diag='ot')}"
+        dft_ot_simulation.write_input_file(ot_inp_file)
         # OT dft run below ...
         # ... but before, we copy the RESTART from the previous basis set (it exists unless for the smallest basis set)
         try_to_copy_previous_restart_file(i_bs=i_bs, sim_folder_scratch=sim_folder_scratch, suf=suf)
@@ -246,13 +247,32 @@ def main():
                 # gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[
                 #     0].RI_RPA.Rpa_num_quad_points = 500
                 gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.RI_G0W0.Crossing_search = 'BISECTION'
-                # print("I write the fallback input file where num of q points = 500. It has the same name as before?")
                 print("I write the fallback input file the crossing search is set to BISECTION")
                 gw_diag_simulations.write_input_file(diag_inp_file)
                 my_cp2k_run(suf=suf, ot_or_diag='diag')
             except SCFNotConvergedNotPossibleToRunMP2:
                 print("GW is not extracted, because SCFNotConvergedNotPossibleToRunMP2. Calling fallback ...")
-                print('NOT IMPLEMENTED')
+                # replay ot with a larger cutoff then make diag with a larger cutoff
+                # ot
+                dft_ot_simulation.CP2K_INPUT.FORCE_EVAL_list[0].DFT.MGRID.Cutoff = 1000
+                dft_ot_simulation.CP2K_INPUT.FORCE_EVAL_list[0].DFT.MGRID.Rel_cutoff = 100
+                dft_ot_simulation.write_input_file(ot_inp_file)
+                print("Replay ot with cutoff of 100 rel_cutoff of 100...")
+                my_cp2k_run(suf=suf, ot_or_diag='ot')
+                print("... ot succesfull")
+                # diag
+                gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.MGRID.Cutoff = 1000
+                gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.MGRID.Rel_cutoff = 100
+                gw_diag_simulations.write_input_file(diag_inp_file)
+                my_cp2k_run(suf=suf, ot_or_diag='diag')
+                # print('NOT IMPLEMENTED')
+            except NaNInGW:
+                print("GW is not extracted, because there is a NaN in the last frame of the SCF loop. Calling fallback")
+                gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.RI_G0W0.Crossing_search = 'BISECTION'
+                print("I write the fallback input file the crossing search is set to BISECTION")
+                gw_diag_simulations.write_input_file(diag_inp_file)
+                my_cp2k_run(suf=suf, ot_or_diag='diag')
+                # print("NOT IMPLEMENTED")
             finally:
                 try:
                     occ, vir, homo_, lumo_, occ_scf, vir_scf, occ_0, vir_0 = return_gw_energies_advanced(diag_out_file)
@@ -439,7 +459,7 @@ class InputFactory:
 
         # set_pbe0(XC_)  # we want G0W0@PBE0. no pbe0 in the beginning
         print_mo_cubes(DFT.PRINT, nhomo=10, nlumo=10)  # all HOMOs are typicall plotted
-        set_scf(DFT, eps_scf=1E-6, max_scf=400)
+        set_scf(DFT, eps_scf=1E-6, max_scf=100)  # I want it to end asap if not converged
         # add G0W0!
         add_gw_ver_0(XC,
                      ev_sc_iter=20,
