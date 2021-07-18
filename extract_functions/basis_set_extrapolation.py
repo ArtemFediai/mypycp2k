@@ -22,12 +22,12 @@ def main():
         db = yaml.load(stream, Loader=yaml.SafeLoader)
         my_new_molecule = Cp2kOutput(12345)
         #
-        cardinal_number, homo, lumo, occ, vir = 2, -9.068935085092464, -0.31584310176186037, -11.748, 1.03
-        my_new_molecule.add_energies(cardinal_number, homo, lumo, occ, vir)
-        cardinal_number, homo, lumo, occ, vir = 3, -9.086503028020836, -0.328626466686336, -12.165, 0.88
-        my_new_molecule.add_energies(cardinal_number, homo, lumo, occ, vir)
-        cardinal_number, homo, lumo, occ, vir = 4, -9.091535229637515, -0.3355201992206428, -12.355, None
-        my_new_molecule.add_energies(cardinal_number, homo, lumo, occ, vir)
+        cardinal_number, homo, lumo, occ, vir, occ_0, vir_0, occ_scf, vir_scf = 2, -9.068935085092464, -0.31584310176186037, -11.748, 1.03, -11.748, 1.03, -11.748, 1.03
+        my_new_molecule.add_energies_advanced(cardinal_number, homo, lumo, occ, vir, occ_0, vir_0, occ_scf, vir_scf)
+        cardinal_number, homo, lumo, occ, vir, occ_0, vir_0, occ_scf, vir_scf = 3, -9.086503028020836, -0.328626466686336, -12.165, 0.88, -12.165, 0.88, -12.165, 0.88
+        my_new_molecule.add_energies_advanced(cardinal_number, homo, lumo, occ, vir, occ_0, vir_0, occ_scf, vir_scf)
+        cardinal_number, homo, lumo, occ, vir, occ_0, vir_0, occ_scf, vir_scf = 4, -9.091535229637515, -0.3355201992206428, -12.355, None, -12.355, None, -12.355, None
+        my_new_molecule.add_energies_advanced(cardinal_number, homo, lumo, occ, vir, occ_0, vir_0, occ_scf, vir_scf)
         #
         my_new_molecule.add_num_orbitals(cardinal_number=2, num_orb=41)
         my_new_molecule.add_num_orbitals(cardinal_number=3, num_orb=92)
@@ -51,7 +51,7 @@ class Cp2kOutput:
     The purpose is to be used in GW for the basis set extrapolation
     this must produce a library
     """
-
+    #?
     def __init__(self, mol_num=None, **kwargs):
         if not kwargs:
             self.mol_num = mol_num
@@ -59,19 +59,35 @@ class Cp2kOutput:
             self.lumos = {}
             self.occs = {}
             self.virs = {}
+            self.virs_scf = {}
+            self.occs_scf = {}
+            self.virs_0 = {}
+            self.occs_0 = {}
             self.num_orb = {}
             self.homo = [None, None]
             self.lumo = [None, None]
             self.occ = [None, None]
+            self.occ_0 = [None, None]
+            self.occ_scf = [None, None]
             self.vir = [None, None]
+            self.vir_0 = [None, None]
+            self.vir_scf = [None, None]
             self.homo_err = [None, None]
             self.lumo_err = [None, None]
             self.occ_err = [None, None]
+            self.occ_0_err = [None, None]
+            self.occ_scf_err = [None, None]
             self.vir_err = [None, None]
+            self.vir_0_err = [None, None]
+            self.vir_scf_err = [None, None]
             self.homo_r2 = [None, None]
             self.lumo_r2 = [None, None]
             self.occ_r2 = [None, None]
+            self.occ_0_r2 = [None, None]
+            self.occ_scf_r2 = [None, None]
             self.vir_r2 = [None, None]
+            self.vir_0_r2 = [None, None]
+            self.vir_scf_r2 = [None, None]
         else:
             # in the ideal world, one has to make smth. like:
             # if key in allowed_keys: ...
@@ -123,34 +139,77 @@ class Cp2kOutput:
         self.occs[cardinal_number] = occ
         self.virs[cardinal_number] = vir
 
+    def add_energies_advanced(self, cardinal_number, homo, lumo, occ, vir, occ_0, vir_0, occ_scf, vir_scf):
+        """
+        adds h/l/o/v with a specified cardinal number.
+        cardinal number of cc-pvDZ = 2; cc-pvTZ = 3, etc.
+        """
+        assert cardinal_number in (
+            1, 2, 3, 4, 5), "Cardinal Number is different from 1,2,3,4, or 5. Did you expect this?"
+        # assert is too rude. Warning would suffice
+        self.homos[cardinal_number] = homo
+        self.lumos[cardinal_number] = lumo
+        self.occs[cardinal_number] = occ
+        self.virs[cardinal_number] = vir
+        self.occs_0[cardinal_number] = occ_0
+        self.virs_0[cardinal_number] = vir_0
+        self.occs_scf[cardinal_number] = occ_scf
+        self.virs_scf[cardinal_number] = vir_scf
+
     def add_num_orbitals(self, cardinal_number, num_orb):
         self.num_orb[cardinal_number] = num_orb
         pass
 
-    def extrapolate_energy_old(self):
+    # def extrapolate_energy_old(self):
+    #     """
+    #     method 1: basis_functions. Energy vs. BF**-1
+    #     method 2: cardinal number. Energy vs. CN**-3
+    #     """
+    #
+    #     # try:
+    #     # yaml hates numpy ==> float()
+    #     # extrapolation method: [0] --> basis function, [1] --> cardinal number
+    #     try:
+    #         x = [num_orb_ ** -1.0 for num_orb_ in list(self.num_orb.values())]
+    #         self.homo[0] = self.get_intersect(X=x, Y=list(self.homos.values()))
+    #         self.lumo[0] = self.get_intersect(X=x, Y=list(self.lumos.values()))
+    #         self.occ[0] = self.get_intersect(X=x, Y=list(self.occs.values()))
+    #         self.vir[0] = self.get_intersect(X=x, Y=list(self.virs.values()))
+    #         #
+    #         x = [num_orb_ ** -3.0 for num_orb_ in list(self.num_orb.keys())]
+    #         self.homo[1] = self.get_intersect(X=x, Y=list(self.homos.values()))
+    #         self.lumo[1] = self.get_intersect(X=x, Y=list(self.lumos.values()))
+    #         self.occ[1] = self.get_intersect(X=x, Y=list(self.occs.values()))
+    #         self.vir[1] = self.get_intersect(X=x, Y=list(self.virs.values()))
+    #     except:
+    #         # self.homo[0:1], self.lumo[0:1] = 'not_computed', 'not_computed'
+    #         # self.occ[0:1], self.vir[0:1] = 'not_computed', 'not_computed'
+    #         pass
+
+    def extrapolate_energy_advanced(self):
         """
         method 1: basis_functions. Energy vs. BF**-1
         method 2: cardinal number. Energy vs. CN**-3
         """
 
-        # try:
-        # yaml hates numpy ==> float()
-        # extrapolation method: [0] --> basis function, [1] --> cardinal number
+        # if self.num_orb.values()[0] == None:
+        #     print("not a number number of orbs")
+        #     return 0
+
         try:
-            x = [num_orb_ ** -1.0 for num_orb_ in list(self.num_orb.values())]
-            self.homo[0] = self.get_intersect(X=x, Y=list(self.homos.values()))
-            self.lumo[0] = self.get_intersect(X=x, Y=list(self.lumos.values()))
-            self.occ[0] = self.get_intersect(X=x, Y=list(self.occs.values()))
-            self.vir[0] = self.get_intersect(X=x, Y=list(self.virs.values()))
-            #
-            x = [num_orb_ ** -3.0 for num_orb_ in list(self.num_orb.keys())]
-            self.homo[1] = self.get_intersect(X=x, Y=list(self.homos.values()))
-            self.lumo[1] = self.get_intersect(X=x, Y=list(self.lumos.values()))
-            self.occ[1] = self.get_intersect(X=x, Y=list(self.occs.values()))
-            self.vir[1] = self.get_intersect(X=x, Y=list(self.virs.values()))
+            #  extrapolation method: [0] --> basis function, [1] --> cardinal number
+            x = [[num_orb_ ** -1.0 for num_orb_ in list(self.num_orb.values())],
+                 [num_orb_ ** -3.0 for num_orb_ in list(self.num_orb.keys())]]
+            for i, xx in enumerate(x):
+                self.homo[i], self.homo_r2[i], self.homo_err[i] = self.my_linregress(xx, list(self.homos.values()))
+                self.lumo[i], self.lumo_r2[i], self.lumo_err[i] = self.my_linregress(xx, list(self.lumos.values()))
+                self.occ[i], self.occ_r2[i], self.occ_err[i] = self.my_linregress(xx, list(self.occs.values()))
+                self.vir[i], self.vir_r2[i], self.vir_err[i] = self.my_linregress(xx, list(self.virs.values()))
+                self.occ_0[i], self.occ_0_r2[i], self.occ_0_err[i] = self.my_linregress(xx, list(self.occs_0.values()))
+                self.vir_0[i], self.vir_0_r2[i], self.vir_0_err[i] = self.my_linregress(xx, list(self.virs_0.values()))
+                self.occ_scf[i], self.occ_scf_r2[i], self.occ_scf_err[i] = self.my_linregress(xx, list(self.occs_scf.values()))
+                self.vir_scf[i], self.vir_scf_r2[i], self.vir_scf_err[i] = self.my_linregress(xx, list(self.virs_scf.values()))
         except:
-            # self.homo[0:1], self.lumo[0:1] = 'not_computed', 'not_computed'
-            # self.occ[0:1], self.vir[0:1] = 'not_computed', 'not_computed'
             pass
 
     def extrapolate_energy(self):
@@ -165,9 +224,8 @@ class Cp2kOutput:
 
         try:
             #  extrapolation method: [0] --> basis function, [1] --> cardinal number
-            x = []
-            x.append([num_orb_ ** -1.0 for num_orb_ in list(self.num_orb.values())])  # num orbs
-            x.append([num_orb_ ** -3.0 for num_orb_ in list(self.num_orb.keys())])  # cardinal number
+            x = [[num_orb_ ** -1.0 for num_orb_ in list(self.num_orb.values())],
+                 [num_orb_ ** -3.0 for num_orb_ in list(self.num_orb.keys())]]
             for i, xx in enumerate(x):
                 self.homo[i], self.homo_r2[i], self.homo_err[i] = self.my_linregress(xx, list(self.homos.values()))
                 self.lumo[i], self.lumo_r2[i], self.lumo_err[i] = self.my_linregress(xx, list(self.lumos.values()))
@@ -223,20 +281,36 @@ class Cp2kOutput:
                 'homos': self.homos,
                 'lumos': self.lumos,
                 'occs': self.occs,
+                'occs_0': self.occs_0,
+                'occs_scf': self.occs_scf,
                 'virs': self.virs,
+                'virs_0': self.virs_0,
+                'virs_scf': self.virs_scf,
                 'num_orb': self.num_orb,
                 'homo': self.homo,
                 'lumo': self.lumo,
                 'occ': self.occ,
+                'occ_0': self.occ_0,
+                'occ_scf': self.occ_scf,
                 'vir': self.vir,
+                'vir_0': self.vir_0,
+                'vir_scf': self.vir_scf,
                 'homo_err': self.homo_err,
                 'lumo_err': self.lumo_err,
                 'occ_err': self.occ_err,
+                'occ_0_err': self.occ_0_err,
+                'occ_scf_err': self.occ_scf_err,
                 'vir_err': self.vir_err,
+                'vir_0_err': self.vir_0_err,
+                'vir_scf_err': self.vir_scf_err,
                 'homo_r2': self.homo_r2,
                 'lumo_r2': self.lumo_r2,
                 'occ_r2': self.occ_r2,
+                'occ_0_r2': self.occ_0_r2,
+                'occ_scf_r2': self.occ_scf_r2,
                 'vir_r2': self.vir_r2,
+                'vir_0_r2': self.vir_0_r2,
+                'vir_scf_r2': self.vir_scf_r2,
             }
         }
 
