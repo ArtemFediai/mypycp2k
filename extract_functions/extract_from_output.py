@@ -1,4 +1,5 @@
-from util.exceptions import SCQPSolutionNotFound, SCFNotConvergedNotPossibleToRunMP2
+from util.exceptions import SCQPSolutionNotFound, SCFNotConvergedNotPossibleToRunMP2, NaNInGW
+import pandas as pd
 
 """
 functions extract something from the out cp2k files using re
@@ -32,10 +33,19 @@ def main():
     my_gw_energies = return_gw_energies_advanced('test/out_scf_gw.out')
 
     print('this should fail -->')
-    my_gw_energies = return_gw_energies_advanced('test/scf_not_converged_not_possible_mp2.out')
+    try:
+        my_gw_energies = return_gw_energies_advanced('test/scf_not_converged_not_possible_mp2.out')
+    except SCFNotConvergedNotPossibleToRunMP2:
+        print('the exception is captured. test passed')
 
     # print('This is the last line')
-
+    # TEST: scf DFT
+    print('this should crash because of nan->')
+    try:
+        my_gw_energies = return_gw_energies_advanced('test/pot_en_abnormal.out')
+    except NaNInGW:
+        print('this has crashed')
+    print("<-- this should crash")
 
 """
     CRASH COURSE ON REGULAR EXPRESSION:
@@ -308,7 +318,6 @@ def return_gw_energies_advanced(path_to_file):
 
     num_gw_iter = 0
     # from collections import namedtuple
-    import pandas as pd
 
     header_is_extracted = False
     list_of_gw_output = []
@@ -334,6 +343,7 @@ def return_gw_energies_advanced(path_to_file):
             while regex1.match(line):  # first group (occ)
                 tmp = re.search(reg_occ_groups, line).groups()
                 list_of_str = ' '.join(tmp).split()
+                # if you check it here, you loose time for "if"
                 single_line = [int(list_of_str[0]), list_of_str[1], *[float(x) for x in list_of_str[2:]], num_gw_iter]
                 occ_line.append(single_line)
                 line = next(myiter)
@@ -349,7 +359,7 @@ def return_gw_energies_advanced(path_to_file):
             list_of_gw_output.extend([*occ_line, *vir_line])
             num_gw_iter += 1
     my_e_df = pd.DataFrame.from_records(data=list_of_gw_output, columns=header_list)
-    print(my_e_df)
+    #print(my_e_df)
 
     # why there are two G0W0: because orbitals sometimes change their order
     # DFT part
@@ -362,8 +372,13 @@ def return_gw_energies_advanced(path_to_file):
         vir_0 = min(my_e_df.loc[(my_e_df['num_gw_iter'] == 0) & (my_e_df['occ_or_vir'] == 'vir')]['E_GW'])
 
         # GW part
-        occ_scf = max(my_e_df.loc[(my_e_df['num_gw_iter'] == num_gw_iter-1) & (my_e_df['occ_or_vir'] == 'occ')]['E_GW'])
-        vir_scf = min(my_e_df.loc[(my_e_df['num_gw_iter'] == num_gw_iter-1) & (my_e_df['occ_or_vir'] == 'vir')]['E_GW'])
+        occ_scf = max(my_e_df.loc[(my_e_df['num_gw_iter'] == num_gw_iter-1) & (my_e_df['occ_or_vir'] == 'occ')]['E_GW'], default="not extracted")
+        vir_scf = min(my_e_df.loc[(my_e_df['num_gw_iter'] == num_gw_iter-1) & (my_e_df['occ_or_vir'] == 'vir')]['E_GW'], default="not extracted")
+
+        if occ_scf == "not extracted":
+            print(f'The run crashes because there is a NaN in the last scf iteration')
+            raise NaNInGW
+
 
         # wrong G0W0 part (correct if order of HOMO/LUMO and occ/vir are same)
         occ = list(my_e_df.loc[(my_e_df['num_gw_iter'] == 0) & (my_e_df['occ_or_vir'] == 'occ')]['E_GW'])[-1]
@@ -371,7 +386,7 @@ def return_gw_energies_advanced(path_to_file):
     else:
         pass
 
-    if isinstance(occ, float) and isinstance(vir, float) and isinstance(homo, float) and isinstance(lumo, float) :
+    if isinstance(occ, float) and isinstance(vir, float) and isinstance(homo, float) and isinstance(lumo, float):
         print(f"G0W0 HOMO wrong: {occ} eV")
         print(f"G0W0 LUMO wrong: {vir} eV")
         print(f"GW HOMO scf: {occ_scf} eV")
