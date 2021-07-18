@@ -32,17 +32,52 @@
   occ:
   - -12.53151568900106
   - -12.404077100707713
+  occ_0:
+  - null
+  - null
+  occ_0_err:
+  - null
+  - null
+  occ_0_r2:
+  - null
+  - null
   occ_err:
   - 0.022750506562477294
   - 0.0507019725637603
   occ_r2:
   - 0.9980107083617342
   - 0.9844109237846624
+  occ_scf:
+  - null
+  - null
+  occ_scf_err:
+  - null
+  - null
+  occ_scf_r2:
+  - null
+  - null
   occs:
     2: -11.748
     3: -12.165
     4: -12.355
+  occs_0:
+    2: -11.748
+    3: -12.165
+    4: -12.355
+  occs_scf:
+    2: -11.748
+    3: -12.165
+    4: -12.355
   vir:
+  - null
+  - null
+  vir_0:
+  - null
+  - null
+  vir_0_err:
+  - null
+  - null
+  vir_0_r2:
   - null
   - null
   vir_err:
@@ -51,7 +86,24 @@
   vir_r2:
   - null
   - null
+  vir_scf:
+  - null
+  - null
+  vir_scf_err:
+  - null
+  - null
+  vir_scf_r2:
+  - null
+  - null
   virs:
+    2: 1.03
+    3: 0.88
+    4: null
+  virs_0:
+    2: 1.03
+    3: 0.88
+    4: null
+  virs_scf:
     2: 1.03
     3: 0.88
     4: null
