@@ -29,10 +29,10 @@ def set_nonperiodic_poisson(DFT, solver='MT'):
 
 
 def set_cutoff(DFT, cutoff=900, rel_cutoff=60, ngrids=5):
-    MGGRID = DFT.MGRID
-    MGGRID.Cutoff = cutoff
-    MGGRID.Rel_cutoff = rel_cutoff
-    MGGRID.Ngrids = ngrids
+    MGRID = DFT.MGRID
+    MGRID.Cutoff = cutoff
+    MGRID.Rel_cutoff = rel_cutoff
+    MGRID.Ngrids = ngrids
 
 def print_mo_cubes(PRINT, nhomo=5, nlumo=5, filename='=HOMO.txt'):
     MO_CUBES = PRINT.MO_CUBES
