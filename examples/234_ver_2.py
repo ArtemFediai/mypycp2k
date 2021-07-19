@@ -389,16 +389,16 @@ class InputFactory:
                 potential_file_name=cls.potential_file_name,
                 basis_set_file_name=cls.basis_set_file_name)
         set_cutoff(DFT, cutoff=cls.cutoff, rel_cutoff=cls.rel_cutoff, ngrids=5)
-        set_scf(DFT, eps_scf=cls.eps_scf_dft[i_bs], max_scf=500, scf_guess='RESTART')
+        set_scf(DFT, eps_scf=cls.eps_scf_dft[i_bs], max_scf=1000, scf_guess='RESTART')
         # <-- even if no actual wfn saved, will not collapse, but start with ATOMIC guess
-        add_ot(SCF, stepsize=0.05)
+        add_ot(SCF, stepsize=0.04)
         #
         # add_outer_scf(OUTER_SCF)
         set_pbe(XC)  # we start with pbe
         # set_pbe0(XC) no pbe0 in the beginning
         set_qs(DFT,
-               eps_default=1.0E-10,
-               eps_pgf_orb=np.sqrt(1.0E-10))
+               eps_default=1.0E-10,  # ad hoc
+               eps_pgf_orb=np.sqrt(1.0E-10))  # ad hoc
         ## END DFT ##
         return calc_dft
 
@@ -433,7 +433,7 @@ class InputFactory:
         # add G0W0!
         add_gw_ver_0(XC,
                      ev_sc_iter=1,
-                     rpa_num_quad_points=100,
+                     rpa_num_quad_points=500,
                      max_memory_wf=4000,
                      max_memory_hf=500,
                      corr_occ=1,
