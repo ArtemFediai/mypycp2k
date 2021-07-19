@@ -100,7 +100,7 @@ def main():
 
     rank = '{:0>6}'.format(rank)  # transform rank from '1' to '000001' format. This is not a general thing
     xyz_file_name = f'{prefix_xyz_file_name}_{rank}.xyz'
-    xyz_file_location = f'{prefix_xyz_file_name}/{xyz_file_name}'
+    xyz_file_location = f'../{prefix_xyz_file_name}/{xyz_file_name}'  # hard coded. db outside!
 
     db_record_path = f'{db}/DB_{rank}.yaml'  # file where the results will be saved todo: raeum es alles auf!
     #  check is the output exists
@@ -242,14 +242,20 @@ def main():
                 homo, lumo = redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo)
                 print_extracted_energies(suf, homo, lumo, occ, vir)  # on a screen
             except SCQPSolutionNotFound:  # we know how to handle this error
-                print("GW is not extracted, because SCQPSolutionNotFound. Calling fallback ...")
-                # --> of the solution not found, it could be that the number of quad points is insufficent
-                # gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[
-                #     0].RI_RPA.Rpa_num_quad_points = 500
-                gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.RI_G0W0.Crossing_search = 'BISECTION'
-                print("I write the fallback input file the crossing search is set to BISECTION")
-                gw_diag_simulations.write_input_file(diag_inp_file)
-                my_cp2k_run(suf=suf, ot_or_diag='diag')
+                try:
+                    print("GW is not extracted, because SCQPSolutionNotFound. Calling fallback ...")
+                    # --> of the solution not found, it could be that the number of quad points is insufficent
+                    gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.RI_G0W0.Crossing_search = 'BISECTION'  # this alone does not always work
+                    print("I write the fallback input file the crossing search is set to BISECTION")
+                    gw_diag_simulations.write_input_file(diag_inp_file)
+                    my_cp2k_run(suf=suf, ot_or_diag='diag')
+                except SCQPSolutionNotFound:
+                    print("GW is not extracted, because SCQPSolutionNotFound. Calling second fallback ...")
+                    gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.Rpa_num_quad_points = 500  # this should help as well
+                    gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.RI_G0W0.Crossing_search = 'BISECTION'
+                    print("I write the fallback input file with QUAD points = 500")
+                    gw_diag_simulations.write_input_file(diag_inp_file)
+                    my_cp2k_run(suf=suf, ot_or_diag='diag')
             except SCFNotConvergedNotPossibleToRunMP2:
                 print("GW is not extracted, because SCFNotConvergedNotPossibleToRunMP2. Calling fallback ...")
                 # replay ot with a larger cutoff then make diag with a larger cutoff
@@ -365,6 +371,7 @@ class InputFactory:
             'scratch']  # the outermost folder in the scratch folder where all other data are put
         cls.prefix_xyz_file_name = input_from_yaml['prefix_xyz_file_name']
         # other settings
+        # todo: I can probably make it in one shot by accessing an objetct as a dict
         cls.offset = input_from_yaml['molecule_vacuum_offset']
         cls.cutoff = input_from_yaml['cutoff']
         cls.rel_cutoff = input_from_yaml['rel_cutoff']
@@ -427,8 +434,8 @@ class InputFactory:
         set_pbe(XC)  # we start with pbe
         # set_pbe0(XC) no pbe0 in the beginning
         set_qs(DFT,
-               eps_default=1.0E-10,  # ad hoc
-               eps_pgf_orb=np.sqrt(1.0E-10))  # ad hoc
+               eps_default=1.0E-10,  # should be 4 order of magnitude lower w.r.t. diag
+               eps_pgf_orb=np.sqrt(1.0E-10))  # --||--
         ## END DFT ##
         return calc_dft
 
