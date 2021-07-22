@@ -123,8 +123,8 @@ def main():
         copytree(sim_folder_home, sim_folder_scratch, dirs_exist_ok=True)  # will rewrite the folder
         print('...done!')
         print(f'now I will remove the sim/{rank} folder at home and create a new empty folder at its place...')
-        rmtree(sim_folder_scratch)  # leftovers from previous simulations will be removed
-        os.mkdir(sim_folder_scratch)  # and the new folder will be created
+        rmtree(sim_folder_home)  # leftovers from previous simulations will be removed
+        os.mkdir(sim_folder_home)  # and the new folder will be created
         print('...done')
 
     #  xyz object created, normal xyz file is created at scratch
@@ -273,17 +273,28 @@ def main():
                 my_cp2k_run(suf=suf, ot_or_diag='diag')
                 # print('NOT IMPLEMENTED')
             except NaNInGW:
-                print("GW is not extracted, because there is a NaN in the last frame of the SCF loop. Calling fallback")
-                gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.RI_G0W0.Crossing_search = 'BISECTION'
-                print("I write the fallback input file the crossing search is set to BISECTION")
-                gw_diag_simulations.write_input_file(diag_inp_file)
-                my_cp2k_run(suf=suf, ot_or_diag='diag')
-                # print("NOT IMPLEMENTED")
+                try:
+                    print("GW is not extracted, because there is a NaN in the last frame of the SCF loop. Calling fallback")
+                    gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.RI_G0W0.Crossing_search = 'BISECTION'
+                    print("I wrote the fallback. The crossing search is set to BISECTION")
+                    gw_diag_simulations.write_input_file(diag_inp_file)
+                    my_cp2k_run(suf=suf, ot_or_diag='diag')
+                    # print("NOT IMPLEMENTED")
+                    occ, vir, homo_, lumo_, occ_scf, vir_scf, occ_0, vir_0 = return_gw_energies_advanced(diag_out_file)
+                    homo, lumo = redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo)
+                    print_extracted_energies(suf, homo, lumo, occ, vir)  # on a screen
+                except NaNInGW:
+                    print("GW is not extracted, because NaNInGW AGAIN. Calling second fallback (BISECTION and num_quad_points = 500) ...")
+                    gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.Rpa_num_quad_points = 500  # this should help as well
+                    gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.RI_G0W0.Crossing_search = 'BISECTION'
+                    print("I wrote the fallback input file with QUAD points = 500")
+                    gw_diag_simulations.write_input_file(diag_inp_file)
+                    my_cp2k_run(suf=suf, ot_or_diag='diag')
             finally:
                 try:
                     occ, vir, homo_, lumo_, occ_scf, vir_scf, occ_0, vir_0 = return_gw_energies_advanced(diag_out_file)
                     homo, lumo = redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo)
-                    print_extracted_energies(suffix, homo, lumo, occ, vir)  # on a screen
+                    print_extracted_energies(suf, homo, lumo, occ, vir)  # on a screen
                 # <---
                 except:
                     print("GW energies were not extracted even in the fallback")
@@ -324,7 +335,7 @@ def main():
         # if not os.path.exists(sim_folder_home):
         # os.mkdir(sim_folder_home)   # will overwrite if exists
         try:
-            copytree(sim_folder_scratch, sim_folder_home)  # will rewrite the folder?
+            copytree(sim_folder_scratch, sim_folder_home, dirs_exist_ok=True)  # will rewrite the folder > 3.8 needed
             print(f"I have copied {sim_folder_scratch} to {sim_folder_home}")
         except:
             print(f"I could not copy {sim_folder_scratch} to {sim_folder_home}")
