@@ -116,13 +116,21 @@ def main():
         sim_folder_scratch = f'{scratch}/{bh5670}/{sim}/{rank}'
 
     sim_folder_home = f'{sim}/{rank}'  # sim folder at home exists. you create later {rank} folder
-    if not os.path.exists(sim_folder_scratch):
-        os.mkdir(sim_folder_scratch)
+
+    # if not os.path.exists(sim_folder_scratch):  # check if accidentially there is a folder at scratch
+    os.mkdir(sim_folder_scratch)
+    # else:
+    #     print('I have found leftovers at /scratch and will remove it ...')
+    #     rmtree(sim_folder_scratch)  # leftovers from previous simulations will be removed
+    #     print('...I have removed it')
+
+    if not os.path.exists(sim_folder_home):  # home
+        os.mkdir(sim_folder_home)
     else:
-        print(f"I have found the folder {sim}/{rank} in the sim folder and will try to copy it to scratch ....")
+        print(f"I have found the folder {sim_folder_home} in the sim folder and will try to copy it to scratch ....")
         copytree(sim_folder_home, sim_folder_scratch, dirs_exist_ok=True)  # will rewrite the folder
         print('...done!')
-        print(f'now I will remove the sim/{rank} folder at home and create a new empty folder at its place...')
+        print(f'now I will remove the {sim_folder_home} folder at home and create a new empty folder at its place...')
         rmtree(sim_folder_home)  # leftovers from previous simulations will be removed
         os.mkdir(sim_folder_home)  # and the new folder will be created
         print('...done')
