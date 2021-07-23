@@ -257,6 +257,10 @@ def main():
                     print("I write the fallback input file the crossing search is set to BISECTION")
                     gw_diag_simulations.write_input_file(diag_inp_file)
                     my_cp2k_run(suf=suf, ot_or_diag='diag')
+                    # the following section is necessary to catch the error:
+                    occ, vir, homo_, lumo_, occ_scf, vir_scf, occ_0, vir_0 = return_gw_energies_advanced(diag_out_file)
+                    homo, lumo = redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo)
+                    print_extracted_energies(suf, homo, lumo, occ, vir)  # on a screen
                 except SCQPSolutionNotFound:
                     print("GW is not extracted, because SCQPSolutionNotFound. Calling second fallback ...")
                     gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.Rpa_num_quad_points = 500  # this should help as well
