@@ -118,7 +118,7 @@ def main():
     sim_folder_home = f'{sim}/{rank}'  # sim folder at home exists. you create later {rank} folder
 
     # if not os.path.exists(sim_folder_scratch):  # check if accidentially there is a folder at scratch
-    os.mkdir(sim_folder_scratch)
+    os.makedirs(sim_folder_scratch, exist_ok=True)
     # else:
     #     print('I have found leftovers at /scratch and will remove it ...')
     #     rmtree(sim_folder_scratch)  # leftovers from previous simulations will be removed
