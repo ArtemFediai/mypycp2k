@@ -1,0 +1,740 @@
+ DBCSR| CPU Multiplication driver                                           XSMM
+ DBCSR| Multrec recursion limit                                              512
+ DBCSR| Multiplication stack size                                           1000
+ DBCSR| Maximum elements for images                                    UNLIMITED
+ DBCSR| Multiplicative factor virtual images                                   1
+ DBCSR| Use multiplication densification                                       T
+ DBCSR| Multiplication size stacks                                             3
+ DBCSR| Number of 3D layers                                               SINGLE
+ DBCSR| Use MPI memory allocation                                              T
+ DBCSR| Use RMA algorithm                                                      F
+ DBCSR| Use Communication thread                                               T
+ DBCSR| Communication thread load                                             87
+
+
+  **** **** ******  **  PROGRAM STARTED AT               2021-07-19 08:52:24.727
+ ***** ** ***  *** **   PROGRAM STARTED ON                                 n1239
+ **    ****   ******    PROGRAM STARTED BY                             ka_bh5670
+ ***** **    ** ** **   PROGRAM PROCESS ID                               2405218
+  **** **  *******  **  PROGRAM STARTED IN /tmp/ka_bh5670.3062159/bh5670/sim/000
+                                           006
+
+ CP2K| version string:                                          CP2K version 7.1
+ CP2K| source code revision number:                                  git:e635599
+ CP2K| cp2kflags: libint fftw3 libxc parallel mpi3 scalapack xsmm spglib        
+ CP2K| is freely available from                            https://www.cp2k.org/
+ CP2K| Program compiled at                          Do 6. Mai 20:02:55 CEST 2021
+ CP2K| Program compiled on                                                 n1731
+ CP2K| Program compiled for                                                local
+ CP2K| Data directory path    /lustre/home/ka/ka_int/ka_bh5670/cp2k/cp2k-7.1/dat
+ CP2K| Input file name                                                diag_2.inp
+
+ GLOBAL| Force Environment number                                              1
+ GLOBAL| Basis set file name                                 BASIS_CC_AUG_RI_NEW
+ GLOBAL| Potential file name                                           POTENTIAL
+ GLOBAL| MM Potential file name                                     MM_POTENTIAL
+ GLOBAL| Coordinate file name                               dsgdb9nsd_000006.xyz
+ GLOBAL| Method name                                                        CP2K
+ GLOBAL| Project name                                                          2
+ GLOBAL| Preferred FFT library                                             FFTW3
+ GLOBAL| Preferred diagonalization lib.                                       SL
+ GLOBAL| Run type                                                         ENERGY
+ GLOBAL| All-to-all communication in single precision                          F
+ GLOBAL| FFTs using library dependent lengths                                  T
+ GLOBAL| Global print level                                                  LOW
+ GLOBAL| MPI I/O enabled                                                       T
+ GLOBAL| Total number of message passing processes                            16
+ GLOBAL| Number of threads for this process                                    1
+ GLOBAL| This output is from process                                           0
+ GLOBAL| CPU model name                 Intel(R) Xeon(R) Gold 6252 CPU @ 2.10GHz
+ GLOBAL| CPUID                                                              1003
+
+ MEMORY| system memory details [Kb]
+ MEMORY|                        rank 0           min           max       average
+ MEMORY| MemTotal            196673224     196673224     196673224     196673224
+ MEMORY| MemFree             172793456     172793456     172793456     172793456
+ MEMORY| Buffers                     0             0             0             0
+ MEMORY| Cached                4879796       4879796       4879796       4879796
+ MEMORY| Slab                  2264652       2264652       2264652       2264652
+ MEMORY| SReclaimable           737580        737580        737580        737580
+ MEMORY| MemLikelyFree       178410832     178410832     178410832     178410832
+
+
+ GENERATE|  Preliminary Number of Bonds generated:                             0
+ GENERATE|  Achieved consistency in connectivity generation.
+
+ *******************************************************************************
+ *******************************************************************************
+ **                                                                           **
+ **     #####                         ##              ##                      **
+ **    ##   ##            ##          ##              ##                      **
+ **   ##     ##                       ##            ######                    **
+ **   ##     ##  ##   ##  ##   #####  ##  ##   ####   ##    #####    #####    **
+ **   ##     ##  ##   ##  ##  ##      ## ##   ##      ##   ##   ##  ##   ##   **
+ **   ##  ## ##  ##   ##  ##  ##      ####     ###    ##   ######   ######    **
+ **    ##  ###   ##   ##  ##  ##      ## ##      ##   ##   ##       ##        **
+ **     #######   #####   ##   #####  ##  ##  ####    ##    #####   ##        **
+ **           ##                                                    ##        **
+ **                                                                           **
+ **                                                ... make the atoms dance   **
+ **                                                                           **
+ **            Copyright (C) by CP2K developers group (2000 - 2019)           **
+ **                                                                           **
+ *******************************************************************************
+
+ *** WARNING in qs_environment.F:1310 :: More added MOs requested than ***
+ *** available. The full set of unoccupied MOs will be used.           ***
+
+
+
+ TOTAL NUMBERS AND MAXIMUM NUMBERS
+
+  Total number of            - Atomic kinds:                                   3
+                             - Atoms:                                          4
+                             - Shell sets:                                    20
+                             - Shells:                                        28
+                             - Primitive Cartesian functions:                 48
+                             - Cartesian basis functions:                     68
+                             - Spherical basis functions:                     64
+
+  Maximum angular momentum of the orbital basis functions:                     2
+
+
+ SCF PARAMETERS         Density guess:                                   RESTART
+                        --------------------------------------------------------
+                        max_scf:                                             100
+                        max_scf_history:                                       0
+                        max_diis:                                              4
+                        --------------------------------------------------------
+                        eps_scf:                                        1.00E-06
+                        eps_scf_history:                                0.00E+00
+                        eps_diis:                                       1.00E-01
+                        eps_eigval:                                     1.00E-05
+                        --------------------------------------------------------
+                        level_shift [a.u.]:                                 0.00
+                        added MOs                                        56    0
+                        --------------------------------------------------------
+                        Mixing method:                            BROYDEN_MIXING
+                                                charge density mixing in g-space
+                        --------------------------------------------------------
+                        No outer SCF
+ 
+ RI-RPA| using GPW style
+ 
+
+ Number of electrons:                                                         16
+ Number of occupied orbitals:                                                  8
+ Number of molecular orbitals:                                                64
+
+ Number of orbital functions:                                                 64
+ Number of independent orbital functions:                                     64
+
+ Extrapolation method: initial_guess
+
+
+ SCF WAVEFUNCTION OPTIMIZATION
+
+  Step     Update method      Time    Convergence         Total energy    Change
+  ------------------------------------------------------------------------------
+     1 NoMix/Diag. 0.20E+00    0.6     4.3467E-09      -114.3874624260 -1.14E+02
+
+  *** SCF run converged in     1 steps ***
+
+
+  Electronic density on regular grids:        -12.2862814834        3.7137185166
+  Core density on regular grids:               16.0000000000       -0.0000000000
+  Hard and soft densities (Lebedev):          -71.2704460503      -67.5567272634
+  Total Rho_soft + Rho1_hard - Rho1_soft      -16.0000002704
+  Total charge density (r-space):              -0.0000002704
+  Total Rho_soft + Rho0_soft (g-space):        -0.0000003016
+
+  Overlap energy of the core charge distribution:               0.00000345510658
+  Self energy of the core charge distribution:               -104.84381476465852
+  Core Hamiltonian energy:                                    -12.86532736715388
+  Hartree energy:                                              34.06893844633340
+  Exchange-correlation energy:                                 -6.14116440142045
+
+  GAPW| Exc from hard and soft atomic rho1:                    -8.41422982735883
+  GAPW| local Eh = 1 center integrals:                        -16.19186796683927
+
+  Total energy:                                              -114.38746242599096
+  
+  Eigenvalues of the occupied subspace spin            1
+ ---------------------------------------------
+     -18.79659766      -9.99630116      -0.98815537      -0.57862469
+      -0.44645426      -0.40648240      -0.37333881      -0.22868465
+ Fermi Energy [eV] :   -6.222826
+  
+  Lowest eigenvalues of the unoccupied subspace spin            1
+ ---------------------------------------------
+      -0.09728109      -0.01424834       0.01740902       0.02738531
+       0.05121296       0.09825766       0.10147942       0.12060054
+       0.13775498       0.15810995
+
+
+ RI-RPA section
+ --------------
+
+  Used number of processes per group:                                          1
+  Maximum allowed memory usage per MPI processes:                    4000.00 MiB
+  GPW_INFO| Density cutoff [a.u.]:                                         150.0
+  GPW_INFO| Relative density cutoff [a.u.]:                                 25.0
+  RI_INFO| Cholesky decomposition group size:                                  1
+  RI_INFO| Number of groups for auxiliary basis functions                     16
+  RI_INFO| Occupied  basis set size:                                           8
+  RI_INFO| Virtual   basis set size:                                          56
+  RI_INFO| Auxiliary basis set size:                                         190
+  RI_INFO| Total memory for (ia|K) integrals:                           0.65 MiB
+  RI_INFO| Total memory for G0W0-(nm|K) integrals:                      2.60 MiB
+  RI_INFO| Minimum required memory per MPI process:                     0.08 MiB
+  RI_INFO| Available memory per MPI process:                         3702.00 MiB
+  RI_INFO| Group size for frequency integration:                               8
+  INTEG_INFO| Clenshaw-Curtius quadrature
+  INTEG_INFO| Number of integration points:                                   50
+  INTEG_INFO| Number of integration points per RPA group:                     25
+  MATRIX_INFO| Number row processes:                                           4
+  MATRIX_INFO| Number column processes:                                        2
+  MATRIX_INFO| Row block size:                                                56
+  MATRIX_INFO| Column block size:                                             47
+  INTEG_INFO| Scaling parameter:                                         0.20000
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                        0.40
+  
+  GW quasiparticle energies
+  -------------------------
+   
+  The GW quasiparticle energies are calculated according to: 
+  E_GW = E_SCF + Z * ( Sigc(E_SCF) + Sigx - vxc )
+   
+  The energy unit of the following table is eV.  Sigc_fit is a very conservative
+  estimate of the statistical error of the fitting.
+   
+            MO      E_SCF       Sigc   Sigc_fit   Sigx-vxc          Z       E_GW
+     1 ( occ )   -511.481     -1.654      0.000    -48.893      1.000   -562.029
+     2 ( occ )   -272.013     -6.756      0.000    -35.417      1.000   -314.186
+     3 ( occ )    -26.889      7.263      0.000    -11.716      1.000    -31.342
+     4 ( occ )    -15.745      3.496      0.000     -7.496      1.000    -19.745
+     5 ( occ )    -12.149      3.156      0.000     -6.371      1.000    -15.364
+     6 ( occ )    -11.061      3.305      0.000     -6.992      1.000    -14.749
+     7 ( occ )    -10.159      1.138      0.000     -4.639      1.000    -13.660
+     8 ( occ )     -6.223      2.214      0.000     -5.790      1.000     -9.799
+     9 ( vir )     -2.647     -1.932      0.000      6.039      1.000      1.459
+    10 ( vir )     -0.388     -0.470      0.000      2.021      1.000      1.162
+    11 ( vir )      0.474     -0.296      0.000      1.482      1.000      1.659
+    12 ( vir )      0.745     -0.437      0.000      2.077      1.000      2.385
+    13 ( vir )      1.394     -0.488      0.000      1.953      1.000      2.859
+    14 ( vir )      2.674     -0.661      0.000      2.317      1.000      4.329
+    15 ( vir )      2.761     -0.307      0.000      1.536      1.000      3.991
+    16 ( vir )      3.282     -0.746      0.000      2.936      1.000      5.471
+    17 ( vir )      3.749     -0.662      0.000      2.715      1.000      5.801
+    18 ( vir )      4.302     -0.952      0.000      3.525      1.000      6.876
+    19 ( vir )      4.615     -0.658      0.000      2.539      1.000      6.495
+    20 ( vir )      5.632     -0.845      0.000      3.145      1.000      7.932
+    21 ( vir )      5.809     -0.987      0.000      3.766      1.000      8.587
+    22 ( vir )      6.417     -0.719      0.000      2.955      1.000      8.653
+    23 ( vir )      8.388     -1.419      0.000      3.929      1.000     10.898
+    24 ( vir )      8.793     -1.032      0.000      3.368      1.000     11.129
+    25 ( vir )      9.455     -1.272      0.000      3.359      1.000     11.542
+    26 ( vir )     10.390     -1.216      0.000      3.732      1.000     12.906
+    27 ( vir )     11.576     -1.190      0.000      3.706      1.000     14.092
+    28 ( vir )     11.842     -0.328      0.000      3.482      1.000     14.996
+   
+  GW HOMO-LUMO gap (eV)                                                    11.26
+  
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                        0.56
+  
+  GW quasiparticle energies
+  -------------------------
+   
+  The GW quasiparticle energies are calculated according to: 
+  E_GW = E_SCF + Z * ( Sigc(E_SCF) + Sigx - vxc )
+   
+  The energy unit of the following table is eV.  Sigc_fit is a very conservative
+  estimate of the statistical error of the fitting.
+   
+            MO      E_SCF       Sigc   Sigc_fit   Sigx-vxc          Z       E_GW
+     1 ( occ )   -562.029     -6.395      0.000    -48.893      1.000   -566.770
+     2 ( occ )   -314.186    -15.740      0.000    -35.417      1.000   -323.171
+     3 ( occ )    -31.342      6.131      0.000    -11.716      1.000    -32.474
+     4 ( occ )    -19.745      2.119      0.000     -7.496      1.000    -21.122
+     5 ( occ )    -15.364      1.470      0.000     -6.371      1.000    -17.050
+     6 ( occ )    -14.749      2.163      0.000     -6.992      1.000    -15.890
+     7 ( occ )    -13.660      0.471      0.000     -4.639      1.000    -14.328
+     8 ( occ )     -9.799      1.413      0.000     -5.790      1.000    -10.600
+     9 ( vir )      1.459     -1.471      0.000      6.039      1.000      1.920
+    10 ( vir )      1.162     -0.367      0.000      2.021      1.000      1.266
+    11 ( vir )      1.659     -0.226      0.000      1.482      1.000      1.730
+    12 ( vir )      2.385     -0.344      0.000      2.077      1.000      2.479
+    13 ( vir )      2.859     -0.370      0.000      1.953      1.000      2.977
+    14 ( vir )      4.329     -0.513      0.000      2.317      1.000      4.477
+    15 ( vir )      3.991     -0.239      0.000      1.536      1.000      4.059
+    16 ( vir )      5.471     -0.559      0.000      2.936      1.000      5.658
+    17 ( vir )      5.801     -0.490      0.000      2.715      1.000      5.973
+    18 ( vir )      6.876     -0.686      0.000      3.525      1.000      7.142
+    19 ( vir )      6.495     -0.443      0.000      2.539      1.000      6.710
+    20 ( vir )      7.932     -0.644      0.000      3.145      1.000      8.133
+    21 ( vir )      8.587     -0.678      0.000      3.766      1.000      8.896
+    22 ( vir )      8.653     -0.526      0.000      2.955      1.000      8.846
+    23 ( vir )     10.898     -0.960      0.000      3.929      1.000     11.356
+    24 ( vir )     11.129     -0.681      0.000      3.368      1.000     11.480
+    25 ( vir )     11.542     -0.695      0.000      3.359      1.000     12.120
+    26 ( vir )     12.906     -0.826      0.000      3.732      1.000     13.296
+    27 ( vir )     14.092     -0.813      0.000      3.706      1.000     14.469
+    28 ( vir )     14.996     -0.794      0.000      3.482      1.000     14.530
+   
+  GW HOMO-LUMO gap (eV)                                                    12.52
+  
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                        0.62
+  
+  GW quasiparticle energies
+  -------------------------
+   
+  The GW quasiparticle energies are calculated according to: 
+  E_GW = E_SCF + Z * ( Sigc(E_SCF) + Sigx - vxc )
+   
+  The energy unit of the following table is eV.  Sigc_fit is a very conservative
+  estimate of the statistical error of the fitting.
+   
+            MO      E_SCF       Sigc   Sigc_fit   Sigx-vxc          Z       E_GW
+     1 ( occ )   -566.770     13.627      0.000    -48.893      1.000   -546.748
+     2 ( occ )   -323.171     -3.532      0.000    -35.417      1.000   -310.962
+     3 ( occ )    -32.474      5.729      0.000    -11.716      1.000    -32.877
+     4 ( occ )    -21.122      1.892      0.000     -7.496      1.000    -21.349
+     5 ( occ )    -17.050      1.290      0.000     -6.371      1.000    -17.230
+     6 ( occ )    -15.890      1.988      0.000     -6.992      1.000    -16.065
+     7 ( occ )    -14.328      0.379      0.000     -4.639      1.000    -14.419
+     8 ( occ )    -10.600      1.291      0.000     -5.790      1.000    -10.722
+     9 ( vir )      1.920     -1.410      0.000      6.039      1.000      1.981
+    10 ( vir )      1.266     -0.233      0.000      2.021      1.000      1.399
+    11 ( vir )      1.730     -0.108      0.000      1.482      1.000      1.847
+    12 ( vir )      2.479     -0.276      0.000      2.077      1.000      2.546
+    13 ( vir )      2.977     -0.294      0.000      1.953      1.000      3.053
+    14 ( vir )      4.477     -0.418      0.000      2.317      1.000      4.572
+    15 ( vir )      4.059     -0.202      0.000      1.536      1.000      4.096
+    16 ( vir )      5.658     -0.518      0.000      2.936      1.000      5.699
+    17 ( vir )      5.973     -0.460      0.000      2.715      1.000      6.003
+    18 ( vir )      7.142     -0.601      0.000      3.525      1.000      7.226
+    19 ( vir )      6.710     -0.422      0.000      2.539      1.000      6.732
+    20 ( vir )      8.133     -0.622      0.000      3.145      1.000      8.155
+    21 ( vir )      8.896     -0.628      0.000      3.766      1.000      8.947
+    22 ( vir )      8.846     -0.499      0.000      2.955      1.000      8.873
+    23 ( vir )     11.356     -0.881      0.000      3.929      1.000     11.436
+    24 ( vir )     11.480     -0.653      0.000      3.368      1.000     11.507
+    25 ( vir )     12.120     -0.629      0.000      3.359      1.000     12.185
+    26 ( vir )     13.296     -0.797      0.000      3.732      1.000     13.325
+    27 ( vir )     14.469     -0.692      0.000      3.706      1.000     14.589
+    28 ( vir )     14.530     -0.651      0.000      3.482      1.000     14.674
+   
+  GW HOMO-LUMO gap (eV)                                                    12.70
+  
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                        0.64
+  
+  GW quasiparticle energies
+  -------------------------
+   
+  The GW quasiparticle energies are calculated according to: 
+  E_GW = E_SCF + Z * ( Sigc(E_SCF) + Sigx - vxc )
+   
+  The energy unit of the following table is eV.  Sigc_fit is a very conservative
+  estimate of the statistical error of the fitting.
+   
+            MO      E_SCF       Sigc   Sigc_fit   Sigx-vxc          Z       E_GW
+     1 ( occ )   -546.748     -0.019      0.000    -48.893      1.000   -560.394
+     2 ( occ )   -310.962     -7.423      0.000    -35.417      1.000   -314.853
+     3 ( occ )    -32.877      5.645      0.000    -11.716      1.000    -32.961
+     4 ( occ )    -21.349      1.859      0.000     -7.496      1.000    -21.382
+     5 ( occ )    -17.230      1.266      0.000     -6.371      1.000    -17.253
+     6 ( occ )    -16.065      1.962      0.000     -6.992      1.000    -16.092
+     7 ( occ )    -14.419      0.365      0.000     -4.639      1.000    -14.433
+     8 ( occ )    -10.722      1.274      0.000     -5.790      1.000    -10.739
+     9 ( vir )      1.981     -1.397      0.000      6.039      1.000      1.994
+    10 ( vir )      1.399     -0.193      0.000      2.021      1.000      1.440
+    11 ( vir )      1.847     -0.073      0.000      1.482      1.000      1.882
+    12 ( vir )      2.546     -0.258      0.000      2.077      1.000      2.564
+    13 ( vir )      3.053     -0.275      0.000      1.953      1.000      3.072
+    14 ( vir )      4.572     -0.404      0.000      2.317      1.000      4.586
+    15 ( vir )      4.096     -0.195      0.000      1.536      1.000      4.102
+    16 ( vir )      5.699     -0.514      0.000      2.936      1.000      5.703
+    17 ( vir )      6.003     -0.457      0.000      2.715      1.000      6.006
+    18 ( vir )      7.226     -0.566      0.000      3.525      1.000      7.262
+    19 ( vir )      6.732     -0.419      0.000      2.539      1.000      6.735
+    20 ( vir )      8.155     -0.623      0.000      3.145      1.000      8.154
+    21 ( vir )      8.947     -0.651      0.000      3.766      1.000      8.923
+    22 ( vir )      8.873     -0.516      0.000      2.955      1.000      8.856
+    23 ( vir )     11.436     -0.961      0.000      3.929      1.000     11.356
+    24 ( vir )     11.507     -0.674      0.000      3.368      1.000     11.486
+    25 ( vir )     12.185     -0.703      0.000      3.359      1.000     12.111
+    26 ( vir )     13.325     -0.866      0.000      3.732      1.000     13.256
+    27 ( vir )     14.589     -0.890      0.000      3.706      1.000     14.392
+    28 ( vir )     14.674     -0.703      0.000      3.482      1.000     14.622
+   
+  GW HOMO-LUMO gap (eV)                                                    12.73
+  
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                        0.64
+  
+  GW quasiparticle energies
+  -------------------------
+   
+  The GW quasiparticle energies are calculated according to: 
+  E_GW = E_SCF + Z * ( Sigc(E_SCF) + Sigx - vxc )
+   
+  The energy unit of the following table is eV.  Sigc_fit is a very conservative
+  estimate of the statistical error of the fitting.
+   
+            MO      E_SCF       Sigc   Sigc_fit   Sigx-vxc          Z       E_GW
+     1 ( occ )   -560.394      0.300      0.000    -48.893      1.000   -560.074
+     2 ( occ )   -314.853     -7.311      0.000    -35.417      1.000   -314.741
+     3 ( occ )    -32.961      5.630      0.000    -11.716      1.000    -32.975
+     4 ( occ )    -21.382      1.854      0.000     -7.496      1.000    -21.387
+     5 ( occ )    -17.253      1.263      0.000     -6.371      1.000    -17.257
+     6 ( occ )    -16.092      1.957      0.000     -6.992      1.000    -16.096
+     7 ( occ )    -14.433      0.362      0.000     -4.639      1.000    -14.436
+     8 ( occ )    -10.739      1.271      0.000     -5.790      1.000    -10.742
+     9 ( vir )      1.994     -1.364      0.000      6.039      1.000      2.027
+    10 ( vir )      1.440      0.016      0.000      2.021      1.000      1.648
+    11 ( vir )      1.882      0.114      0.000      1.482      1.000      2.069
+    12 ( vir )      2.564     -0.166      0.000      2.077      1.000      2.656
+    13 ( vir )      3.072     -0.177      0.000      1.953      1.000      3.170
+    14 ( vir )      4.586     -0.321      0.000      2.317      1.000      4.670
+    15 ( vir )      4.102     -0.158      0.000      1.536      1.000      4.140
+    16 ( vir )      5.703     -0.502      0.000      2.936      1.000      5.715
+    17 ( vir )      6.006     -0.452      0.000      2.715      1.000      6.012
+    18 ( vir )      7.262     -0.615      0.000      3.525      1.000      7.212
+    19 ( vir )      6.735     -0.420      0.000      2.539      1.000      6.734
+    20 ( vir )      8.154     -0.624      0.000      3.145      1.000      8.153
+    21 ( vir )      8.923     -0.679      0.000      3.766      1.000      8.895
+    22 ( vir )      8.856     -0.520      0.000      2.955      1.000      8.852
+    23 ( vir )     11.356     -1.102      0.000      3.929      1.000     11.214
+    24 ( vir )     11.486     -0.760      0.000      3.368      1.000     11.401
+    25 ( vir )     12.111     -0.857      0.000      3.359      1.000     11.958
+    26 ( vir )     13.256     -1.086      0.000      3.732      1.000     13.036
+    27 ( vir )     14.392     -1.426      0.000      3.706      1.000     13.855
+    28 ( vir )     14.622     -0.787      0.000      3.482      1.000     14.537
+   
+  GW HOMO-LUMO gap (eV)                                                    12.77
+  
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                        0.63
+  
+  GW quasiparticle energies
+  -------------------------
+   
+  The GW quasiparticle energies are calculated according to: 
+  E_GW = E_SCF + Z * ( Sigc(E_SCF) + Sigx - vxc )
+   
+  The energy unit of the following table is eV.  Sigc_fit is a very conservative
+  estimate of the statistical error of the fitting.
+   
+            MO      E_SCF       Sigc   Sigc_fit   Sigx-vxc          Z       E_GW
+     1 ( occ )   -560.074      1.436      0.000    -48.893      1.000   -558.938
+     2 ( occ )   -314.741     -8.102      0.000    -35.417      1.000   -315.532
+     3 ( occ )    -32.975      5.630      0.000    -11.716      1.000    -32.975
+     4 ( occ )    -21.387      1.852      0.000     -7.496      1.000    -21.389
+     5 ( occ )    -17.257      1.261      0.000     -6.371      1.000    -17.259
+     6 ( occ )    -16.096      1.955      0.000     -6.992      1.000    -16.098
+     7 ( occ )    -14.436      0.361      0.000     -4.639      1.000    -14.437
+     8 ( occ )    -10.742      1.270      0.000     -5.790      1.000    -10.743
+     9 ( vir )      2.027     -1.421      0.000      6.039      1.000      1.971
+    10 ( vir )      1.648     -0.352      0.000      2.021      1.000      1.281
+    11 ( vir )      2.069     -0.217      0.000      1.482      1.000      1.739
+    12 ( vir )      2.656     -0.331      0.000      2.077      1.000      2.491
+    13 ( vir )      3.170     -0.356      0.000      1.953      1.000      2.991
+    14 ( vir )      4.670     -0.494      0.000      2.317      1.000      4.496
+    15 ( vir )      4.140     -0.230      0.000      1.536      1.000      4.068
+    16 ( vir )      5.715     -0.538      0.000      2.936      1.000      5.680
+    17 ( vir )      6.012     -0.471      0.000      2.715      1.000      5.992
+    18 ( vir )      7.212     -0.655      0.000      3.525      1.000      7.172
+    19 ( vir )      6.734     -0.425      0.000      2.539      1.000      6.729
+    20 ( vir )      8.153     -0.622      0.000      3.145      1.000      8.155
+    21 ( vir )      8.895     -0.642      0.000      3.766      1.000      8.933
+    22 ( vir )      8.852     -0.506      0.000      2.955      1.000      8.866
+    23 ( vir )     11.214     -0.906      0.000      3.929      1.000     11.410
+    24 ( vir )     11.401     -0.646      0.000      3.368      1.000     11.515
+    25 ( vir )     11.958     -0.654      0.000      3.359      1.000     12.160
+    26 ( vir )     13.036     -0.787      0.000      3.732      1.000     13.334
+    27 ( vir )     13.855     -0.765      0.000      3.706      1.000     14.516
+    28 ( vir )     14.537     -0.676      0.000      3.482      1.000     14.648
+   
+  GW HOMO-LUMO gap (eV)                                                    12.71
+  
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                        0.61
+  
+  GW quasiparticle energies
+  -------------------------
+   
+  The GW quasiparticle energies are calculated according to: 
+  E_GW = E_SCF + Z * ( Sigc(E_SCF) + Sigx - vxc )
+   
+  The energy unit of the following table is eV.  Sigc_fit is a very conservative
+  estimate of the statistical error of the fitting.
+   
+            MO      E_SCF       Sigc   Sigc_fit   Sigx-vxc          Z       E_GW
+     1 ( occ )   -558.938      1.576      0.000    -48.893      1.000   -558.798
+     2 ( occ )   -315.532    -22.653      0.000    -35.417      1.000   -330.083
+     3 ( occ )    -32.975      5.634      0.000    -11.716      1.000    -32.972
+     4 ( occ )    -21.389      1.856      0.000     -7.496      1.000    -21.385
+     5 ( occ )    -17.259      1.264      0.000     -6.371      1.000    -17.255
+     6 ( occ )    -16.098      1.959      0.000     -6.992      1.000    -16.095
+     7 ( occ )    -14.437      0.363      0.000     -4.639      1.000    -14.435
+     8 ( occ )    -10.743      1.272      0.000     -5.790      1.000    -10.741
+     9 ( vir )      1.971     -1.405      0.000      6.039      1.000      1.986
+    10 ( vir )      1.281     -0.234      0.000      2.021      1.000      1.399
+    11 ( vir )      1.739     -0.109      0.000      1.482      1.000      1.846
+    12 ( vir )      2.491     -0.276      0.000      2.077      1.000      2.547
+    13 ( vir )      2.991     -0.293      0.000      1.953      1.000      3.054
+    14 ( vir )      4.496     -0.417      0.000      2.317      1.000      4.574
+    15 ( vir )      4.068     -0.201      0.000      1.536      1.000      4.096
+    16 ( vir )      5.680     -0.516      0.000      2.936      1.000      5.702
+    17 ( vir )      5.992     -0.458      0.000      2.715      1.000      6.006
+    18 ( vir )      7.172     -0.597      0.000      3.525      1.000      7.230
+    19 ( vir )      6.729     -0.420      0.000      2.539      1.000      6.733
+    20 ( vir )      8.155     -0.620      0.000      3.145      1.000      8.157
+    21 ( vir )      8.933     -0.620      0.000      3.766      1.000      8.955
+    22 ( vir )      8.866     -0.499      0.000      2.955      1.000      8.873
+    23 ( vir )     11.410     -0.863      0.000      3.929      1.000     11.454
+    24 ( vir )     11.515     -0.621      0.000      3.368      1.000     11.539
+    25 ( vir )     12.160     -0.627      0.000      3.359      1.000     12.187
+    26 ( vir )     13.334     -0.730      0.000      3.732      1.000     13.392
+    27 ( vir )     14.516     -0.575      0.000      3.706      1.000     14.707
+    28 ( vir )     14.648     -0.664      0.000      3.482      1.000     14.661
+   
+  GW HOMO-LUMO gap (eV)                                                    12.73
+  
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                        0.58
+  
+  GW quasiparticle energies
+  -------------------------
+   
+  The GW quasiparticle energies are calculated according to: 
+  E_GW = E_SCF + Z * ( Sigc(E_SCF) + Sigx - vxc )
+   
+  The energy unit of the following table is eV.  Sigc_fit is a very conservative
+  estimate of the statistical error of the fitting.
+   
+            MO      E_SCF       Sigc   Sigc_fit   Sigx-vxc          Z       E_GW
+     1 ( occ )   -558.798      0.666      0.000    -48.893      1.000   -559.709
+     2 ( occ )   -330.083    -12.169      0.000    -35.417      1.000   -319.600
+     3 ( occ )    -32.972      5.629      0.000    -11.716      1.000    -32.976
+     4 ( occ )    -21.385      1.854      0.000     -7.496      1.000    -21.387
+     5 ( occ )    -17.255      1.263      0.000     -6.371      1.000    -17.257
+     6 ( occ )    -16.095      1.957      0.000     -6.992      1.000    -16.096
+     7 ( occ )    -14.435      0.363      0.000     -4.639      1.000    -14.436
+     8 ( occ )    -10.741      1.271      0.000     -5.790      1.000    -10.741
+     9 ( vir )      1.986     -1.398      0.000      6.039      1.000      1.994
+    10 ( vir )      1.399     -0.202      0.000      2.021      1.000      1.431
+    11 ( vir )      1.846     -0.081      0.000      1.482      1.000      1.874
+    12 ( vir )      2.547     -0.262      0.000      2.077      1.000      2.560
+    13 ( vir )      3.054     -0.279      0.000      1.953      1.000      3.068
+    14 ( vir )      4.574     -0.407      0.000      2.317      1.000      4.583
+    15 ( vir )      4.096     -0.197      0.000      1.536      1.000      4.101
+    16 ( vir )      5.702     -0.514      0.000      2.936      1.000      5.703
+    17 ( vir )      6.006     -0.456      0.000      2.715      1.000      6.007
+    18 ( vir )      7.230     -0.575      0.000      3.525      1.000      7.252
+    19 ( vir )      6.733     -0.419      0.000      2.539      1.000      6.735
+    20 ( vir )      8.157     -0.623      0.000      3.145      1.000      8.154
+    21 ( vir )      8.955     -0.650      0.000      3.766      1.000      8.925
+    22 ( vir )      8.873     -0.516      0.000      2.955      1.000      8.856
+    23 ( vir )     11.454     -0.954      0.000      3.929      1.000     11.363
+    24 ( vir )     11.539     -0.668      0.000      3.368      1.000     11.492
+    25 ( vir )     12.187     -0.656      0.000      3.359      1.000     12.158
+    26 ( vir )     13.392     -0.851      0.000      3.732      1.000     13.271
+    27 ( vir )     14.707     -0.752      0.000      3.706      1.000     14.530
+    28 ( vir )     14.661     -0.690      0.000      3.482      1.000     14.635
+   
+  GW HOMO-LUMO gap (eV)                                                    12.74
+  
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                        0.56
+  
+  GW quasiparticle energies
+  -------------------------
+   
+  The GW quasiparticle energies are calculated according to: 
+  E_GW = E_SCF + Z * ( Sigc(E_SCF) + Sigx - vxc )
+   
+  The energy unit of the following table is eV.  Sigc_fit is a very conservative
+  estimate of the statistical error of the fitting.
+   
+            MO      E_SCF       Sigc   Sigc_fit   Sigx-vxc          Z       E_GW
+     1 ( occ )   -559.709      0.582      0.000    -48.893      1.000   -559.793
+     2 ( occ )   -319.600    -13.128      0.000    -35.417      1.000   -320.559
+     3 ( occ )    -32.976      5.628      0.000    -11.716      1.000    -32.977
+     4 ( occ )    -21.387      1.854      0.000     -7.496      1.000    -21.387
+     5 ( occ )    -17.257      1.262      0.000     -6.371      1.000    -17.257
+     6 ( occ )    -16.096      1.957      0.000     -6.992      1.000    -16.097
+     7 ( occ )    -14.436      0.362      0.000     -4.639      1.000    -14.436
+     8 ( occ )    -10.741      1.271      0.000     -5.790      1.000    -10.742
+     9 ( vir )      1.994     -1.384      0.000      6.039      1.000      2.007
+    10 ( vir )      1.431     -0.115      0.000      2.021      1.000      1.518
+    11 ( vir )      1.874     -0.003      0.000      1.482      1.000      1.953
+    12 ( vir )      2.560     -0.224      0.000      2.077      1.000      2.599
+    13 ( vir )      3.068     -0.238      0.000      1.953      1.000      3.109
+    14 ( vir )      4.583     -0.374      0.000      2.317      1.000      4.617
+    15 ( vir )      4.101     -0.182      0.000      1.536      1.000      4.116
+    16 ( vir )      5.703     -0.511      0.000      2.936      1.000      5.707
+    17 ( vir )      6.007     -0.455      0.000      2.715      1.000      6.008
+    18 ( vir )      7.252     -0.646      0.000      3.525      1.000      7.181
+    19 ( vir )      6.735     -0.419      0.000      2.539      1.000      6.735
+    20 ( vir )      8.154     -0.622      0.000      3.145      1.000      8.155
+    21 ( vir )      8.925     -0.660      0.000      3.766      1.000      8.915
+    22 ( vir )      8.856     -0.514      0.000      2.955      1.000      8.858
+    23 ( vir )     11.363     -1.012      0.000      3.929      1.000     11.304
+    24 ( vir )     11.492     -0.707      0.000      3.368      1.000     11.454
+    25 ( vir )     12.158     -0.766      0.000      3.359      1.000     12.049
+    26 ( vir )     13.271     -0.950      0.000      3.732      1.000     13.171
+    27 ( vir )     14.530     -1.153      0.000      3.706      1.000     14.129
+    28 ( vir )     14.635     -0.736      0.000      3.482      1.000     14.588
+   
+  GW HOMO-LUMO gap (eV)                                                    12.75
+  
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                        0.53
+  
+  GW quasiparticle energies
+  -------------------------
+   
+  The GW quasiparticle energies are calculated according to: 
+  E_GW = E_SCF + Z * ( Sigc(E_SCF) + Sigx - vxc )
+   
+  The energy unit of the following table is eV.  Sigc_fit is a very conservative
+  estimate of the statistical error of the fitting.
+   
+            MO      E_SCF       Sigc   Sigc_fit   Sigx-vxc          Z       E_GW
+     1 ( occ )   -559.793     -0.107      0.000    -48.893      1.000   -560.482
+     2 ( occ )   -320.559      6.071      0.000    -35.417      1.000   -301.360
+     3 ( occ )    -32.977      5.631      0.000    -11.716      1.000    -32.975
+     4 ( occ )    -21.387      1.853      0.000     -7.496      1.000    -21.388
+     5 ( occ )    -17.257      1.262      0.000     -6.371      1.000    -17.257
+     6 ( occ )    -16.097      1.957      0.000     -6.992      1.000    -16.097
+     7 ( occ )    -14.436      0.362      0.000     -4.639      1.000    -14.436
+     8 ( occ )    -10.742      1.271      0.000     -5.790      1.000    -10.742
+     9 ( vir )      2.007     -1.424      0.000      6.039      1.000      1.967
+    10 ( vir )      1.518     -0.371      0.000      2.021      1.000      1.262
+    11 ( vir )      1.953     -0.234      0.000      1.482      1.000      1.722
+    12 ( vir )      2.599     -0.339      0.000      2.077      1.000      2.484
+    13 ( vir )      3.109     -0.364      0.000      1.953      1.000      2.983
+    14 ( vir )      4.617     -0.499      0.000      2.317      1.000      4.491
+    15 ( vir )      4.116     -0.232      0.000      1.536      1.000      4.066
+    16 ( vir )      5.707     -0.538      0.000      2.936      1.000      5.679
+    17 ( vir )      6.008     -0.471      0.000      2.715      1.000      5.992
+    18 ( vir )      7.181     -0.672      0.000      3.525      1.000      7.156
+    19 ( vir )      6.735     -0.426      0.000      2.539      1.000      6.728
+    20 ( vir )      8.155     -0.623      0.000      3.145      1.000      8.154
+    21 ( vir )      8.915     -0.606      0.000      3.766      1.000      8.968
+    22 ( vir )      8.858     -0.506      0.000      2.955      1.000      8.866
+    23 ( vir )     11.304     -0.786      0.000      3.929      1.000     11.531
+    24 ( vir )     11.454     -0.556      0.000      3.368      1.000     11.605
+    25 ( vir )     12.049     -0.546      0.000      3.359      1.000     12.268
+    26 ( vir )     13.171     -0.665      0.000      3.732      1.000     13.457
+    27 ( vir )     14.129     -0.593      0.000      3.706      1.000     14.688
+    28 ( vir )     14.588     -0.587      0.000      3.482      1.000     14.738
+   
+  GW HOMO-LUMO gap (eV)                                                    12.71
+  
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                        0.50
+  
+  GW quasiparticle energies
+  -------------------------
+   
+  The GW quasiparticle energies are calculated according to: 
+  E_GW = E_SCF + Z * ( Sigc(E_SCF) + Sigx - vxc )
+   
+  The energy unit of the following table is eV.  Sigc_fit is a very conservative
+  estimate of the statistical error of the fitting.
+   
+            MO      E_SCF       Sigc   Sigc_fit   Sigx-vxc          Z       E_GW
+     1 ( occ )   -560.482      9.777      0.000    -48.893      1.000   -550.597
+     2 ( occ )   -301.360     -7.229      0.000    -35.417      1.000   -314.660
+     3 ( occ )    -32.975      5.630      0.000    -11.716      1.000    -32.975
+     4 ( occ )    -21.388      1.856      0.000     -7.496      1.000    -21.385
+     5 ( occ )    -17.257      1.265      0.000     -6.371      1.000    -17.255
+     6 ( occ )    -16.097      1.959      0.000     -6.992      1.000    -16.094
+     7 ( occ )    -14.436      0.364      0.000     -4.639      1.000    -14.434
+     8 ( occ )    -10.742      1.273      0.000     -5.790      1.000    -10.740
+     9 ( vir )      1.967     -1.405      0.000      6.039      1.000      1.987
+    10 ( vir )      1.262     -0.234      0.000      2.021      1.000      1.399
+    11 ( vir )      1.722     -0.109      0.000      1.482      1.000      1.846
+    12 ( vir )      2.484     -0.276      0.000      2.077      1.000      2.547
+    13 ( vir )      2.983     -0.293      0.000      1.953      1.000      3.054
+    14 ( vir )      4.491     -0.416      0.000      2.317      1.000      4.574
+    15 ( vir )      4.066     -0.201      0.000      1.536      1.000      4.097
+    16 ( vir )      5.679     -0.515      0.000      2.936      1.000      5.702
+    17 ( vir )      5.992     -0.457      0.000      2.715      1.000      6.006
+    18 ( vir )      7.156     -0.596      0.000      3.525      1.000      7.231
+    19 ( vir )      6.728     -0.420      0.000      2.539      1.000      6.734
+    20 ( vir )      8.154     -0.619      0.000      3.145      1.000      8.158
+    21 ( vir )      8.968     -0.618      0.000      3.766      1.000      8.956
+    22 ( vir )      8.866     -0.499      0.000      2.955      1.000      8.873
+    23 ( vir )     11.531     -0.857      0.000      3.929      1.000     11.459
+    24 ( vir )     11.605     -0.618      0.000      3.368      1.000     11.542
+    25 ( vir )     12.268     -0.627      0.000      3.359      1.000     12.187
+    26 ( vir )     13.457     -0.724      0.000      3.732      1.000     13.398
+    27 ( vir )     14.688     -0.610      0.000      3.706      1.000     14.672
+    28 ( vir )     14.738     -0.714      0.000      3.482      1.000     14.611
+   
+  GW HOMO-LUMO gap (eV)                                                    12.73
+  
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                        0.47
+  
+  GW quasiparticle energies
+  -------------------------
+   
+  The GW quasiparticle energies are calculated according to: 
+  E_GW = E_SCF + Z * ( Sigc(E_SCF) + Sigx - vxc )
+   
+  The energy unit of the following table is eV.  Sigc_fit is a very conservative
+  estimate of the statistical error of the fitting.
+   
+            MO      E_SCF       Sigc   Sigc_fit   Sigx-vxc          Z       E_GW
+     1 ( occ )   -550.597      1.062      0.000    -48.893      1.000   -559.313
+     2 ( occ )   -314.660    -11.404      0.000    -35.417      1.000   -318.835
+     3 ( occ )    -32.975      5.628      0.000    -11.716      1.000    -32.977
+     4 ( occ )    -21.385      1.854      0.000     -7.496      1.000    -21.387
+     5 ( occ )    -17.255      1.263      0.000     -6.371      1.000    -17.256
+     6 ( occ )    -16.094      1.957      0.000     -6.992      1.000    -16.096
+     7 ( occ )    -14.434      0.363      0.000     -4.639      1.000    -14.436
+     8 ( occ )    -10.740      1.272      0.000     -5.790      1.000    -10.741
+     9 ( vir )      1.987     -1.398      0.000      6.039      1.000      1.994
+    10 ( vir )      1.399     -0.203      0.000      2.021      1.000      1.429
+    11 ( vir )      1.846     -0.082      0.000      1.482      1.000      1.873
+    12 ( vir )      2.547     -0.263      0.000      2.077      1.000      2.560
+    13 ( vir )      3.054     -0.280      0.000      1.953      1.000      3.067
+    14 ( vir )      4.574     -0.408      0.000      2.317      1.000      4.583
+    15 ( vir )      4.097     -0.197      0.000      1.536      1.000      4.101
+    16 ( vir )      5.702     -0.514      0.000      2.936      1.000      5.703
+    17 ( vir )      6.006     -0.457      0.000      2.715      1.000      6.007
+    18 ( vir )      7.231     -0.577      0.000      3.525      1.000      7.251
+    19 ( vir )      6.734     -0.419      0.000      2.539      1.000      6.735
+    20 ( vir )      8.158     -0.623      0.000      3.145      1.000      8.154
+    21 ( vir )      8.956     -0.650      0.000      3.766      1.000      8.925
+    22 ( vir )      8.873     -0.514      0.000      2.955      1.000      8.858
+    23 ( vir )     11.459     -0.953      0.000      3.929      1.000     11.364
+    24 ( vir )     11.542     -0.667      0.000      3.368      1.000     11.493
+    25 ( vir )     12.187     -0.659      0.000      3.359      1.000     12.155
+    26 ( vir )     13.398     -0.848      0.000      3.732      1.000     13.274
+    27 ( vir )     14.672     -0.715      0.000      3.706      1.000     14.567
+    28 ( vir )     14.611     -0.688      0.000      3.482      1.000     14.636
+   
+  GW HOMO-LUMO gap (eV)                                                    12.73
+  
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                        0.44
+
+ *******************************************************************************
+ *   ___                                                                       *
+ *  /   \                                                                      *
+ * [ABORT]                                                                     *
+ *  \___/            Self-consistent quasi-particle solution not found         *
+ *    |                                                                        *
+ *  O/|                                                                        *
+ * /| |                                                                        *
+ * / \                                                           rpa_gw.F:4162 *
+ *******************************************************************************
+
+
+ ===== Routine Calling Stack ===== 
+
+            9 get_sigma_c_newton_pade
+            8 continuation_pade
+            7 GW_postprocessing
+            6 rpa_num_int
+            5 rpa_ri_compute_en
+            4 mp2_gpw_main
+            3 mp2_main
+            2 qs_energies
+            1 CP2K

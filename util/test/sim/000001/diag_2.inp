@@ -1,0 +1,163 @@
+&GLOBAL
+  EXTENDED_FFT_LENGTHS TRUE
+  PRINT_LEVEL LOW
+  PROJECT_NAME 2
+  RUN_TYPE ENERGY
+&END GLOBAL
+&FORCE_EVAL
+  METHOD QUICKSTEP
+  &DFT
+    POTENTIAL_FILE_NAME POTENTIAL
+    UKS FALSE
+    MULTIPLICITY 1
+    CHARGE 0
+    BASIS_SET_FILE_NAME BASIS_CC_AUG_RI_NEW
+    &SCF
+      MAX_SCF 100
+      EPS_SCF 1e-06
+      SCF_GUESS RESTART
+      ADDED_MOS 1000
+      &DIAGONALIZATION T
+      &END DIAGONALIZATION
+      &MIXING
+        METHOD BROYDEN_MIXING
+        ALPHA 0.2
+        BETA 1.5
+        NBUFFER 8
+      &END MIXING
+    &END SCF
+    &QS
+      EPS_DEFAULT 1e-10
+      EPS_PGF_ORB 1e-05
+      METHOD GAPW
+    &END QS
+    &MGRID
+      NGRIDS 5
+      CUTOFF 500
+      REL_CUTOFF 50
+    &END MGRID
+    &XC
+      &XC_FUNCTIONAL PBE
+      &END XC_FUNCTIONAL
+      &WF_CORRELATION
+        METHOD RI_RPA_GPW
+        MEMORY 4000
+        GROUP_SIZE 1
+        ERI_METHOD OS
+        &RI_RPA
+          QUADRATURE_POINTS 50
+          SIZE_FREQ_INTEG_GROUP -1
+          RI_G0W0 TRUE
+          &RI_G0W0
+            CORR_MOS_OCC 20
+            CORR_MOS_VIRT 20
+            CROSSING_SEARCH NEWTON
+            EV_SC_ITER 20
+            RI_SIGMA_X .TRUE.
+            ANALYTIC_CONTINUATION PADE
+          &END RI_G0W0
+          &HF
+            FRACTION 1.0
+            &SCREENING
+              EPS_SCHWARZ 1e-11
+              SCREEN_ON_INITIAL_P FALSE
+            &END SCREENING
+            &MEMORY
+              MAX_MEMORY 500
+            &END MEMORY
+          &END HF
+        &END RI_RPA
+      &END WF_CORRELATION
+    &END XC
+    &POISSON
+      POISSON_SOLVER MT
+      PERIODIC NONE
+    &END POISSON
+    &PRINT
+      &MO_CUBES
+        FILENAME =HOMO.txt
+        WRITE_CUBE FALSE
+        NLUMO 10
+        NHOMO 10
+      &END MO_CUBES
+    &END PRINT
+  &END DFT
+  &SUBSYS
+    &CELL
+      ABC 11.55254591 11.46978248 11.7830410
+      PERIODIC NONE
+    &END CELL
+    &TOPOLOGY
+      COORD_FILE_NAME dsgdb9nsd_000001.xyz
+      COORD_FILE_FORMAT xyz
+      &CENTER_COORDINATES 
+      &END CENTER_COORDINATES
+    &END TOPOLOGY
+    &KIND H
+      RI_AUX_BASIS_SET aug-cc-pVDZ-RIFIT
+      ELEMENT H
+      POTENTIAL ALL
+      BASIS_SET aug-cc-pVDZ
+    &END KIND
+    &KIND C
+      RI_AUX_BASIS_SET aug-cc-pVDZ-RIFIT
+      ELEMENT C
+      POTENTIAL ALL
+      BASIS_SET aug-cc-pVDZ
+    &END KIND
+    &KIND N
+      RI_AUX_BASIS_SET aug-cc-pVDZ-RIFIT
+      ELEMENT N
+      POTENTIAL ALL
+      BASIS_SET aug-cc-pVDZ
+    &END KIND
+    &KIND O
+      RI_AUX_BASIS_SET aug-cc-pVDZ-RIFIT
+      ELEMENT O
+      POTENTIAL ALL
+      BASIS_SET aug-cc-pVDZ
+    &END KIND
+    &KIND F
+      RI_AUX_BASIS_SET aug-cc-pVDZ-RIFIT
+      ELEMENT F
+      POTENTIAL ALL
+      BASIS_SET aug-cc-pVDZ
+    &END KIND
+    &KIND P
+      RI_AUX_BASIS_SET aug-cc-pVDZ-RIFIT
+      ELEMENT P
+      POTENTIAL ALL
+      BASIS_SET aug-cc-pVDZ
+    &END KIND
+    &KIND S
+      RI_AUX_BASIS_SET aug-cc-pVDZ-RIFIT
+      ELEMENT S
+      POTENTIAL ALL
+      BASIS_SET aug-cc-pVDZ
+    &END KIND
+    &KIND Cl
+      RI_AUX_BASIS_SET aug-cc-pVDZ-RIFIT
+      ELEMENT Cl
+      POTENTIAL ALL
+      BASIS_SET aug-cc-pVDZ
+    &END KIND
+    &KIND Br
+      RI_AUX_BASIS_SET aug-cc-pVDZ-RIFIT
+      ELEMENT Br
+      POTENTIAL ALL
+      BASIS_SET aug-cc-pVDZ
+    &END KIND
+    &KIND B
+      RI_AUX_BASIS_SET aug-cc-pVDZ-RIFIT
+      ELEMENT B
+      POTENTIAL ALL
+      BASIS_SET aug-cc-pVDZ
+    &END KIND
+    &KIND I
+      RI_AUX_BASIS_SET aug-cc-pVDZ-RIFIT
+      ELEMENT I
+      POTENTIAL ALL
+      BASIS_SET aug-cc-pVDZ
+    &END KIND
+  &END SUBSYS
+&END FORCE_EVAL

@@ -1,0 +1,797 @@
+ DBCSR| CPU Multiplication driver                                           XSMM
+ DBCSR| Multrec recursion limit                                              512
+ DBCSR| Multiplication stack size                                           1000
+ DBCSR| Maximum elements for images                                    UNLIMITED
+ DBCSR| Multiplicative factor virtual images                                   1
+ DBCSR| Use multiplication densification                                       T
+ DBCSR| Multiplication size stacks                                             3
+ DBCSR| Number of 3D layers                                               SINGLE
+ DBCSR| Use MPI memory allocation                                              T
+ DBCSR| Use RMA algorithm                                                      F
+ DBCSR| Use Communication thread                                               T
+ DBCSR| Communication thread load                                             87
+
+
+  **** **** ******  **  PROGRAM STARTED AT               2021-07-19 08:54:56.380
+ ***** ** ***  *** **   PROGRAM STARTED ON                                 n0229
+ **    ****   ******    PROGRAM STARTED BY                             ka_bh5670
+ ***** **    ** ** **   PROGRAM PROCESS ID                               2692734
+  **** **  *******  **  PROGRAM STARTED IN /tmp/ka_bh5670.3062163/bh5670/sim/000
+                                           010
+
+ CP2K| version string:                                          CP2K version 7.1
+ CP2K| source code revision number:                                  git:e635599
+ CP2K| cp2kflags: libint fftw3 libxc parallel mpi3 scalapack xsmm spglib        
+ CP2K| is freely available from                            https://www.cp2k.org/
+ CP2K| Program compiled at                          Do 6. Mai 20:02:55 CEST 2021
+ CP2K| Program compiled on                                                 n1731
+ CP2K| Program compiled for                                                local
+ CP2K| Data directory path    /lustre/home/ka/ka_int/ka_bh5670/cp2k/cp2k-7.1/dat
+ CP2K| Input file name                                                diag_3.inp
+
+ GLOBAL| Force Environment number                                              1
+ GLOBAL| Basis set file name                                 BASIS_CC_AUG_RI_NEW
+ GLOBAL| Potential file name                                           POTENTIAL
+ GLOBAL| MM Potential file name                                     MM_POTENTIAL
+ GLOBAL| Coordinate file name                               dsgdb9nsd_000010.xyz
+ GLOBAL| Method name                                                        CP2K
+ GLOBAL| Project name                                                          3
+ GLOBAL| Preferred FFT library                                             FFTW3
+ GLOBAL| Preferred diagonalization lib.                                       SL
+ GLOBAL| Run type                                                         ENERGY
+ GLOBAL| All-to-all communication in single precision                          F
+ GLOBAL| FFTs using library dependent lengths                                  T
+ GLOBAL| Global print level                                                  LOW
+ GLOBAL| MPI I/O enabled                                                       T
+ GLOBAL| Total number of message passing processes                            16
+ GLOBAL| Number of threads for this process                                    1
+ GLOBAL| This output is from process                                           0
+ GLOBAL| CPU model name                 Intel(R) Xeon(R) Gold 6252 CPU @ 2.10GHz
+ GLOBAL| CPUID                                                              1003
+
+ MEMORY| system memory details [Kb]
+ MEMORY|                        rank 0           min           max       average
+ MEMORY| MemTotal            196673224     196673224     196673224     196673224
+ MEMORY| MemFree             168734268     168734268     168734268     168734268
+ MEMORY| Buffers                     0             0             0             0
+ MEMORY| Cached                4929288       4929288       4929288       4929288
+ MEMORY| Slab                  1966372       1966372       1966372       1966372
+ MEMORY| SReclaimable           509636        509636        509636        509636
+ MEMORY| MemLikelyFree       174173192     174173192     174173192     174173192
+
+
+ GENERATE|  Preliminary Number of Bonds generated:                             0
+ GENERATE|  Achieved consistency in connectivity generation.
+
+ *******************************************************************************
+ *******************************************************************************
+ **                                                                           **
+ **     #####                         ##              ##                      **
+ **    ##   ##            ##          ##              ##                      **
+ **   ##     ##                       ##            ######                    **
+ **   ##     ##  ##   ##  ##   #####  ##  ##   ####   ##    #####    #####    **
+ **   ##     ##  ##   ##  ##  ##      ## ##   ##      ##   ##   ##  ##   ##   **
+ **   ##  ## ##  ##   ##  ##  ##      ####     ###    ##   ######   ######    **
+ **    ##  ###   ##   ##  ##  ##      ## ##      ##   ##   ##       ##        **
+ **     #######   #####   ##   #####  ##  ##  ####    ##    #####   ##        **
+ **           ##                                                    ##        **
+ **                                                                           **
+ **                                                ... make the atoms dance   **
+ **                                                                           **
+ **            Copyright (C) by CP2K developers group (2000 - 2019)           **
+ **                                                                           **
+ *******************************************************************************
+
+ *** WARNING in qs_environment.F:1310 :: More added MOs requested than ***
+ *** available. The full set of unoccupied MOs will be used.           ***
+
+
+
+ TOTAL NUMBERS AND MAXIMUM NUMBERS
+
+  Total number of            - Atomic kinds:                                   3
+                             - Atoms:                                          6
+                             - Shell sets:                                    42
+                             - Shells:                                        69
+                             - Primitive Cartesian functions:                 99
+                             - Cartesian basis functions:                    240
+                             - Spherical basis functions:                    207
+
+  Maximum angular momentum of the orbital basis functions:                     3
+
+
+ SCF PARAMETERS         Density guess:                                   RESTART
+                        --------------------------------------------------------
+                        max_scf:                                             100
+                        max_scf_history:                                       0
+                        max_diis:                                              4
+                        --------------------------------------------------------
+                        eps_scf:                                        1.00E-06
+                        eps_scf_history:                                0.00E+00
+                        eps_diis:                                       1.00E-01
+                        eps_eigval:                                     1.00E-05
+                        --------------------------------------------------------
+                        level_shift [a.u.]:                                 0.00
+                        added MOs                                       196    0
+                        --------------------------------------------------------
+                        Mixing method:                            BROYDEN_MIXING
+                                                charge density mixing in g-space
+                        --------------------------------------------------------
+                        No outer SCF
+ 
+ RI-RPA| using GPW style
+ 
+
+ Number of electrons:                                                         22
+ Number of occupied orbitals:                                                 11
+ Number of molecular orbitals:                                               207
+
+ Number of orbital functions:                                                207
+ Number of independent orbital functions:                                    207
+
+ Extrapolation method: initial_guess
+
+
+ SCF WAVEFUNCTION OPTIMIZATION
+
+  Step     Update method      Time    Convergence         Total energy    Change
+  ------------------------------------------------------------------------------
+     1 NoMix/Diag. 0.20E+00    1.2     4.6994E-09      -132.6333287465 -1.33E+02
+
+  *** SCF run converged in     1 steps ***
+
+
+  Electronic density on regular grids:        -16.5203742207        5.4796257793
+  Core density on regular grids:               22.0000000000       -0.0000000000
+  Hard and soft densities (Lebedev):         -129.2523686869     -123.7727441122
+  Total Rho_soft + Rho1_hard - Rho1_soft      -21.9999987955
+  Total charge density (r-space):               0.0000012045
+  Total Rho_soft + Rho0_soft (g-space):         0.0000011686
+
+  Overlap energy of the core charge distribution:               0.00003076388264
+  Self energy of the core charge distribution:               -110.25649185789518
+  Core Hamiltonian energy:                                    -20.59196045567669
+  Hartree energy:                                              41.65433528328548
+  Exchange-correlation energy:                                 -7.37603640581884
+
+  GAPW| Exc from hard and soft atomic rho1:                   -11.24686538164579
+  GAPW| local Eh = 1 center integrals:                        -24.81634069266352
+
+  Total energy:                                              -132.63332874653190
+  
+  Eigenvalues of the occupied subspace spin            1
+ ---------------------------------------------
+     -13.98324161      -9.94030754      -9.92800241      -0.82920791
+      -0.71249756      -0.47138052      -0.42234013      -0.42232451
+      -0.31321810      -0.29816272      -0.29816116
+ Fermi Energy [eV] :   -8.113378
+  
+  Lowest eigenvalues of the unoccupied subspace spin            1
+ ---------------------------------------------
+      -0.02930710      -0.01352240      -0.01351278       0.01765434
+       0.01790056       0.02237019       0.05708048       0.06910960
+       0.06918466       0.06966238
+
+
+ RI-RPA section
+ --------------
+
+  Used number of processes per group:                                          1
+  Maximum allowed memory usage per MPI processes:                    4000.00 MiB
+  GPW_INFO| Density cutoff [a.u.]:                                         150.0
+  GPW_INFO| Relative density cutoff [a.u.]:                                 25.0
+  RI_INFO| Cholesky decomposition group size:                                  1
+  RI_INFO| Number of groups for auxiliary basis functions                     16
+  RI_INFO| Occupied  basis set size:                                          11
+  RI_INFO| Virtual   basis set size:                                         196
+  RI_INFO| Auxiliary basis set size:                                         456
+  RI_INFO| Total memory for (ia|K) integrals:                           7.50 MiB
+  RI_INFO| Total memory for G0W0-(nm|K) integrals:                     22.32 MiB
+  RI_INFO| Minimum required memory per MPI process:                     0.95 MiB
+  RI_INFO| Available memory per MPI process:                         3624.00 MiB
+  RI_INFO| Group size for frequency integration:                               8
+  INTEG_INFO| Clenshaw-Curtius quadrature
+  INTEG_INFO| Number of integration points:                                   50
+  INTEG_INFO| Number of integration points per RPA group:                     25
+  MATRIX_INFO| Number row processes:                                           4
+  MATRIX_INFO| Number column processes:                                        2
+  MATRIX_INFO| Row block size:                                               269
+  MATRIX_INFO| Column block size:                                            114
+  INTEG_INFO| Scaling parameter:                                         0.20000
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                        9.59
+  
+  GW quasiparticle energies
+  -------------------------
+   
+  The GW quasiparticle energies are calculated according to: 
+  E_GW = E_SCF + Z * ( Sigc(E_SCF) + Sigx - vxc )
+   
+  The energy unit of the following table is eV.  Sigc_fit is a very conservative
+  estimate of the statistical error of the fitting.
+   
+            MO      E_SCF       Sigc   Sigc_fit   Sigx-vxc          Z       E_GW
+     1 ( occ )   -380.503     -3.809      0.000    -42.130      1.000   -426.443
+     2 ( occ )   -270.490     -5.080      0.000    -35.355      1.000   -310.924
+     3 ( occ )   -270.155     -8.296      0.000    -35.424      1.000   -313.875
+     4 ( occ )    -22.564      5.672      0.000    -10.313      1.000    -27.205
+     5 ( occ )    -19.388      4.387      0.000     -8.477      1.000    -23.478
+     6 ( occ )    -12.827      1.995      0.000     -5.652      1.000    -16.484
+     7 ( occ )    -11.492      1.380      0.000     -5.297      1.000    -15.409
+     8 ( occ )    -11.492      1.380      0.000     -5.296      1.000    -15.408
+     9 ( occ )     -8.523      2.786      0.000     -6.302      1.000    -12.038
+    10 ( occ )     -8.113      0.517      0.000     -4.186      1.000    -11.783
+    11 ( occ )     -8.113      0.517      0.000     -4.186      1.000    -11.783
+    12 ( vir )     -0.797     -0.732      0.000      2.286      1.000      0.757
+    13 ( vir )     -0.368     -2.139      0.000      5.279      1.000      2.772
+    14 ( vir )     -0.368     -2.142      0.000      5.285      1.000      2.775
+    15 ( vir )      0.480     -0.565      0.000      1.773      1.000      1.689
+    16 ( vir )      0.487     -0.566      0.000      1.778      1.000      1.699
+    17 ( vir )      0.609     -0.440      0.000      1.574      1.000      1.742
+    18 ( vir )      1.553     -0.576      0.000      1.879      1.000      2.856
+    19 ( vir )      1.881     -0.334      0.000      1.327      1.000      2.873
+    20 ( vir )      1.883     -0.335      0.000      1.328      1.000      2.876
+    21 ( vir )      1.896     -0.530      0.000      1.441      1.000      2.806
+    22 ( vir )      1.967     -0.637      0.000      2.089      1.000      3.419
+    23 ( vir )      1.977     -0.650      0.000      2.120      1.000      3.447
+    24 ( vir )      2.729     -0.998      0.000      2.656      1.000      4.387
+    25 ( vir )      2.743     -0.984      0.000      2.622      1.000      4.381
+    26 ( vir )      3.141     -1.116      0.000      2.998      1.000      5.023
+    27 ( vir )      3.792     -0.755      0.000      2.028      1.000      5.065
+    28 ( vir )      4.207     -0.536      0.000      1.732      1.000      5.403
+    29 ( vir )      4.210     -0.537      0.000      1.734      1.000      5.407
+    30 ( vir )      4.332     -1.095      0.000      2.702      1.000      5.939
+    31 ( vir )      5.919     -1.059      0.000      2.844      1.000      7.704
+   
+  GW HOMO-LUMO gap (eV)                                                    12.54
+  
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                       13.26
+  
+  GW quasiparticle energies
+  -------------------------
+   
+  The GW quasiparticle energies are calculated according to: 
+  E_GW = E_SCF + Z * ( Sigc(E_SCF) + Sigx - vxc )
+   
+  The energy unit of the following table is eV.  Sigc_fit is a very conservative
+  estimate of the statistical error of the fitting.
+   
+            MO      E_SCF       Sigc   Sigc_fit   Sigx-vxc          Z       E_GW
+     1 ( occ )   -426.443     -0.302      0.000    -42.130      1.000   -422.936
+     2 ( occ )   -310.924     -3.946      0.000    -35.355      1.000   -309.790
+     3 ( occ )   -313.875      0.353      0.000    -35.424      1.000   -305.225
+     4 ( occ )    -27.205      4.989      0.000    -10.313      1.000    -27.888
+     5 ( occ )    -23.478      3.003      0.000     -8.477      1.000    -24.862
+     6 ( occ )    -16.484      0.967      0.000     -5.652      1.000    -17.512
+     7 ( occ )    -15.409      0.509      0.000     -5.297      1.000    -16.280
+     8 ( occ )    -15.408      0.509      0.000     -5.296      1.000    -16.279
+     9 ( occ )    -12.038      1.654      0.000     -6.302      1.000    -13.171
+    10 ( occ )    -11.783     -0.135      0.000     -4.186      1.000    -12.434
+    11 ( occ )    -11.783     -0.135      0.000     -4.186      1.000    -12.434
+    12 ( vir )      0.757     -0.602      0.000      2.286      1.000      0.886
+    13 ( vir )      2.772     -1.808      0.000      5.279      1.000      3.103
+    14 ( vir )      2.775     -1.811      0.000      5.285      1.000      3.106
+    15 ( vir )      1.689     -0.469      0.000      1.773      1.000      1.785
+    16 ( vir )      1.699     -0.470      0.000      1.778      1.000      1.796
+    17 ( vir )      1.742     -0.353      0.000      1.574      1.000      1.829
+    18 ( vir )      2.856     -0.469      0.000      1.879      1.000      2.963
+    19 ( vir )      2.873     -0.268      0.000      1.327      1.000      2.939
+    20 ( vir )      2.876     -0.269      0.000      1.328      1.000      2.942
+    21 ( vir )      2.806     -0.446      0.000      1.441      1.000      2.890
+    22 ( vir )      3.419     -0.517      0.000      2.089      1.000      3.539
+    23 ( vir )      3.447     -0.527      0.000      2.120      1.000      3.569
+    24 ( vir )      4.387     -0.817      0.000      2.656      1.000      4.568
+    25 ( vir )      4.381     -0.806      0.000      2.622      1.000      4.559
+    26 ( vir )      5.023     -0.923      0.000      2.998      1.000      5.216
+    27 ( vir )      5.065     -0.625      0.000      2.028      1.000      5.195
+    28 ( vir )      5.403     -0.415      0.000      1.732      1.000      5.524
+    29 ( vir )      5.407     -0.416      0.000      1.734      1.000      5.528
+    30 ( vir )      5.939     -0.914      0.000      2.702      1.000      6.120
+    31 ( vir )      7.704     -0.798      0.000      2.844      1.000      7.964
+   
+  GW HOMO-LUMO gap (eV)                                                    13.32
+  
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                       15.33
+  
+  GW quasiparticle energies
+  -------------------------
+   
+  The GW quasiparticle energies are calculated according to: 
+  E_GW = E_SCF + Z * ( Sigc(E_SCF) + Sigx - vxc )
+   
+  The energy unit of the following table is eV.  Sigc_fit is a very conservative
+  estimate of the statistical error of the fitting.
+   
+            MO      E_SCF       Sigc   Sigc_fit   Sigx-vxc          Z       E_GW
+     1 ( occ )   -422.936     -0.177      0.000    -42.130      1.000   -422.810
+     2 ( occ )   -309.790     -1.013      0.000    -35.355      1.000   -306.858
+     3 ( occ )   -305.225      0.534      0.000    -35.424      1.000   -305.045
+     4 ( occ )    -27.888      4.546      0.000    -10.313      1.000    -28.331
+     5 ( occ )    -24.862      2.725      0.000     -8.477      1.000    -25.141
+     6 ( occ )    -17.512      0.833      0.000     -5.652      1.000    -17.646
+     7 ( occ )    -16.280      0.405      0.000     -5.297      1.000    -16.384
+     8 ( occ )    -16.279      0.405      0.000     -5.296      1.000    -16.384
+     9 ( occ )    -13.171      1.483      0.000     -6.302      1.000    -13.342
+    10 ( occ )    -12.434     -0.211      0.000     -4.186      1.000    -12.510
+    11 ( occ )    -12.434     -0.211      0.000     -4.186      1.000    -12.510
+    12 ( vir )      0.886     -0.588      0.000      2.286      1.000      0.900
+    13 ( vir )      3.103     -1.777      0.000      5.279      1.000      3.134
+    14 ( vir )      3.106     -1.780      0.000      5.285      1.000      3.137
+    15 ( vir )      1.785     -0.459      0.000      1.773      1.000      1.794
+    16 ( vir )      1.796     -0.460      0.000      1.778      1.000      1.805
+    17 ( vir )      1.829     -0.344      0.000      1.574      1.000      1.838
+    18 ( vir )      2.963     -0.457      0.000      1.879      1.000      2.975
+    19 ( vir )      2.939     -0.261      0.000      1.327      1.000      2.946
+    20 ( vir )      2.942     -0.262      0.000      1.328      1.000      2.949
+    21 ( vir )      2.890     -0.437      0.000      1.441      1.000      2.899
+    22 ( vir )      3.539     -0.504      0.000      2.089      1.000      3.552
+    23 ( vir )      3.569     -0.514      0.000      2.120      1.000      3.583
+    24 ( vir )      4.568     -0.798      0.000      2.656      1.000      4.587
+    25 ( vir )      4.559     -0.788      0.000      2.622      1.000      4.577
+    26 ( vir )      5.216     -0.903      0.000      2.998      1.000      5.236
+    27 ( vir )      5.195     -0.612      0.000      2.028      1.000      5.209
+    28 ( vir )      5.524     -0.404      0.000      1.732      1.000      5.535
+    29 ( vir )      5.528     -0.405      0.000      1.734      1.000      5.539
+    30 ( vir )      6.120     -0.895      0.000      2.702      1.000      6.139
+    31 ( vir )      7.964     -0.775      0.000      2.844      1.000      7.987
+   
+  GW HOMO-LUMO gap (eV)                                                    13.41
+  
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                       16.22
+  
+  GW quasiparticle energies
+  -------------------------
+   
+  The GW quasiparticle energies are calculated according to: 
+  E_GW = E_SCF + Z * ( Sigc(E_SCF) + Sigx - vxc )
+   
+  The energy unit of the following table is eV.  Sigc_fit is a very conservative
+  estimate of the statistical error of the fitting.
+   
+            MO      E_SCF       Sigc   Sigc_fit   Sigx-vxc          Z       E_GW
+     1 ( occ )   -422.810      0.054      0.000    -42.130      1.000   -422.580
+     2 ( occ )   -306.858     -5.173      0.000    -35.355      1.000   -311.018
+     3 ( occ )   -305.045      2.281      0.000    -35.424      1.000   -303.297
+     4 ( occ )    -28.331      4.468      0.000    -10.313      1.000    -28.409
+     5 ( occ )    -25.141      2.686      0.000     -8.477      1.000    -25.179
+     6 ( occ )    -17.646      0.814      0.000     -5.652      1.000    -17.664
+     7 ( occ )    -16.384      0.392      0.000     -5.297      1.000    -16.397
+     8 ( occ )    -16.384      0.391      0.000     -5.296      1.000    -16.397
+     9 ( occ )    -13.342      1.458      0.000     -6.302      1.000    -13.366
+    10 ( occ )    -12.510     -0.221      0.000     -4.186      1.000    -12.520
+    11 ( occ )    -12.510     -0.221      0.000     -4.186      1.000    -12.520
+    12 ( vir )      0.900     -0.587      0.000      2.286      1.000      0.902
+    13 ( vir )      3.134     -1.773      0.000      5.279      1.000      3.138
+    14 ( vir )      3.137     -1.776      0.000      5.285      1.000      3.141
+    15 ( vir )      1.794     -0.458      0.000      1.773      1.000      1.795
+    16 ( vir )      1.805     -0.459      0.000      1.778      1.000      1.806
+    17 ( vir )      1.838     -0.343      0.000      1.574      1.000      1.839
+    18 ( vir )      2.975     -0.456      0.000      1.879      1.000      2.976
+    19 ( vir )      2.946     -0.260      0.000      1.327      1.000      2.947
+    20 ( vir )      2.949     -0.261      0.000      1.328      1.000      2.950
+    21 ( vir )      2.899     -0.436      0.000      1.441      1.000      2.900
+    22 ( vir )      3.552     -0.502      0.000      2.089      1.000      3.554
+    23 ( vir )      3.583     -0.512      0.000      2.120      1.000      3.584
+    24 ( vir )      4.587     -0.796      0.000      2.656      1.000      4.589
+    25 ( vir )      4.577     -0.786      0.000      2.622      1.000      4.579
+    26 ( vir )      5.236     -0.901      0.000      2.998      1.000      5.238
+    27 ( vir )      5.209     -0.610      0.000      2.028      1.000      5.211
+    28 ( vir )      5.535     -0.403      0.000      1.732      1.000      5.536
+    29 ( vir )      5.539     -0.404      0.000      1.734      1.000      5.541
+    30 ( vir )      6.139     -0.893      0.000      2.702      1.000      6.141
+    31 ( vir )      7.987     -0.773      0.000      2.844      1.000      7.990
+   
+  GW HOMO-LUMO gap (eV)                                                    13.42
+  
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                       16.43
+  
+  GW quasiparticle energies
+  -------------------------
+   
+  The GW quasiparticle energies are calculated according to: 
+  E_GW = E_SCF + Z * ( Sigc(E_SCF) + Sigx - vxc )
+   
+  The energy unit of the following table is eV.  Sigc_fit is a very conservative
+  estimate of the statistical error of the fitting.
+   
+            MO      E_SCF       Sigc   Sigc_fit   Sigx-vxc          Z       E_GW
+     1 ( occ )   -422.580     -0.369      0.000    -42.130      1.000   -423.003
+     2 ( occ )   -311.018     -1.535      0.000    -35.355      1.000   -307.380
+     3 ( occ )   -303.297      9.412      0.000    -35.424      1.000   -296.167
+     4 ( occ )    -28.409      4.456      0.000    -10.313      1.000    -28.421
+     5 ( occ )    -25.179      2.681      0.000     -8.477      1.000    -25.185
+     6 ( occ )    -17.664      0.812      0.000     -5.652      1.000    -17.667
+     7 ( occ )    -16.397      0.390      0.000     -5.297      1.000    -16.399
+     8 ( occ )    -16.397      0.390      0.000     -5.296      1.000    -16.399
+     9 ( occ )    -13.366      1.455      0.000     -6.302      1.000    -13.370
+    10 ( occ )    -12.520     -0.223      0.000     -4.186      1.000    -12.522
+    11 ( occ )    -12.520     -0.223      0.000     -4.186      1.000    -12.522
+    12 ( vir )      0.902     -0.586      0.000      2.286      1.000      0.902
+    13 ( vir )      3.138     -1.773      0.000      5.279      1.000      3.138
+    14 ( vir )      3.141     -1.776      0.000      5.285      1.000      3.141
+    15 ( vir )      1.795     -0.458      0.000      1.773      1.000      1.795
+    16 ( vir )      1.806     -0.459      0.000      1.778      1.000      1.806
+    17 ( vir )      1.839     -0.343      0.000      1.574      1.000      1.840
+    18 ( vir )      2.976     -0.456      0.000      1.879      1.000      2.976
+    19 ( vir )      2.947     -0.260      0.000      1.327      1.000      2.947
+    20 ( vir )      2.950     -0.261      0.000      1.328      1.000      2.950
+    21 ( vir )      2.900     -0.436      0.000      1.441      1.000      2.900
+    22 ( vir )      3.554     -0.502      0.000      2.089      1.000      3.554
+    23 ( vir )      3.584     -0.512      0.000      2.120      1.000      3.584
+    24 ( vir )      4.589     -0.796      0.000      2.656      1.000      4.589
+    25 ( vir )      4.579     -0.786      0.000      2.622      1.000      4.579
+    26 ( vir )      5.238     -0.901      0.000      2.998      1.000      5.238
+    27 ( vir )      5.211     -0.610      0.000      2.028      1.000      5.211
+    28 ( vir )      5.536     -0.403      0.000      1.732      1.000      5.537
+    29 ( vir )      5.541     -0.403      0.000      1.734      1.000      5.541
+    30 ( vir )      6.141     -0.893      0.000      2.702      1.000      6.142
+    31 ( vir )      7.990     -0.772      0.000      2.844      1.000      7.990
+   
+  GW HOMO-LUMO gap (eV)                                                    13.42
+  
+  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                       16.25
+  
+  GW quasiparticle energies
+  -------------------------
+   
+  The GW quasiparticle energies are calculated according to: 
+  E_GW = E_SCF + Z * ( Sigc(E_SCF) + Sigx - vxc )
+   
+  The energy unit of the following table is eV.  Sigc_fit is a very conservative
+  estimate of the statistical error of the fitting.
+   
+            MO      E_SCF       Sigc   Sigc_fit   Sigx-vxc          Z       E_GW
+     1 ( occ )   -423.003     -0.273      0.000    -42.130      1.000   -422.906
+     2 ( occ )   -307.380     -4.365      0.000    -35.355      1.000   -310.209
+     3 ( occ )   -296.167      0.737      0.000    -35.424      1.000   -304.842
+     4 ( occ )    -28.421      4.454      0.000    -10.313      1.000    -28.423
+     5 ( occ )    -25.185      2.679      0.000     -8.477      1.000    -25.186
+     6 ( occ )    -17.667      0.812      0.000     -5.652      1.000    -17.667
+     7 ( occ )    -16.399      0.390      0.000     -5.297      1.000    -16.399
+     8 ( occ )    -16.399      0.389      0.000     -5.296      1.000    -16.399
+     9 ( occ )    -13.370      1.455      0.000     -6.302      1.000    -13.370
+    10 ( occ )    -12.522     -0.223      0.000     -4.186      1.000    -12.522
+    11 ( occ )    -12.522     -0.223      0.000     -4.186      1.000    -12.522
+    12 ( vir )      0.902     -0.586      0.000      2.286      1.000      0.902
+    13 ( vir )      3.138     -1.773      0.000      5.279      1.000      3.138
+    14 ( vir )      3.141     -1.776      0.000      5.285      1.000      3.141
+    15 ( vir )      1.795     -0.458      0.000      1.773      1.000      1.795
+    16 ( vir )      1.806     -0.459      0.000      1.778      1.000      1.806
+    17 ( vir )      1.840     -0.343      0.000      1.574      1.000      1.840
+    18 ( vir )      2.976     -0.456      0.000      1.879      1.000      2.976
+    19 ( vir )      2.947     -0.260      0.000      1.327      1.000      2.947
+    20 ( vir )      2.950     -0.261      0.000      1.328      1.000      2.950
+    21 ( vir )      2.900     -0.436      0.000      1.441      1.000      2.900
+    22 ( vir )      3.554     -0.502      0.000      2.089      1.000      3.554
+    23 ( vir )      3.584     -0.512      0.000      2.120      1.000      3.584
+    24 ( vir )      4.589     -0.796      0.000      2.656      1.000      4.589
+    25 ( vir )      4.579     -0.786      0.000      2.622      1.000      4.579
+    26 ( vir )      5.238     -0.901      0.000      2.998      1.000      5.238
+    27 ( vir )      5.211     -0.610      0.000      2.028      1.000      5.211
+    28 ( vir )      5.537     -0.403      0.000      1.732      1.000      5.537
+    29 ( vir )      5.541     -0.403      0.000      1.734      1.000      5.541
+    30 ( vir )      6.142     -0.893      0.000      2.702      1.000      6.142
+    31 ( vir )      7.990     -0.772      0.000      2.844      1.000      7.990
+   
+  GW HOMO-LUMO gap (eV)                                                    13.42
+  
+
+  Total RI-RPA Time=                                                    8.100216
+  RI-RPA energy  =                                             -0.77244317756784
+
+  Total EXX Time=                                                       0.373038
+  EXX energy  =                                                 0.00000000000000
+
+ ENERGY| Total FORCE_EVAL ( QS ) energy (a.u.):             -114.782870135117108
+
+
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                                DBCSR STATISTICS                             -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+ COUNTER                                    TOTAL       BLAS       SMM       ACC
+ flops     9 x    12 x    12               165888       0.0%    100.0%      0.0%
+ flops     9 x    12 x    13               179712       0.0%    100.0%      0.0%
+ flops     9 x    13 x    12               179712       0.0%    100.0%      0.0%
+ flops     9 x    13 x    13               194688       0.0%    100.0%      0.0%
+ flops    23 x    32 x    23               304704       0.0%    100.0%      0.0%
+ flops    23 x    23 x    32               406272       0.0%    100.0%      0.0%
+ flops    23 x    46 x    23               438012       0.0%    100.0%      0.0%
+ flops     9 x    16 x    12               442368       0.0%    100.0%      0.0%
+ flops     9 x    12 x    16               442368       0.0%    100.0%      0.0%
+ flops     9 x    16 x    13               479232       0.0%    100.0%      0.0%
+ flops     9 x    13 x    16               479232       0.0%    100.0%      0.0%
+ flops    46 x    23 x    32               541696       0.0%    100.0%      0.0%
+ flops    23 x    23 x    47               596712       0.0%    100.0%      0.0%
+ flops    46 x    32 x    23               609408       0.0%    100.0%      0.0%
+ flops    23 x    32 x    46               609408       0.0%    100.0%      0.0%
+ flops    69 x    69 x    69               657018       0.0%    100.0%      0.0%
+ flops    23 x    46 x    32               677120       0.0%    100.0%      0.0%
+ flops    46 x    23 x    47               795616       0.0%    100.0%      0.0%
+ flops    46 x    46 x    23               876024       0.0%    100.0%      0.0%
+ flops    23 x    46 x    46               876024       0.0%    100.0%      0.0%
+ flops    23 x    46 x    47               994520       0.0%    100.0%      0.0%
+ flops     1 x     1 x     1              1153024       0.0%    100.0%      0.0%
+ flops     9 x    16 x    16              1179648       0.0%    100.0%      0.0%
+ flops    46 x    32 x    46              1218816       0.0%    100.0%      0.0%
+ flops    46 x    69 x    69              1314036       0.0%    100.0%      0.0%
+ flops    69 x    46 x    69              1314036       0.0%    100.0%      0.0%
+ flops    69 x    69 x    46              1314036       0.0%    100.0%      0.0%
+ flops    46 x    46 x    32              1625088       0.0%    100.0%      0.0%
+ flops    23 x    23 x    64              1625088       0.0%    100.0%      0.0%
+ flops    46 x    23 x    64              2166784       0.0%    100.0%      0.0%
+ flops    46 x    46 x    47              2386848       0.0%    100.0%      0.0%
+ flops    46 x    46 x    69              2628072       0.0%    100.0%      0.0%
+ flops    46 x    69 x    46              2628072       0.0%    100.0%      0.0%
+ flops    69 x    46 x    46              2628072       0.0%    100.0%      0.0%
+ flops    23 x    46 x    64              2708480       0.0%    100.0%      0.0%
+ flops    11 x     4 x    23              2768832       0.0%    100.0%      0.0%
+ flops    11 x     4 x    46              5537664       0.0%    100.0%      0.0%
+ flops    46 x    46 x    64              6500352       0.0%    100.0%      0.0%
+ flops    46 x    46 x    46              7008192       0.0%    100.0%      0.0%
+ flops    12 x    12 x    12             23666688       0.0%    100.0%      0.0%
+ flops    12 x    12 x    13             25638912       0.0%    100.0%      0.0%
+ flops    12 x    13 x    12             25638912       0.0%    100.0%      0.0%
+ flops    12 x    13 x    13             27775488       0.0%    100.0%      0.0%
+ flops    31 x    15 x    23             29261520       0.0%    100.0%      0.0%
+ flops    23 x    11 x    23             47762352       0.0%    100.0%      0.0%
+ flops    31 x    15 x    46             58523040       0.0%    100.0%      0.0%
+ flops    12 x    16 x    12             63111168       0.0%    100.0%      0.0%
+ flops    12 x    12 x    16             63111168       0.0%    100.0%      0.0%
+ flops    12 x    16 x    13             68370432       0.0%    100.0%      0.0%
+ flops    12 x    13 x    16             68370432       0.0%    100.0%      0.0%
+ flops    46 x    11 x    23             95524704       0.0%    100.0%      0.0%
+ flops    23 x    11 x    46             95524704       0.0%    100.0%      0.0%
+ flops    11 x    32 x    23            132903936       0.0%    100.0%      0.0%
+ flops    16 x    12 x    12            134184960       0.0%    100.0%      0.0%
+ flops    23 x    31 x    23            134602992       0.0%    100.0%      0.0%
+ flops    16 x    12 x    13            145367040       0.0%    100.0%      0.0%
+ flops    16 x    13 x    12            145367040       0.0%    100.0%      0.0%
+ flops    16 x    13 x    13            157480960       0.0%    100.0%      0.0%
+ flops    12 x    16 x    16            168296448       0.0%    100.0%      0.0%
+ flops    46 x    11 x    46            191049408       0.0%    100.0%      0.0%
+ flops    11 x    32 x    46            265807872       0.0%    100.0%      0.0%
+ flops    46 x    31 x    23            269205984       0.0%    100.0%      0.0%
+ flops    23 x    31 x    46            269205984       0.0%    100.0%      0.0%
+ flops    16 x    16 x    12            357826560       0.0%    100.0%      0.0%
+ flops    16 x    12 x    16            357826560       0.0%    100.0%      0.0%
+ flops    31 x    32 x    23            374547456       0.0%    100.0%      0.0%
+ flops    16 x    16 x    13            387645440       0.0%    100.0%      0.0%
+ flops    16 x    13 x    16            387645440       0.0%    100.0%      0.0%
+ flops    46 x    31 x    46            538411968       0.0%    100.0%      0.0%
+ flops    31 x    32 x    46            749094912       0.0%    100.0%      0.0%
+ flops    16 x    16 x    16            954204160       0.0%    100.0%      0.0%
+ flops inhomo. stacks                           0       0.0%      0.0%      0.0%
+ flops total                         6.871606E+09       0.0%    100.0%      0.0%
+ flops max/rank                    459.980346E+06       0.0%    100.0%      0.0%
+ matmuls inhomo. stacks                         0       0.0%      0.0%      0.0%
+ matmuls total                            1224464       0.0%    100.0%      0.0%
+ number of processed stacks                  9075       0.0%    100.0%      0.0%
+ average stack size                                     0.0     134.9       0.0
+ marketing flops                     6.834300E+09
+ -------------------------------------------------------------------------------
+ # multiplications                            125
+ max memory usage/rank             402.116608E+06
+ # max total images/rank                        1
+ # max 3D layers                                1
+ # MPI messages exchanged                     544
+ MPI messages size (bytes):
+  total size                        23.203952E+06
+  min size                           0.000000E+00
+  max size                         675.584000E+03
+  average size                      42.654324E+03
+ MPI breakdown and total messages size (bytes):
+             size <=      128                  72                        0
+       128 < size <=     8192                  32                    70400
+      8192 < size <=    32768                 372                  7309584
+     32768 < size <=   131072                  36                  1304928
+    131072 < size <=  4194304                  32                 14519040
+   4194304 < size <= 16777216                   0                        0
+  16777216 < size                               0                        0
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                      DBCSR MESSAGE PASSING PERFORMANCE                      -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+ ROUTINE             CALLS      AVE VOLUME [Bytes]
+ MP_Group              133
+ MP_Bcast              100                     10.
+ MP_Allreduce          686                     14.
+ MP_Alltoall          1096                  15706.
+ MP_Wait              3160
+ MP_comm_split          28
+ MP_ISend              910                  10081.
+ MP_IRecv              910                   9812.
+ MP_Memory            4598
+ -------------------------------------------------------------------------------
+
+ MEMORY| Estimated peak process memory [MiB]                                 387
+
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                         MESSAGE PASSING PERFORMANCE                         -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+
+ ROUTINE             CALLS      AVE VOLUME [Bytes]
+ MP_Group                6
+ MP_Bcast              859                9861664.
+ MP_Allreduce          603                  16971.
+ MP_Sync                15
+ MP_Alltoall            54                7249217.
+ MP_SendRecv            30                  10594.
+ MP_ISendRecv          240                 152544.
+ MP_Wait              1632
+ MP_comm_split          11
+ MP_ISend             1214                  87808.
+ MP_IRecv             1216                  91444.
+ MP_Recv                 6                  52992.
+ -------------------------------------------------------------------------------
+
+
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                           R E F E R E N C E S                               -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+ 
+ CP2K version 7.1, the CP2K developers group (2019).
+ CP2K is freely available from https://www.cp2k.org/ .
+
+ Schuett, Ole; Messmer, Peter; Hutter, Juerg; VandeVondele, Joost. 
+ Electronic Structure Calculations on Graphics Processing Units, John
+ Wiley & Sons, Ltd, 173-190 (2016). 
+ GPU-Accelerated Sparse Matrix-Matrix Multiplication for
+ Linear Scaling Density Functional Theory.
+ https://dx.doi.org/10.1002/9781118670712.ch8
+
+ Del Ben, M; Schuett, O; Wentz, T; Messmer, P; Hutter, J;
+ VandeVondele, J. 
+ COMPUTER PHYSICS COMMUNICATIONS, 187, 120-129 (2015). 
+ Enabling simulation at the fifth rung of DFT: Large scale RPA
+ calculations with excellent time to solution.
+ https://dx.doi.org/10.1016/j.cpc.2014.10.021
+
+ Borstnik, U; VandeVondele, J; Weber, V; Hutter, J. 
+ PARALLEL COMPUTING, 40 (5-6), 47-58 (2014). 
+ Sparse matrix multiplication: The distributed block-compressed sparse
+ row library.
+ https://dx.doi.org/10.1016/j.parco.2014.03.012
+
+ Hutter, J; Iannuzzi, M; Schiffmann, F; VandeVondele, J. 
+ WIREs Comput Mol Sci., 4 (1), 15-25 (2014). 
+ CP2K: atomistic simulations of condensed matter systems.
+ https://dx.doi.org/10.1002/wcms.1159
+
+ Del Ben, M; Hutter, J; VandeVondele, J. 
+ JOURNAL OF CHEMICAL THEORY AND COMPUTATION, 9 (6), 2654-2671 (2013). 
+ Electron Correlation in the Condensed Phase from a Resolution of
+ Identity Approach Based on the Gaussian and Plane Waves Scheme.
+ https://dx.doi.org/10.1021/ct4002202
+
+ Del Ben, M; Hutter, J; VandeVondele, J. 
+ JOURNAL OF CHEMICAL THEORY AND COMPUTATION, 8 (11), 4177-4188 (2012). 
+ Second-Order Moller-Plesset Perturbation Theory in the Condensed Phase:
+ An Efficient and Massively Parallel Gaussian and Plane Waves Approach.
+ https://dx.doi.org/10.1021/ct300531w
+
+ Guidon, M; Hutter, J; VandeVondele, J. 
+ JOURNAL OF CHEMICAL THEORY AND COMPUTATION, 5 (11), 3010-3021 (2009). 
+ Robust Periodic Hartree-Fock Exchange for Large-Scale Simulations Using
+ Gaussian Basis Sets.
+ https://dx.doi.org/10.1021/ct900494g
+
+ Guidon, M; Schiffmann, F; Hutter, J; VandeVondele, J. 
+ JOURNAL OF CHEMICAL PHYSICS, 128 (21), 214104 (2008). 
+ Ab initio molecular dynamics using hybrid density functionals.
+ https://dx.doi.org/10.1063/1.2931945
+
+ Frigo, M; Johnson, SG. 
+ PROCEEDINGS OF THE IEEE, 93 (2), 216-231 (2005). 
+ The design and implementation of FFTW3.
+ https://dx.doi.org/10.1109/JPROC.2004.840301
+
+ Lippert, G; Hutter, J; Parrinello, M. 
+ THEORETICAL CHEMISTRY ACCOUNTS, 103 (2), 124-140 (1999). 
+ The Gaussian and augmented-plane-wave density functional method for ab
+ initio molecular dynamics simulations.
+ https://dx.doi.org/10.1007/s002140050523
+
+ Krack, M; Parrinello, M. 
+ PHYSICAL CHEMISTRY CHEMICAL PHYSICS, 2 (10), 2105-2112 (2000). 
+ All-electron ab-initio molecular dynamics.
+ https://dx.doi.org/10.1039/b001167n
+
+ Martyna, GJ; Tuckerman, ME. 
+ JOURNAL OF CHEMICAL PHYSICS, 110 (6), 2810-2821 (1999). 
+ A reciprocal space based method for treating long range interactions in
+ ab initio and force-field-based calculations in clusters.
+ https://dx.doi.org/10.1063/1.477923
+
+ Perdew, JP; Burke, K; Ernzerhof, M. 
+ PHYSICAL REVIEW LETTERS, 77 (18), 3865-3868 (1996). 
+ Generalized gradient approximation made simple.
+ https://dx.doi.org/10.1103/PhysRevLett.77.3865
+
+
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                                T I M I N G                                  -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+ SUBROUTINE                       CALLS  ASD         SELF TIME        TOTAL TIME
+                                MAXIMUM       AVERAGE  MAXIMUM  AVERAGE  MAXIMUM
+ CP2K                                 1  1.0    0.010    0.013   12.011   12.012
+ qs_energies                          1  2.0    0.000    0.000   10.270   10.271
+ mp2_main                             1  3.0    0.000    0.000    8.488    8.491
+ mp2_gpw_main                         1  4.0    0.000    0.000    8.100    8.100
+ rpa_ri_compute_en                    1  5.0    0.000    0.000    6.898    6.899
+ rpa_num_int                          1  6.0    0.001    0.001    6.858    6.859
+ cp_gemm                            301  9.5    0.001    0.001    5.327    5.474
+ cp_gemm_fm_gemm                    301 10.5    0.001    0.001    5.326    5.473
+ cp_fm_gemm                         301 11.5    5.325    5.472    5.325    5.472
+ GW_matrix_operations               150  7.0    0.004    0.005    5.177    5.380
+ calc_vec_W_gw                      150  8.0    0.598    0.765    4.817    5.025
+ rpa_num_int_RPA_matrix_operati     150  7.0    0.001    0.002    1.570    1.783
+ calc_mat_Q                         150  8.0    0.001    0.001    1.340    1.548
+ qs_ks_build_kohn_sham_matrix         2  6.0    0.001    0.001    1.531    1.531
+ contract_S_to_Q                    150  9.0    0.001    0.001    1.195    1.410
+ scf_env_do_scf                       1  3.0    0.000    0.000    1.379    1.380
+ scf_env_do_scf_inner_loop            1  4.0    0.000    0.000    1.379    1.380
+ pw_transfer                         43  8.7    0.002    0.003    1.187    1.227
+ fft_wrap_pw1pw2                     35 10.0    0.000    0.000    1.168    1.208
+ mp2_ri_gpw_compute_in                1  5.0    0.001    0.001    1.198    1.201
+ mp2_ri_gpw_compute_in_loop           1  6.0    0.000    0.000    1.172    1.176
+ qs_ks_update_qs_env                  1  5.0    0.000    0.000    1.162    1.163
+ rebuild_ks_matrix                    1  6.0    0.000    0.000    1.161    1.162
+ fft3d_ps                            35 12.0    0.433    0.551    0.913    0.976
+ fft_wrap_pw1pw2_250                 18 10.9    0.056    0.070    0.929    0.962
+ create_qs_kind_set                   1  2.0    0.000    0.000    0.948    0.949
+ read_qs_kind                         3  3.0    0.418    0.714    0.948    0.949
+ contract_B_L                         2  7.0    0.000    0.001    0.766    0.914
+ mp2_eri_3c_integrate                 1  7.0    0.012    0.018    0.310    0.817
+ integrate_set_3c                 16512  8.0    0.258    0.706    0.298    0.805
+ qs_init_subsys                       1  2.0    0.004    0.005    0.771    0.771
+ mp_cart_create                     139 11.1    0.590    0.744    0.590    0.744
+ dbcsr_t_pgrid_create                22  9.8    0.000    0.000    0.575    0.729
+ qs_env_setup                         1  3.0    0.000    0.000    0.684    0.691
+ qs_env_rebuild_pw_env                2  3.5    0.000    0.000    0.683    0.691
+ pw_env_rebuild                       1  5.0    0.001    0.001    0.683    0.691
+ parser_read_line                108107  4.0    0.035    0.051    0.533    0.624
+ parser_read_line_low               115  5.0    0.044    0.148    0.498    0.594
+ broadcast_input_information        115  6.0    0.001    0.001    0.454    0.567
+ qs_vxc_create                        2  7.0    0.000    0.000    0.534    0.534
+ xc_vxc_pw_create                     1  9.0    0.004    0.005    0.534    0.534
+ mp_bcast_i                         512  7.2    0.158    0.483    0.158    0.483
+ pw_grid_setup                        6  6.0    0.001    0.001    0.476    0.477
+ pw_grid_setup_internal               6  7.0    0.004    0.007    0.476    0.476
+ mp_bcast_am                        115  7.0    0.280    0.439    0.296    0.454
+ qs_rho_update_rho                    2  5.0    0.000    0.000    0.430    0.430
+ calculate_rho_elec                   2  6.0    0.025    0.044    0.427    0.428
+ mp_alltoall_z22v                    35 14.0    0.346    0.425    0.346    0.425
+ pw_grid_sort                         6  8.0    0.193    0.251    0.274    0.388
+ compute_vec_Sigma_x_minus_vxc_       1  4.0    0.000    0.000    0.373    0.373
+ density_rs2pw                        2  7.0    0.000    0.000    0.366    0.372
+ yz_to_x                             18 12.8    0.073    0.075    0.296    0.357
+ rs_pw_transfer                      24  8.9    0.000    0.000    0.333    0.346
+ init_scf_run                         1  3.0    0.000    0.000    0.311    0.312
+ scf_env_initial_rho_setup            1  4.0    0.000    0.000    0.307    0.308
+ xc_rho_set_and_dset_create           1 10.0    0.001    0.002    0.239    0.304
+ pw_poisson_solve                     3  6.0    0.030    0.034    0.301    0.301
+ mp_sum_d                           533  2.0    0.207    0.267    0.207    0.267
+ cp_fm_cholesky_invert              150  8.0    0.257    0.266    0.257    0.266
+ sum_up_and_integrate                 2  7.0    0.002    0.002    0.255    0.265
+ integrate_v_rspace                   2  8.0    0.016    0.030    0.253    0.264
+ pw_poisson_rebuild                   3  7.0    0.002    0.002    0.226    0.252
+ MTin_create_screen_fn                1 10.0    0.005    0.008    0.224    0.250
+ -------------------------------------------------------------------------------
+
+ The number of warnings for this run is : 1
+ 
+ -------------------------------------------------------------------------------
+  **** **** ******  **  PROGRAM ENDED AT                 2021-07-19 08:55:08.894
+ ***** ** ***  *** **   PROGRAM RAN ON                                     n0229
+ **    ****   ******    PROGRAM RAN BY                                 ka_bh5670
+ ***** **    ** ** **   PROGRAM PROCESS ID                               2692734
+  **** **  *******  **  PROGRAM STOPPED IN /tmp/ka_bh5670.3062163/bh5670/sim/000
+                                           010
