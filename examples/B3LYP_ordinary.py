@@ -27,7 +27,7 @@ from mypycp2k.cp2k_input import set_global
 from mypycp2k.dft import set_dft, set_scf, set_nonperiodic_poisson, set_cutoff, print_mo_cubes, set_qs
 from mypycp2k.scf import add_ot, add_diagonalization, add_mixing, add_mos, remove_ot
 from mypycp2k.subsys import add_elements, set_unperiodic_cell, set_topology, center_coordinates
-from mypycp2k.xc import set_pbe, add_gw_ver_0
+from mypycp2k.xc import set_pbe, add_gw_ver_0, add_b3lyp
 from util.exceptions import SCQPSolutionNotFound, SCFNotConvergedNotPossibleToRunMP2, NaNInGW
 from util.units_conversion import eV_to_Hartree
 from util.xyz import XYZ
@@ -216,8 +216,8 @@ def main():
         # --> GW following DIAG dft. (DIAG = diagonalization)
         diag_out_file = f"{sim_folder_scratch}/{my_out_file(suf=suf, ot_or_diag='diag')}"
         diag_inp_file = f"{sim_folder_scratch}/{my_inp_file(suf=suf, ot_or_diag='diag')}"
-        gw_diag_simulations = InputFactory.new_gw(i_bs)
-        gw_diag_simulations.write_input_file(diag_inp_file)
+        b3lyp_diag_simulations = InputFactory.new_b3lyp(i_bs)
+        b3lyp_diag_simulations.write_input_file(diag_inp_file)
         print(f"Running G0W0 with DIAG (basis set = {suf})...")
         if not dummy_run:
             my_cp2k_run(suf=suf, ot_or_diag='diag')
@@ -250,9 +250,9 @@ def main():
                 try:
                     print("GW is not extracted, because SCQPSolutionNotFound. Calling fallback ...")
                     # --> of the solution not found, it could be that the number of quad points is insufficent
-                    gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.RI_G0W0.Crossing_search = 'BISECTION'  # this alone does not always work
+                    b3lyp_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.RI_G0W0.Crossing_search = 'BISECTION'  # this alone does not always work
                     print("I write the fallback input file the crossing search is set to BISECTION")
-                    gw_diag_simulations.write_input_file(diag_inp_file)
+                    b3lyp_diag_simulations.write_input_file(diag_inp_file)
                     my_cp2k_run(suf=suf, ot_or_diag='diag')
                     # the following section is necessary to catch the error:
                     occ, vir, homo_, lumo_, occ_scf, vir_scf, occ_0, vir_0 = return_gw_energies_advanced(diag_out_file)
@@ -260,10 +260,10 @@ def main():
                     print_extracted_energies(suf, homo, lumo, occ, vir)  # on a screen
                 except SCQPSolutionNotFound:
                     print("GW is not extracted, because SCQPSolutionNotFound. Calling second fallback ...")
-                    gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.Rpa_num_quad_points = 500  # this should help as well
-                    gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.RI_G0W0.Crossing_search = 'BISECTION'
+                    b3lyp_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.Rpa_num_quad_points = 500  # this should help as well
+                    b3lyp_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.RI_G0W0.Crossing_search = 'BISECTION'
                     print("I write the fallback input file with QUAD points = 500")
-                    gw_diag_simulations.write_input_file(diag_inp_file)
+                    b3lyp_diag_simulations.write_input_file(diag_inp_file)
                     my_cp2k_run(suf=suf, ot_or_diag='diag')
             except SCFNotConvergedNotPossibleToRunMP2:
                 print("GW is not extracted, because SCFNotConvergedNotPossibleToRunMP2. Calling fallback ...")
@@ -276,17 +276,17 @@ def main():
                 my_cp2k_run(suf=suf, ot_or_diag='ot')
                 print("... ot succesfull")
                 # diag
-                gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.MGRID.Cutoff = 1000
-                gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.MGRID.Rel_cutoff = 100
-                gw_diag_simulations.write_input_file(diag_inp_file)
+                b3lyp_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.MGRID.Cutoff = 1000
+                b3lyp_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.MGRID.Rel_cutoff = 100
+                b3lyp_diag_simulations.write_input_file(diag_inp_file)
                 my_cp2k_run(suf=suf, ot_or_diag='diag')
                 # print('NOT IMPLEMENTED')
             except NaNInGW:
                 try:
                     print("GW is not extracted, because there is a NaN in the last frame of the SCF loop. Calling fallback")
-                    gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.RI_G0W0.Crossing_search = 'BISECTION'
+                    b3lyp_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.RI_G0W0.Crossing_search = 'BISECTION'
                     print("I wrote the fallback. The crossing search is set to BISECTION")
-                    gw_diag_simulations.write_input_file(diag_inp_file)
+                    b3lyp_diag_simulations.write_input_file(diag_inp_file)
                     my_cp2k_run(suf=suf, ot_or_diag='diag')
                     # print("NOT IMPLEMENTED")
                     occ, vir, homo_, lumo_, occ_scf, vir_scf, occ_0, vir_0 = return_gw_energies_advanced(diag_out_file)
@@ -294,10 +294,10 @@ def main():
                     print_extracted_energies(suf, homo, lumo, occ, vir)  # on a screen
                 except (NaNInGW, SCQPSolutionNotFound):
                     print("GW is not extracted, because NaNInGW AGAIN. Calling second fallback (BISECTION and num_quad_points = 500) ...")
-                    gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.Rpa_num_quad_points = 500  # this should help as well
-                    gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.RI_G0W0.Crossing_search = 'BISECTION'
+                    b3lyp_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.Rpa_num_quad_points = 500  # this should help as well
+                    b3lyp_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.RI_G0W0.Crossing_search = 'BISECTION'
                     print("I wrote the fallback input file with QUAD points = 500")
-                    gw_diag_simulations.write_input_file(diag_inp_file)
+                    b3lyp_diag_simulations.write_input_file(diag_inp_file)
                     my_cp2k_run(suf=suf, ot_or_diag='diag')
             finally:
                 try:
@@ -310,7 +310,7 @@ def main():
                     # occ = 'not extracted'
                     # vir = 'not extracted'
                     occ, vir, occ_scf, vir_scf, occ_0, vir_0 = ['not extracted']*6
-            del dft_ot_simulation, gw_diag_simulations
+            del dft_ot_simulation, b3lyp_diag_simulations
 
             #  put computed data into the molecule object
             my_new_mol.add_energies_advanced(int(suf), homo, lumo, occ, vir, occ_0, vir_0, occ_scf, vir_scf)
@@ -501,11 +501,11 @@ class InputFactory:
     @classmethod
     def b3lyp_prototype(cls):
 
-        calc_gw = deepcopy(InputFactory.dft_prototype())  # we could also make it from scratch,
+        calc_b3lyp = deepcopy(InputFactory.dft_prototype())  # we could also make it from scratch,
         # but it is better to inherit it from the dft to decrease the probability of the error
 
         # pycp2k objects: hierarchy
-        CP2K_INPUT = calc_gw.CP2K_INPUT
+        CP2K_INPUT = calc_b3lyp.CP2K_INPUT
         FORCE_EVAL = CP2K_INPUT.FORCE_EVAL_list[0]
         FORCE_EVAL.Method = 'QUICKSTEP'
         SUBSYS = FORCE_EVAL.SUBSYS
@@ -514,6 +514,7 @@ class InputFactory:
         SCF = DFT.SCF
         ################################################################################################################
 
+        #todo probably let it converge with OT method
         # remove the OT method
         remove_ot(SCF)
         # change calculations to a diagonalization
@@ -527,15 +528,37 @@ class InputFactory:
         print_mo_cubes(DFT.PRINT, nhomo=10, nlumo=10)  # all HOMOs are typicall plotted
         set_scf(DFT, eps_scf=1E-6, max_scf=100)  # I want it to end asap if not converged
         # add G0W0!
-        add_gw_ver_0(XC,
-                     ev_sc_iter=20,
-                     rpa_num_quad_points=50,
-                     max_memory_wf=4000,
-                     max_memory_hf=500,
-                     corr_occ=20,
-                     corr_virt=20)  # GW!
+
+        add_b3lyp(XC)
+
+        # XC_FUNCTIONAL = XC.XC_FUNCTIONAL
+        # XC_FUNCTIONAL.LYP.Scale_c = 0.81
+        # XC_FUNCTIONAL.BECKE88.Scale_x = 0.72
+        # XC_FUNCTIONAL.VWN.Scale_c = 0.19
+        # XC_FUNCTIONAL.VWN.Functional_type = 'VWN3'
+        # XC_FUNCTIONAL.XALPHA_add()
+        # XC_FUNCTIONAL.XALPHA_list[0].Scale_x = 0.08
+        #
+        # HF = XC.HF_add()
+        # HF.SCREENING.Eps_schwarz = 1.0E-11
+        # max_memory = 500
+        # HF.MEMORY.Max_memory = max_memory
+        # HF.MEMORY.Eps_storage_scaling = 0.1
+        # HF.Fraction = 0.2
+        # XC.XC_GRID.Xc_smooth_rho = 'NN10'
+        # XC.XC_GRID.Xc_deriv = 'SPLINE2_SMOOTH'
+        # print('B3LYP was set')
+        # HF.SCREENING.Screen_on_initial_p = False
+
+        # add_gw_ver_0(XC,
+        #              ev_sc_iter=20,
+        #              rpa_num_quad_points=50,
+        #              max_memory_wf=4000,
+        #              max_memory_hf=500,
+        #              corr_occ=20,
+        #              corr_virt=20)  # GW!
         # it is important to keep WF memory smaller than HF memory, otherwise, it crashes
-        return calc_gw
+        return calc_b3lyp
 
     @classmethod
     def __new_simulation(cls,
