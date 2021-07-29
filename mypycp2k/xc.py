@@ -108,7 +108,7 @@ def add_b3lyp(XC,
     XC_FUNCTIONAL.LYP.Scale_c = 0.81
     XC_FUNCTIONAL.BECKE88.Scale_x = 0.72
     XC_FUNCTIONAL.VWN.Scale_c = 0.19
-    XC_FUNCTIONAL.VWN.Functional_type = 'VWN3'
+    XC_FUNCTIONAL.VWN.Functional_type = 'VWN5'
     XC_FUNCTIONAL.XALPHA_add()
     XC_FUNCTIONAL.XALPHA_list[0].Scale_x = 0.08
 
