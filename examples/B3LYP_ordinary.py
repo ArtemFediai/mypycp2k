@@ -455,7 +455,7 @@ class InputFactory:
         # set_pbe0(XC) no pbe0 in the beginning
         set_qs(DFT,
                eps_default=1.0E-10,  # should be 4 order of magnitude lower w.r.t. diag
-               eps_pgf_orb=np.sqrt(1.0E-10))  # --||--
+               eps_pgf_orb=np.sqrt(1.0E-20))  # --||--
         ## END DFT ##
         return calc_dft
 
@@ -538,7 +538,7 @@ class InputFactory:
         # set_pbe0(XC) no pbe0 in the beginning
         set_qs(DFT,
                eps_default=1.0E-10,  # should be 4 order of magnitude lower w.r.t. diag
-               eps_pgf_orb=np.sqrt(1.0E-10))  # --||--
+               eps_pgf_orb=np.sqrt(1.0E-20))  # --||-- 1E-20 helps to avoid in b3lyp
         ## END DFT ##
         #
         ################################################################################################################
