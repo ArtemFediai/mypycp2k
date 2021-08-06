@@ -32,7 +32,7 @@ from mypycp2k.dft import set_dft, set_scf, set_nonperiodic_poisson, set_cutoff, 
 from mypycp2k.scf import add_ot, add_diagonalization, add_mixing, add_mos, remove_ot
 from mypycp2k.subsys import add_elements, set_unperiodic_cell, set_topology, center_coordinates
 from mypycp2k.xc import set_pbe, add_gw_ver_0
-from util.exceptions import SCQPSolutionNotFound, SCFNotConvergedNotPossibleToRunMP2, NaNInGW
+from util.exceptions import SCQPSolutionNotFound, SCFNotConvergedNotPossibleToRunMP2, NaNInGW, IterationLimit, LargeSigc
 from util.units_conversion import eV_to_Hartree
 from util.xyz import XYZ
 
@@ -245,10 +245,45 @@ def main():
                 print(f'Homo/Lumo were not extracted')
                 homo = 'not extracted'
                 lumo = 'not extracted'
-            try:
+            try:  # first try to return gw energies -->
                 occ, vir, homo_, lumo_, occ_scf, vir_scf, occ_0, vir_0 = return_gw_energies_advanced(diag_out_file)
                 homo, lumo = redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo)
                 print_extracted_energies(suf, homo, lumo, occ, vir)  # on a screen
+            except (IterationLimit, LargeSigc):  # 20 iterations
+                try:  # xyz + 10
+                    print("GW is extracted, but scf is not converged, because of IterationLimit. Calling fallback ...")
+                    my_abc_plus_10 = str(my_xyz_file_obj.compute_box_size(offset=my_offset+10.0))[1:-2]  # todo: hard
+                    # replay ot with a larger xyz space +10
+                    # ot
+                    dft_ot_simulation.CP2K_INPUT.FORCE_EVAL_list[0].SUBSYS.CELL.Abc = my_abc_plus_10
+                    dft_ot_simulation.write_input_file(ot_inp_file)
+                    print("Replay ot with xyz + 10")
+                    my_cp2k_run(suf=suf, ot_or_diag='ot')
+                    print("... ot succesfull")
+                    # diag
+                    print("diag Replay ot with xyz + 10")
+                    gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].SUBSYS.CELL.Abc = my_abc_plus_10
+                    gw_diag_simulations.write_input_file(diag_inp_file)
+                    my_cp2k_run(suf=suf, ot_or_diag='diag')
+                    print("... diag succesfull")
+                    # the following section is necessary to catch the error:
+                    occ, vir, homo_, lumo_, occ_scf, vir_scf, occ_0, vir_0 = return_gw_energies_advanced(diag_out_file)
+                    homo, lumo = redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo)
+                    print_extracted_energies(suf, homo, lumo, occ, vir)  # on a screen
+                except (IterationLimit, LargeSigc):
+                    print("GW is extracted, but scf is not converged AGAIN, because of IterationLimit. Calling fallback ...")
+                    # diag 200 Q points
+                    gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.Rpa_num_quad_points = 200  # this should help as well
+                    gw_diag_simulations.write_input_file(diag_inp_file)
+                    my_cp2k_run(suf=suf, ot_or_diag='diag')
+                    print("I write the fallback input file with QUAD points = 200")
+                    gw_diag_simulations.write_input_file(diag_inp_file)
+                    my_cp2k_run(suf=suf, ot_or_diag='diag')
+                    print("... diag succesful")
+                    # the following section is necessary to catch the error:
+                    occ, vir, homo_, lumo_, occ_scf, vir_scf, occ_0, vir_0 = return_gw_energies_advanced(diag_out_file)
+                    homo, lumo = redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo)
+                    print_extracted_energies(suf, homo, lumo, occ, vir)  # on a screen
             except SCQPSolutionNotFound:  # we know how to handle this error
                 try:
                     print("GW is not extracted, because SCQPSolutionNotFound. Calling fallback ...")

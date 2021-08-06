@@ -1,5 +1,6 @@
-from util.exceptions import SCQPSolutionNotFound, SCFNotConvergedNotPossibleToRunMP2, NaNInGW
+from util.exceptions import SCQPSolutionNotFound, SCFNotConvergedNotPossibleToRunMP2, NaNInGW, LargeSigc, IterationLimit
 import pandas as pd
+import numpy as np
 
 """
 functions extract something from the out cp2k files using re
@@ -46,6 +47,26 @@ def main():
     except NaNInGW:
         print('this has crashed')
     print("<-- this should crash")
+
+    print('this should crash because of large Sigc ->')
+    try:
+        my_gw_energies = return_gw_energies_advanced('test/false_converge.out')
+    except LargeSigc:
+        print('the exception of large Sigc is captured. The test is passed')
+    print("<-- this should crash because of large Sigc")
+
+    # return_gw_energies_advanced('test/false_converge.out')  # this will raise an exception!
+
+
+    print('this should crash because of 20 ITERATIONS->')
+    try:
+        my_gw_energies = return_gw_energies_advanced('test/20_iterations.out')
+    except IterationLimit:
+        print('the exception of IterationLimit is captured. The test is passed')
+    print("<-- this should crash because of 20 ITERATIONS")
+
+
+    #my_gw_energies = return_gw_energies_advanced('test/false_converge.out')
 
 """
     CRASH COURSE ON REGULAR EXPRESSION:
@@ -375,16 +396,29 @@ def return_gw_energies_advanced(path_to_file):
         occ_scf = max(my_e_df.loc[(my_e_df['num_gw_iter'] == num_gw_iter-1) & (my_e_df['occ_or_vir'] == 'occ')]['E_GW'], default="not extracted")
         vir_scf = min(my_e_df.loc[(my_e_df['num_gw_iter'] == num_gw_iter-1) & (my_e_df['occ_or_vir'] == 'vir')]['E_GW'], default="not extracted")
 
+        # wrong G0W0 part (only correct if order of HOMO/LUMO and occ/vir are same)
+        occ = list(my_e_df.loc[(my_e_df['num_gw_iter'] == 0) & (my_e_df['occ_or_vir'] == 'occ')]['E_GW'])[-1]
+        vir = list(my_e_df.loc[(my_e_df['num_gw_iter'] == 0) & (my_e_df['occ_or_vir'] == 'vir')]['E_GW'])[0]
+
         if occ_scf == "not extracted":
             print(f'The run crashes because there is a NaN in the last scf iteration')
             raise NaNInGW
-
-
-        # wrong G0W0 part (correct if order of HOMO/LUMO and occ/vir are same)
-        occ = list(my_e_df.loc[(my_e_df['num_gw_iter'] == 0) & (my_e_df['occ_or_vir'] == 'occ')]['E_GW'])[-1]
-        vir = list(my_e_df.loc[(my_e_df['num_gw_iter'] == 0) & (my_e_df['occ_or_vir'] == 'vir')]['E_GW'])[0]
     else:
         pass
+
+    # check for large numbers in the xc energy
+    if header_is_extracted:
+        max_Sigc = max(np.abs(my_e_df.loc[(my_e_df['num_gw_iter'] == num_gw_iter-1)]['Sigc']))
+        print(f'maximum Sigc = {max_Sigc}')  # debug
+        if max_Sigc > 20.0:  # todo: hard-coded!
+            print('Unphysically large |Sigc| (>20.0 eV). I return LargeSigc expection')
+            raise LargeSigc
+
+    # check if 20 iter limit is reached
+    if header_is_extracted:
+        if max(my_e_df['num_gw_iter']) == 19:  # todo: hard-coded. assume, 20 iteration is the limit!
+            print('GW scf not converged: 20 iterations reached! I return IterationLimit exception')
+            raise IterationLimit
 
     if isinstance(occ, float) and isinstance(vir, float) and isinstance(homo, float) and isinstance(lumo, float):
         print(f"G0W0 HOMO wrong: {occ} eV")
