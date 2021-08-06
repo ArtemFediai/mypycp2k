@@ -261,8 +261,9 @@ def main():
                     my_cp2k_run(suf=suf, ot_or_diag='ot')
                     print("... ot succesfull")
                     # diag
-                    print("diag Replay ot with xyz + 10")
+                    print("diag Replay ot with xyz + 10 and Femi offset of 5E-2")
                     gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].SUBSYS.CELL.Abc = my_abc_plus_10
+                    gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.RI_G0W0.Fermi_level_offset = 5.0E-2
                     gw_diag_simulations.write_input_file(diag_inp_file)
                     my_cp2k_run(suf=suf, ot_or_diag='diag')
                     print("... diag succesfull")
