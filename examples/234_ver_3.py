@@ -271,19 +271,42 @@ def main():
                     homo, lumo = redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo)
                     print_extracted_energies(suf, homo, lumo, occ, vir)  # on a screen
                 except (IterationLimit, LargeSigc):
-                    print("GW is extracted, but scf is not converged AGAIN, because of IterationLimit. Calling fallback ...")
-                    # diag 200 Q points
-                    gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.Rpa_num_quad_points = 200  # this should help as well
-                    gw_diag_simulations.write_input_file(diag_inp_file)
-                    my_cp2k_run(suf=suf, ot_or_diag='diag')
-                    print("I write the fallback input file with QUAD points = 200")
-                    gw_diag_simulations.write_input_file(diag_inp_file)
-                    my_cp2k_run(suf=suf, ot_or_diag='diag')
-                    print("... diag succesful")
-                    # the following section is necessary to catch the error:
-                    occ, vir, homo_, lumo_, occ_scf, vir_scf, occ_0, vir_0 = return_gw_energies_advanced(diag_out_file)
-                    homo, lumo = redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo)
-                    print_extracted_energies(suf, homo, lumo, occ, vir)  # on a screen
+                    try:
+                        print("GW is extracted, but scf is not converged AGAIN, because of IterationLimit. Calling fallback ...")
+                        # diag 200 Q points
+                        gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.Rpa_num_quad_points = 200  # this should help as well
+                        gw_diag_simulations.write_input_file(diag_inp_file)
+                        my_cp2k_run(suf=suf, ot_or_diag='diag')
+                        print("I write the fallback input file with QUAD points = 200")
+                        gw_diag_simulations.write_input_file(diag_inp_file)
+                        my_cp2k_run(suf=suf, ot_or_diag='diag')
+                        print("... diag succesful")
+                        # the following section is necessary to catch the error:
+                        occ, vir, homo_, lumo_, occ_scf, vir_scf, occ_0, vir_0 = return_gw_energies_advanced(diag_out_file)
+                        homo, lumo = redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo)
+                        print_extracted_energies(suf, homo, lumo, occ, vir)  # on a screen
+                    except (IterationLimit, LargeSigc):
+                        # replay ot with a larger cutoff then make diag with a larger cutoff
+                        # ot
+                        print("GW is extracted, but scf is not converged AGAIN AGAIN, because of IterationLimit. Calling fallback ...")
+                        dft_ot_simulation.CP2K_INPUT.FORCE_EVAL_list[0].DFT.MGRID.Cutoff = 750
+                        dft_ot_simulation.CP2K_INPUT.FORCE_EVAL_list[0].DFT.MGRID.Rel_cutoff = 75
+                        dft_ot_simulation.write_input_file(ot_inp_file)
+                        print("Replay ot with cutoff of 100 rel_cutoff of 100...")
+                        my_cp2k_run(suf=suf, ot_or_diag='ot')
+                        print("... ot succesfull")
+                        # diag
+                        gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.MGRID.Cutoff = 750
+                        gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.MGRID.Rel_cutoff = 75
+                        gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[
+                            0].RI_RPA.Rpa_num_quad_points = 500  # this should help as well #?
+                        gw_diag_simulations.write_input_file(diag_inp_file)
+                        my_cp2k_run(suf=suf, ot_or_diag='diag')
+                        print("... diag succesful")
+                        # the following section is necessary to catch the error:
+                        # occ, vir, homo_, lumo_, occ_scf, vir_scf, occ_0, vir_0 = return_gw_energies_advanced(diag_out_file)
+                        # homo, lumo = redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo)
+                        # print_extracted_energies(suf, homo, lumo, occ, vir)  # on a screen
             except SCQPSolutionNotFound:  # we know how to handle this error
                 try:
                     print("GW is not extracted, because SCQPSolutionNotFound. Calling fallback ...")
