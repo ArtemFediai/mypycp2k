@@ -11,21 +11,26 @@ PATH = '/shared/user_data/New_GW_FromArtemToPatrick/data/sim'  # path to folders
 LEN = 133885
 OUTPUT_FILE_NAMES = ('out_diag_2.out', 'out_diag_3.out')
 # list_of_sigc_folders, list_of_scqp_sol_folders, list_scf_not_converged, list_nan,  list_iteration_limit = [],[],[]
-MAX_LEN = LEN
+MAX_LEN = 10
+thousend = 1000
 
-NAMES_OF_FOLDERS = ['list_of_sigc_folders',
-                    'list_of_scqp_sol_folders',
-                    'list_scf_not_converged',
-                    'list_nan',
-                    'list_iteration_limit']
+NAMES_OF_FOLDERS = ['list_of_sigc_folders_',
+                    'list_of_scqp_sol_folders_',
+                    'list_scf_not_converged_',
+                    'list_nan_',
+                    'list_iteration_limit_']
 
-for x in NAMES_OF_FOLDERS:
+DICT_OF_FOLDERS = {LargeSigc: 'list_of_sigc_folders_',
+                   SCQPSolutionNotFound: 'list_of_scqp_sol_folders_',
+                   SCFNotConvergedNotPossibleToRunMP2: 'list_scf_not_converged_',
+                   NaNInGW: 'list_of_sigc_folders_',
+                   IterationLimit: 'list_iteration_limit_'}
+
+for x in DICT_OF_FOLDERS.values():
     exec(f'{x} = []')
+# thsnd = 1
 
-
-
-def main():
-
+def main(thsnd=1):
     dir_content_raw = os.listdir(PATH)
     # print(dir_content_raw)
 
@@ -42,45 +47,50 @@ def main():
 
     # MAIN -->
     large_sigc_folders, list_of_scqp_sol_folders, list_scf_not_converged, list_nan, list_iteration_limit = \
-        extract(dirs, max_len=MAX_LEN)  # wo arg --> LEN
+        extract(dirs, thsnd=thsnd)  # wo arg --> LEN
     # <-- MAIN
 
     # --> write
     print('\n')
-    for folder in NAMES_OF_FOLDERS:
+    for folder in DICT_OF_FOLDERS.values():
         write_into_csv_file(name_of_folder=folder)
-    for folder in NAMES_OF_FOLDERS:
+    for folder in DICT_OF_FOLDERS.values():
         print(f"NUMBERS {folder}: {eval(folder)}")
         print(f"LENGTH of {folder}: {len(set(eval(folder)))}")
         print('\n')
+
+    return large_sigc_folders, list_of_scqp_sol_folders, list_scf_not_converged, list_nan, list_iteration_limit 
     # <-- write
 
 
 #
 
-@timeit
-def extract(dirs, max_len=LEN):
-    for i, current_dir in enumerate(dirs[0:max_len]):
-        if not i % 1000:
-            print(f'finished {i // 1000} thousands')
+# @timeit
+def extract(dirs,  thsnd=0):
+    print(f'make {thsnd} thousands')
+    for i, current_dir in enumerate(dirs[thousend*thsnd:thousend*thsnd+thousend]):
         for output_file_name in OUTPUT_FILE_NAMES:
             try:
                 return_gw_energies_advanced(path_to_file=f'{PATH}/{current_dir}/{output_file_name}', silent=True)
             except LargeSigc:
-                #print(f"SigC folder: {current_dir}/{output_file_name}")
-                list_of_sigc_folders.append(current_dir)
+                # print(f"SigC folder: {current_dir}/{output_file_name}")
+                eval(DICT_OF_FOLDERS[LargeSigc]).append(current_dir)
             except SCQPSolutionNotFound:
-                list_of_scqp_sol_folders.append(current_dir)
+                eval(DICT_OF_FOLDERS[SCQPSolutionNotFound]).append(current_dir)
             except SCFNotConvergedNotPossibleToRunMP2:
-                list_scf_not_converged.append(current_dir)
+                eval(DICT_OF_FOLDERS[SCFNotConvergedNotPossibleToRunMP2]).append(current_dir)
             except NaNInGW:
-                list_nan.append(current_dir)
+                eval(DICT_OF_FOLDERS[NaNInGW]).append(current_dir)
             except IterationLimit:
-                list_iteration_limit.append(current_dir)
-    return list_of_sigc_folders, list_of_scqp_sol_folders, list_scf_not_converged, list_nan, list_iteration_limit
+                eval(DICT_OF_FOLDERS[IterationLimit]).append(current_dir)
+    return eval(DICT_OF_FOLDERS[LargeSigc]), \
+           eval(DICT_OF_FOLDERS[SCQPSolutionNotFound]), \
+           eval(DICT_OF_FOLDERS[SCFNotConvergedNotPossibleToRunMP2]), \
+           eval(DICT_OF_FOLDERS[NaNInGW]), \
+           eval(DICT_OF_FOLDERS[IterationLimit])
 
 
-def write_into_csv_file(name_of_folder=NAMES_OF_FOLDERS[0]):
+def write_into_csv_file(name_of_folder=list(DICT_OF_FOLDERS.values())[0]):
     with open(f'{name_of_folder}.csv', 'w') as scv_stream:
         writer = csv.writer(scv_stream)
         writer.writerow(np.sort(list(set(eval(name_of_folder)))))
@@ -88,4 +98,3 @@ def write_into_csv_file(name_of_folder=NAMES_OF_FOLDERS[0]):
 
 if __name__ == '__main__':
     main()
-
