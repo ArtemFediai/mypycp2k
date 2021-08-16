@@ -1,76 +1,16 @@
 from util.exceptions import SCQPSolutionNotFound, SCFNotConvergedNotPossibleToRunMP2, NaNInGW, LargeSigc, IterationLimit
 import pandas as pd
 import numpy as np
+import re
 
 """
 functions extract something from the out cp2k files using re
 Example of 7.1 gw cp2k output in test
 """
-import re
-
-def main():
-    num_o_fun = extract_number_of_independent_orbital_function('test/out.out')
-    print(f'number of independent orbital function: {num_o_fun}')
-
-    # try:
-    #     my_gw_energies = return_gw_energies('test/out_gw_no_solution_found.out')
-    # except SCQPSolutionNotFound:
-    #     print("I got the SCQPSolutionNotFoundError. This is a correct result")
-
-    # TEST: capture the exeption: reason of failed run: "SCF Not Converged. Not Possible to Run MP2"
-    print('\nTEST: I test that I capture the exception: "SCF Not Converged. Not Possible to Run MP2"')
-    try:
-        my_gw_energies = return_gw_energies('test/scf_not_converged_not_possible_mp2.out')
-        print('TEST IS FAILED. Everythingg was extracted\n')
-    except SCFNotConvergedNotPossibleToRunMP2:
-        print("I got the SCFNotConvergedNotPossibleToRunMP2. This is a correct result \nTEST IS PASSED \n")
-    except FileNotFoundError:
-        print('TEST NOT PASSED because of FileNotFoundError')
-    except:
-        print('TEST NOT PASSED')
-
-    # TEST: scf DFT
-    print('this should work -->')
-    my_gw_energies = return_gw_energies_advanced('test/out_scf_gw.out')
-
-    print('this should fail -->')
-    try:
-        my_gw_energies = return_gw_energies_advanced('test/scf_not_converged_not_possible_mp2.out')
-    except SCFNotConvergedNotPossibleToRunMP2:
-        print('the exception is captured. test passed')
-
-    # print('This is the last line')
-    # TEST: scf DFT
-    print('this should crash because of nan->')
-    try:
-        my_gw_energies = return_gw_energies_advanced('test/pot_en_abnormal.out')
-    except NaNInGW:
-        print('this has crashed')
-    print("<-- this should crash")
-
-    print('this should crash because of large Sigc ->')
-    try:
-        my_gw_energies = return_gw_energies_advanced('test/false_converge.out')
-    except LargeSigc:
-        print('the exception of large Sigc is captured. The test is passed')
-    print("<-- this should crash because of large Sigc")
-
-    # return_gw_energies_advanced('test/false_converge.out')  # this will raise an exception!
-
-
-    print('this should crash because of 20 ITERATIONS->')
-    try:
-        my_gw_energies = return_gw_energies_advanced('test/20_iterations.out')
-    except IterationLimit:
-        print('the exception of IterationLimit is captured. The test is passed')
-    print("<-- this should crash because of 20 ITERATIONS")
-
-
-    #my_gw_energies = return_gw_energies_advanced('test/false_converge.out')
 
 """
     CRASH COURSE ON REGULAR EXPRESSION:
-    
+
     ^       # Match start of string
     [-+]?   # Match a leading + or - (optional)
     [0-9]+  # Match one or more digit
@@ -106,17 +46,70 @@ def main():
     ab|cd 	match ab or cd
 """
 
-def return_homo_lumo(path_to_file):
 
+def main():
+    num_o_fun = extract_number_of_independent_orbital_function('test/out.out')
+    my_print(f'number of independent orbital function: {num_o_fun}')
+
+    # TEST: capture the exeption: reason of failed run: "SCF Not Converged. Not Possible to Run MP2"
+    my_print('\nTEST: I test that I capture the exception: "SCF Not Converged. Not Possible to Run MP2"')
+    try:
+        my_gw_energies = return_gw_energies('test/scf_not_converged_not_possible_mp2.out')
+        my_print('TEST IS FAILED. Everythingg was extracted\n')
+    except SCFNotConvergedNotPossibleToRunMP2:
+        my_print("I got the SCFNotConvergedNotPossibleToRunMP2. This is a correct result \nTEST IS PASSED \n")
+    except FileNotFoundError:
+        my_print('TEST NOT PASSED because of FileNotFoundError')
+    except:
+        my_print('TEST NOT PASSED')
+
+    # TEST: scf DFT
+    my_print('this should work -->')
+    my_gw_energies = return_gw_energies_advanced('test/out_scf_gw.out')
+
+    my_print('this should fail -->')
+    try:
+        my_gw_energies = return_gw_energies_advanced('test/scf_not_converged_not_possible_mp2.out')
+    except SCFNotConvergedNotPossibleToRunMP2:
+        my_print('the exception is captured. test passed')
+
+    # print('This is the last line')
+    # TEST: scf DFT
+    my_print('this should crash because of nan->')
+    try:
+        my_gw_energies = return_gw_energies_advanced('test/pot_en_abnormal.out')
+    except NaNInGW:
+        my_print('this has crashed')
+    my_print("<-- this should crash")
+
+    my_print('this should crash because of large Sigc ->')
+    try:
+        my_gw_energies = return_gw_energies_advanced('test/false_converge.out')
+    except LargeSigc:
+        my_print('the exception of large Sigc is captured. The test is passed')
+    my_print("<-- this should crash because of large Sigc")
+
+    # return_gw_energies_advanced('test/false_converge.out')  # this will raise an exception!
+
+    my_print('this should crash because of 20 ITERATIONS->')
+    try:
+        my_gw_energies = return_gw_energies_advanced('test/20_iterations.out')
+    except IterationLimit:
+        my_print('the exception of IterationLimit is captured. The test is passed')
+    my_print("<-- this should crash because of 20 ITERATIONS")
+
+    # my_gw_energies = return_gw_energies_advanced('test/false_converge.out')
+
+
+def return_homo_lumo(path_to_file):
     """
     mo_cubes is supposed to output homos and lumos.
     this script is able to read them out from the path_to_file cp2k output file
     
     """
 
-
-    with open(path_to_file,"r") as fin:
-       all_file = fin.read()
+    with open(path_to_file, "r") as fin:
+        all_file = fin.read()
 
     myiter = iter(all_file.splitlines())
 
@@ -126,7 +119,7 @@ def return_homo_lumo(path_to_file):
     f_begin = '(^\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)'  # f = float. expr: any float
     f_middle = '(\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)*'
     f_end = '(\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s*$)'
-    any_floating_point_numbers = re.compile(f_begin+f_middle+f_end)
+    any_floating_point_numbers = re.compile(f_begin + f_middle + f_end)
 
     homos = []
     lumos = []
@@ -233,7 +226,7 @@ def return_gw_energies(path_to_file):
         if line == -1:
             break
         if regex.match(line):
-            for i in range(0,10):
+            for i in range(0, 10):
                 line = next(myiter)
             if regex1.match(line):
                 # print("\nI have detected the first occ! The next line is potentailly vir!")
@@ -249,7 +242,6 @@ def return_gw_energies(path_to_file):
     if isinstance(line_occ, str) and isinstance(line_vir, str) and \
             line_occ.split().__len__() == 10 and line_vir.split().__len__() == 10:
 
-
         homo = float(line_occ.split()[4])
         lumo = float(line_vir.split()[4])
 
@@ -260,21 +252,19 @@ def return_gw_energies(path_to_file):
         # print(f"GW LUMO: {vir} eV")
         return occ, vir, homo, lumo
     else:
-        print('GW energies were not extracted.')
+        my_print('GW energies were not extracted.')
         _through_an_exception_if_the_string_is_found(string='Self-consistent quasi-particle solution not found',
                                                      exception=SCQPSolutionNotFound,
                                                      all_file=all_file)
         _through_an_exception_if_the_string_is_found(string='SCF not converged: not possible to run MP2',
                                                      exception=SCFNotConvergedNotPossibleToRunMP2,
                                                      all_file=all_file)
-        print("gs energies were not found")  # if neither of those
+        my_print("gs energies were not found")  # if neither of those
         return None, None, None, None
 
 
-def return_gw_energies_advanced(path_to_file):
+def return_gw_energies_advanced(path_to_file, silent=False):
     """
-
-
   GW quasiparticle energies
   -------------------------
 
@@ -334,11 +324,7 @@ def return_gw_energies_advanced(path_to_file):
     regex2 = re.compile("^\s*[0-9]+ \( vir \)(\s+[-+]?[0-9]*\.[0-9]*\s*)")
     # regex1 = re.compile("^\s*[0-9]+\s+\(")
 
-    line_occ = None
-    line_vir = None
-
     num_gw_iter = 0
-    # from collections import namedtuple
 
     header_is_extracted = False
     list_of_gw_output = []
@@ -372,7 +358,8 @@ def return_gw_energies_advanced(path_to_file):
                 while regex2.match(line):  # match virs
                     tmp = re.search(reg_vir_groups, line).groups()
                     list_of_str = ' '.join(tmp).split()
-                    single_line = [int(list_of_str[0]), list_of_str[1], *[float(x) for x in list_of_str[2:]], num_gw_iter]
+                    single_line = [int(list_of_str[0]), list_of_str[1], *[float(x) for x in list_of_str[2:]],
+                                   num_gw_iter]
                     vir_line.append(single_line)
                     line = next(myiter)
 
@@ -380,7 +367,7 @@ def return_gw_energies_advanced(path_to_file):
             list_of_gw_output.extend([*occ_line, *vir_line])
             num_gw_iter += 1
     my_e_df = pd.DataFrame.from_records(data=list_of_gw_output, columns=header_list)
-    #print(my_e_df)
+    # print(my_e_df)
 
     # why there are two G0W0: because orbitals sometimes change their order
     # DFT part
@@ -393,45 +380,52 @@ def return_gw_energies_advanced(path_to_file):
         vir_0 = min(my_e_df.loc[(my_e_df['num_gw_iter'] == 0) & (my_e_df['occ_or_vir'] == 'vir')]['E_GW'])
 
         # GW part
-        occ_scf = max(my_e_df.loc[(my_e_df['num_gw_iter'] == num_gw_iter-1) & (my_e_df['occ_or_vir'] == 'occ')]['E_GW'], default="not extracted")
-        vir_scf = min(my_e_df.loc[(my_e_df['num_gw_iter'] == num_gw_iter-1) & (my_e_df['occ_or_vir'] == 'vir')]['E_GW'], default="not extracted")
+        occ_scf = max(
+            my_e_df.loc[(my_e_df['num_gw_iter'] == num_gw_iter - 1) & (my_e_df['occ_or_vir'] == 'occ')]['E_GW'],
+            default="not extracted")
+        vir_scf = min(
+            my_e_df.loc[(my_e_df['num_gw_iter'] == num_gw_iter - 1) & (my_e_df['occ_or_vir'] == 'vir')]['E_GW'],
+            default="not extracted")
 
         # wrong G0W0 part (only correct if order of HOMO/LUMO and occ/vir are same)
         occ = list(my_e_df.loc[(my_e_df['num_gw_iter'] == 0) & (my_e_df['occ_or_vir'] == 'occ')]['E_GW'])[-1]
         vir = list(my_e_df.loc[(my_e_df['num_gw_iter'] == 0) & (my_e_df['occ_or_vir'] == 'vir')]['E_GW'])[0]
 
         if occ_scf == "not extracted":
-            print(f'The run crashes because there is a NaN in the last scf iteration')
+            my_print(f'The run crashes because there is a NaN in the last scf iteration')
             raise NaNInGW
     else:
         pass
 
     # check for large numbers in the xc energy
     if header_is_extracted:
-        max_Sigc = max(np.abs(my_e_df.loc[(my_e_df['num_gw_iter'] == num_gw_iter-1)]['Sigc']))
-        print(f'maximum Sigc = {max_Sigc}')  # debug
+        max_Sigc = max(np.abs(my_e_df.loc[(my_e_df['num_gw_iter'] == num_gw_iter - 1)]['Sigc']))
+        if not silent:
+            my_print(f'maximum Sigc = {max_Sigc}')  # debug
+        else:
+            pass
         if max_Sigc > 20.0:  # todo: hard-coded!
-            print('Unphysically large |Sigc| (>20.0 eV). I return LargeSigc expection')
+            my_print('Unphysically large |Sigc| (>20.0 eV). I return LargeSigc expection')
             raise LargeSigc
 
     # check if 20 iter limit is reached
     if header_is_extracted:
         if max(my_e_df['num_gw_iter']) == 19:  # todo: hard-coded. assume, 20 iteration is the limit!
-            print('GW scf not converged: 20 iterations reached! I return IterationLimit exception')
+            my_print('GW scf not converged: 20 iterations reached! I return IterationLimit exception')
             raise IterationLimit
 
     if isinstance(occ, float) and isinstance(vir, float) and isinstance(homo, float) and isinstance(lumo, float):
-        print(f"G0W0 HOMO wrong: {occ} eV")
-        print(f"G0W0 LUMO wrong: {vir} eV")
-        print(f"GW HOMO scf: {occ_scf} eV")
-        print(f"GW LUMO scf: {vir_scf} eV")
-        print(f"G0W0 HOMO: {occ_0} eV")
-        print(f"G0W0 LUMO: {vir_0} eV")
-        print(f"HOMO: {homo} eV")
-        print(f"LUMO: {lumo} eV")
+        my_print(f"G0W0 HOMO wrong: {occ} eV")
+        my_print(f"G0W0 LUMO wrong: {vir} eV")
+        my_print(f"GW HOMO scf: {occ_scf} eV")
+        my_print(f"GW LUMO scf: {vir_scf} eV")
+        my_print(f"G0W0 HOMO: {occ_0} eV")
+        my_print(f"G0W0 LUMO: {vir_0} eV")
+        my_print(f"HOMO: {homo} eV")
+        my_print(f"LUMO: {lumo} eV")
         return occ, vir, homo, lumo, occ_scf, vir_scf, occ_0, vir_0
     else:
-        print('GW energies were not extracted.')
+        my_print('GW energies were not extracted.')
         _through_an_exception_if_the_string_is_found(string='Self-consistent quasi-particle solution not found',
                                                      exception=SCQPSolutionNotFound,
                                                      all_file=all_file)
@@ -441,7 +435,7 @@ def return_gw_energies_advanced(path_to_file):
 
 
 def _through_an_exception_if_the_string_is_found(string, exception, all_file):
-    print(f"I will check, if the reason is: {string}")
+    my_print(f"I will check, if the reason is: {string}")
     str_to_find = f"^.*{string}.*$"
     regex = re.compile(str_to_find)
     # with open(path_to_file, "r") as fin:
@@ -452,9 +446,9 @@ def _through_an_exception_if_the_string_is_found(string, exception, all_file):
         if line == -1:
             break
         if regex.match(line):
-            print(f'The run crashes because indeed: {string}')
+            my_print(f'The run crashes because indeed: {string}')
             raise exception
-    print("No, this is not the reason indicated above. ")
+    my_print("No, this is not the reason indicated above. ")
 
 
 def extract_total_energy(path_to_file):
@@ -483,6 +477,19 @@ def extract_number_of_independent_orbital_function(path_to_file):
             if match:
                 return int(match.groups()[0])
 
+
+
+# def my_print(x, *args, **kwargs):
+#     my_print(x, *args, **kwargs)
+
+
+# todo: this is hard coded. One has to change here silen manually. Set it to False to see the output in out files.
+
+def my_print(x, silent=False, *args, **kwargs):
+    if not silent:
+        print(x, *args, **kwargs)
+    else:
+        pass
 
 if __name__ == '__main__':
     main()
