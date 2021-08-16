@@ -249,7 +249,7 @@ def main():
                 occ, vir, homo_, lumo_, occ_scf, vir_scf, occ_0, vir_0 = return_gw_energies_advanced(diag_out_file)
                 homo, lumo = redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo)
                 print_extracted_energies(suf, homo, lumo, occ, vir)  # on a screen
-            except (IterationLimit, LargeSigc):  # 20 iterations
+            except (IterationLimit, LargeSigc, SCQPSolutionNotFound, NaNInGW):  # 20 iterations
                 try:  # xyz + 10
                     print("GW is extracted, but scf is not converged, because of IterationLimit. Calling fallback ...")
                     my_abc_plus_10 = str(my_xyz_file_obj.compute_box_size(offset=my_offset+10.0))[1:-2]  # todo: hard
@@ -263,7 +263,7 @@ def main():
                     # diag
                     print("diag Replay ot with xyz + 10 and Femi offset of 5E-2")
                     gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].SUBSYS.CELL.Abc = my_abc_plus_10
-                    gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.RI_G0W0.Fermi_level_offset = 5.0E-2
+                    gw_diag_simulations.CP2K_INPUT.FORCE_EVAL_list[0].DFT.XC.WF_CORRELATION_list[0].RI_RPA.RI_G0W0.Fermi_level_offset = 4.0E-2
                     gw_diag_simulations.write_input_file(diag_inp_file)
                     my_cp2k_run(suf=suf, ot_or_diag='diag')
                     print("... diag succesfull")
@@ -271,7 +271,7 @@ def main():
                     occ, vir, homo_, lumo_, occ_scf, vir_scf, occ_0, vir_0 = return_gw_energies_advanced(diag_out_file)
                     homo, lumo = redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo)
                     print_extracted_energies(suf, homo, lumo, occ, vir)  # on a screen
-                except (IterationLimit, LargeSigc):
+                except (IterationLimit, LargeSigc, SCQPSolutionNotFound, NaNInGW):
                     try:
                         print("GW is extracted, but scf is not converged AGAIN, because of IterationLimit. Calling fallback ...")
                         # diag 200 Q points
@@ -286,7 +286,7 @@ def main():
                         occ, vir, homo_, lumo_, occ_scf, vir_scf, occ_0, vir_0 = return_gw_energies_advanced(diag_out_file)
                         homo, lumo = redefine_homo_lumo_if_not_extracted_before(homo_, lumo_, homo, lumo)
                         print_extracted_energies(suf, homo, lumo, occ, vir)  # on a screen
-                    except (IterationLimit, LargeSigc):
+                    except (IterationLimit, LargeSigc, SCQPSolutionNotFound):
                         # replay ot with a larger cutoff then make diag with a larger cutoff
                         # ot
                         print("GW is extracted, but scf is not converged AGAIN AGAIN, because of IterationLimit. Calling fallback ...")
