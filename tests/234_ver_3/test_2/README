@@ -1,0 +1,5 @@
+test with four molecules from the qm17 dataset. These four are in turn randomly selected from the subset of the molecules I have generated from qm17 dataset (first, 100-Means  --> then 100 molecules, which are as close as possible to the centers of the mensioned molecules).
+===
+Here, the molecules in the folders are simply named arbitrarity.
+The names of them should be read in from the file *.csv as is.
+This is the different format from qm17 dataset, where the molecules are listed by 6-digits numbers in *csv and many other stupid things also there.

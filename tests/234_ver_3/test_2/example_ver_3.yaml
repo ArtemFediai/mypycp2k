@@ -1,0 +1,31 @@
+---
+# example: 2,3 zeta for basis set extrapolation GW
+db_format: general
+basis_set_file: BASIS_CC_AUG_RI_NEW
+basis_set_suffix:
+  - 2
+  - 3
+basis_set_list:
+  - aug-cc-pVDZ
+  - aug-cc-pVTZ
+ri_basis_set_list:
+  - aug-cc-pVDZ-RIFIT
+  - aug-cc-pVTZ-RIFIT
+cutoff: 500
+rel_cutoff: 50
+eps_scf_dft:
+  - 1.0E-10
+  - 1.0E-10
+molecule_vacuum_offset: 10
+folder_names:
+  simulations: sim
+  database: db
+  scratch: bh5670
+debug: False
+dummy_run: True
+prefix_xyz_file_name: dataset_qm17  # --> {}_{rank}.xyz  another version: dataset_name
+cp2k_exe_path: /home/ws/bh5670/cp2k/cp2k-7.1/exe/local/cp2k.popt
+potential_file_name: 'POTENTIAL'
+potential: 'ALL'
+elements: ['H', 'C', 'N', 'O', 'F', 'P', 'S', 'Cl', 'Br', 'B', 'I']
+mpi: mpich
