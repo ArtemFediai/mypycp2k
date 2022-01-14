@@ -1,0 +1,4 @@
+Aim of the folder: test py scripts from examples folder
+Contains: two types of the folders:
+1-st type: datasets (the test one, i.e. reduced) e.g., dsgb9nsd
+2-nd type: folder with the test for specific datasets
