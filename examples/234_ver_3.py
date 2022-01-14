@@ -47,19 +47,20 @@ def main():
     parser.add_argument('-rank')  # array job number
     parser.add_argument('-num_cpus')  # number of cpus you request for every array job
     parser.add_argument('-i')  # input_from_yaml yaml file
-    parser.add_argument('-mol_ids')  # mol_ids to simulate (without prefix and suffix) todo: not used?
+    parser.add_argument('-mol_ids')  # path to csv file with some identifiers of molecules to be simulated.
+    # Identifiers may be: numbers of the molecules (6 digits) or the full names of the molecules mol_ids to simulate
     args = parser.parse_args()
     #  parser end
 
-    #  yaml file
+    #  yaml file. my_input is the dictionaty containing input information.
     yaml_file_name = args.i
     with open(yaml_file_name) as stream:
-        my_input = yaml.load(stream=stream)
+        my_input = yaml.load(stream=stream, Loader=yaml.SafeLoader)
     #  end: yaml file
 
     #  todo: think over because it is imported twice
     #  end: run-or-check settings
-    debug = my_input['debug']
+    debug = my_input['debug']  # if True will copy the content of the scratch folder back to sim/* folder. Actually, should be used
     dummy_run = my_input['dummy_run']
 
     #  if not at cluster: test
@@ -70,9 +71,7 @@ def main():
     #  folders names
     sim = my_input['folder_names']['simulations']
     db = my_input['folder_names']['database']
-    bh5670 = my_input['folder_names'][
-        'scratch']  # the outermost folder in the scratch folder where all other data are put
-    prefix_xyz_file_name = my_input['prefix_xyz_file_name']
+    bh5670 = my_input['folder_names']['scratch']  # the outermost folder in the scratch folder where all other data are put
     my_offset = my_input['molecule_vacuum_offset']
     try:
         mpi = my_input['mpi']
@@ -82,48 +81,75 @@ def main():
     #  parsing input_from_yaml
     threads = int(args.num_cpus)  # cpus used to compute. I do not subtract 1. This does not help
     # mol_id = parse_mixed_list()
-    path_to_mol_ids_default = 'db/trash_db_numbers.csv'  # simulate mols that did not fully converged
-    # path_to_mol_ids_default = 'db/missing_num.csv'  #  simulate mols that are missing in the range of the simulated mols
 
-    # by default: missing_numbers
-    try:
-        path_to_mol_ids = args.mol_ids
-        if path_to_mol_ids is None:
-            raise TypeError
-    except TypeError:
-        path_to_mol_ids = path_to_mol_ids_default
-    finally:
+    def determine_file_name_path(my_input, args):
+        """
+        Depending on the format of the input dictionary (my_input['db_format']),
+         returns the name of the input file and the path to it
+        @param my_input: input dictionary, which was read in from the yaml input file
+        @param args: command line arguments list
+        @return: xyz_file_name, xyz_file_path, mol_identifier (self-explained)
+        """
+
+        try:
+            db_format = my_input['db_format']  # 'general' means that names are full mols identifiers
+        except KeyError:
+            db_format = 'dsgdb9nsd'  # this is the format of the corresponding dataset only. default
+
+        try:
+            path_to_mol_ids = args.mol_ids
+        except TypeError:
+            print(f'path_to_mol_ids {args.mol_ids} is not found. Exiting...')
+            exit()
+
         with open(path_to_mol_ids, 'r') as stream:
             csv_reader = csv.reader(stream)
-            all_numbers = csv_reader.__next__()  # only one line in this csv format file, so we do not loop over
-            rank = all_numbers[int(args.rank) - 1]
+            all_mols_ids = csv_reader.__next__()  # only one line in this csv format file, so we do not loop over
 
-    rank = '{:0>6}'.format(rank)  # transform rank from '1' to '000001' format. This is not a general thing
-    xyz_file_name = f'{prefix_xyz_file_name}_{rank}.xyz'
-    xyz_file_location = f'../{prefix_xyz_file_name}/{xyz_file_name}'  # hard coded. db outside!
+        if db_format =='dsgdb9nsd':
+            prefix_xyz_file_name = my_input['prefix_xyz_file_name']
+            mol_identifier_variable_digits = all_mols_ids[int(args.rank) - 1]  # the variable "rank" is not actually a rank. This is here 6 digits read from *.csv file (only for db_format = 'gdb...' or if it is nnot specified).
+            mol_identifier_6_digits = '{:0>6}'.format(mol_identifier_variable_digits)  # transform rank from '1' to '000001' format. This is not a general thing
+            xyz_file_name = f'{prefix_xyz_file_name}_{mol_identifier_6_digits}.xyz'  # only file name
+            xyz_file_path = f'../{prefix_xyz_file_name}/{xyz_file_name}'  # path to the file. db outside working folder
+            return xyz_file_name, xyz_file_path, mol_identifier_6_digits
 
-    db_record_path = f'{db}/DB_{rank}.yaml'  # file where the results will be saved todo: raeum es alles auf!
-    #  check is the output exists
+        elif db_format == 'general':
+            try:
+                prefix_xyz_file_name = my_input['prefix_xyz_file_name']  # here, xyz file name is the name of the db folder.
+            except KeyError:
+                prefix_xyz_file_name = my_input['dataset_name']
+            mol_identifier = all_mols_ids[int(args.rank) - 1].split('.')[0]
+            xyz_file_name = f'{mol_identifier}.xyz'  # only file name
+            xyz_file_path = f'../{prefix_xyz_file_name}/{xyz_file_name}'  # path to the file. db outside working folder
+            return xyz_file_name, xyz_file_path, mol_identifier
+        else:
+            print('Unknown db_format. Exiting...')
+            exit()
+
+    xyz_file_name, xyz_file_path, mol_identifier = determine_file_name_path(my_input, args)
+
+    # db -->
+    # check is the output exists in 'db' folder
+    db_record_path = f'{db}/DB_{mol_identifier}.yaml'  # file where the results will be saved
     if os.path.exists(db_record_path):
-        print(f'The simulation results of mol. {rank} is already in the folder of reference')
+        print(f'The simulation results of mol. {mol_identifier} is already in the folder of reference')
         exit()
     #  here one can check if the DB_ file is not broken
     #  end: check if the output exists
-
+    # <-- db
+    
+    # scratch -->
+    # this below makes something. look carefully!
     if not dummy_run:
-        sim_folder_scratch = f'/{scratch}/{bh5670}/{sim}/{rank}'
+        sim_folder_scratch = f'/{scratch}/{bh5670}/{sim}/{mol_identifier}'
     else:
-        sim_folder_scratch = f'{scratch}/{bh5670}/{sim}/{rank}'
-
-    sim_folder_home = f'{sim}/{rank}'  # sim folder at home exists. you create later {rank} folder
-
-    # if not os.path.exists(sim_folder_scratch):  # check if accidentially there is a folder at scratch
+        sim_folder_scratch = f'{scratch}/{bh5670}/{sim}/{mol_identifier}'
     os.makedirs(sim_folder_scratch, exist_ok=True)
-    # else:
-    #     print('I have found leftovers at /scratch and will remove it ...')
-    #     rmtree(sim_folder_scratch)  # leftovers from previous simulations will be removed
-    #     print('...I have removed it')
+    #<-- scratch
 
+    # sim -->
+    sim_folder_home = f'{sim}/{mol_identifier}'  # sim folder at home exists (has to exist beforehand). you create later {mol_id} folder
     if not os.path.exists(sim_folder_home):  # home
         os.mkdir(sim_folder_home)
     else:
@@ -134,21 +160,24 @@ def main():
         rmtree(sim_folder_home)  # leftovers from previous simulations will be removed
         os.mkdir(sim_folder_home)  # and the new folder will be created
         print('...done')
-
+    # <-- sim
+    
     #  xyz object created, normal xyz file is created at scratch
     try:
-        my_xyz_file_obj = XYZ.from_file(xyz_file_location)  # object created using the file from home
-    except:  # test
+        my_xyz_file_obj = XYZ.from_file(xyz_file_path)  # object created using the file from home
+    except FileNotFoundError:  # test
         my_xyz_file_obj = XYZ.from_file('H2O.xyz')  # object created using the file from home
 
     xyz_at_scratch = sim_folder_scratch + '/' + xyz_file_name  #
     my_xyz_file_obj.write(xyz_at_scratch)  # writes a normal xyz (into scratch)
 
     # my molecule object is created. It will serve as a DB record
-    my_new_mol = Cp2kOutput(rank)
+    my_new_mol = Cp2kOutput(mol_identifier)
 
     # rel_cutoff: 40; cutoff: 300; abc = 10
     my_abc = str(my_xyz_file_obj.compute_box_size(offset=my_offset))[1:-2]
+
+    # last changes to my_input: offsets and xyz_file_name
     my_input['my_abc'] = my_abc
     my_input['xyz_file_name'] = xyz_file_name
 
@@ -373,10 +402,10 @@ def main():
     if not dummy_run:
         print('saving to DB...')
 
-        with open(f'{db}/DB_{rank}.yaml', 'w') as stream:
+        with open(f'{db}/DB_{mol_identifier}.yaml', 'w') as stream:
             yaml.safe_dump(db_record, stream)
 
-        print(f"saved to {db}/DB_{rank}.yaml")
+        print(f"saved to {db}/DB_{mol_identifier}.yaml")
 
     print('I will remove the content of the sim folder')
     # Clean up before leave
