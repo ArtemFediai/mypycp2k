@@ -15,9 +15,18 @@ import yaml
 from util.general import timeit
 import shutil
 import csv
+import argparse
+
 
 def main():
+    # Parsing -->
+    parser = argparse.ArgumentParser(description='arguments supplied to the remove trash function')
+    parser.add_argument('-format',
+                        nargs='?')
+    args = parser.parse_args()
+    format_of_the_xyz_file = args.format
 
+    # <-- Parsing
 
     # path = '.'  # current dir
     # only_number = r'^[DB_(\d{6}).yaml$]'
@@ -31,21 +40,34 @@ def main():
     # valid_db_files = [item for item in all_files_and_folders if valid_db_file_name.match(item)]
     # six_digit_numbers = [int(re.match(only_number_2, item)[2]) for item in all_files_and_folders]
 
-    valid_db_files, numbers = get_all_db_files()
-
+    # return db files -->
+    if format_of_the_xyz_file is None:
+        valid_db_files, numbers = get_all_db_files()
+    else:
+        valid_db_files, numbers = get_all_db_files_general()
     print('list of db: ', valid_db_files)
-    print('numbers: ', *numbers)
+    try:
+        print('numbers: ', *numbers)
+    except TypeError:
+        print('numbers cannot be returned because general format of xyz file name is used. '
+              'Only QM9 dataset will return this')
+    # <-- return db files
 
-    trash_files, trash_numbers = identify_trash_db_files(all_db_files=valid_db_files, use_cashe_if_exists=False)  #  TODO cash is broken
+    # identify trash files -->
+    trash_files, trash_numbers = identify_trash_db_files(all_db_files=valid_db_files,
+                                                         use_cashe_if_exists=False)  # TODO cash is broken
     print("trash_files: ", trash_files)
 
     try:
-        print(f"(number of trash files = {len(trash_files)} which is {100 * len(trash_files) / len(valid_db_files)} \% of all files)")
+        print(
+            f"(number of trash files = {len(trash_files)} which is {100 * len(trash_files) / len(valid_db_files)} \% of all files)")
     except ZeroDivisionError:
-        print("No valid db files found. Probably you are in a wrong folder. Go to a folder with the simulation results (db/)")
+        print(
+            "No valid db files found. Probably you are in a wrong folder. Go to a folder with the simulation results (db/)")
     write_list_of_trash_db(list_of_trash_db=trash_files, list_of_trash_numbers=trash_numbers)
 
     move_files_to_trash_folder(file_names_to_put_there=trash_files)
+    # <-- identify trash files
 
     min_max_tuple, missing_db, missing_numbers = get_range_and_missing_items(valid_db_files=valid_db_files,
                                                                              numbers=numbers)
@@ -53,6 +75,7 @@ def main():
 
     broken_num = get_broken_items(min_max_tuple)
     print("Numbers of broken xyz file of the original db", broken_num)
+
 
 @timeit
 def move_files_to_trash_folder(file_names_to_put_there,
@@ -72,8 +95,8 @@ def move_files_to_trash_folder(file_names_to_put_there,
 def get_all_db_files(prefix='DB_',
                      num_digits=6,
                      path='.'):
-    #only_number = '^DB_[0-9]{6}.yaml$'
-    only_number = '^{}[0-9]{}.yaml$'.format(prefix,'{' + str(num_digits) + '}')
+    # only_number = '^DB_[0-9]{6}.yaml$'
+    only_number = '^{}[0-9]{}.yaml$'.format(prefix, '{' + str(num_digits) + '}')
     valid_db_file_name = re.compile(only_number)
     all_files_and_folders = os.listdir(path)
     valid_db_files = [item for item in all_files_and_folders if valid_db_file_name.match(item)]
@@ -82,6 +105,28 @@ def get_all_db_files(prefix='DB_',
     # numbers = [int(re.match(only_number_2, item)[2]) for item in all_files_and_folders if not os.path.isdir(item)]
     numbers = [int(re.match(only_number_2, item)[2]) for item in valid_db_files]
     return valid_db_files, np.sort(numbers)
+
+
+@timeit
+def get_all_db_files_general(prefix='DB_',
+                             path='.'):
+    """
+    General format. In contrast to one
+    @param prefix: every record starts here
+    @param num_digits: assumed that the prefix is followed by this number of digits
+    @param path: self-explaining
+    @return: list of records, sorted numbers
+    """
+    # only_number = '^DB_[0-9]{6}.yaml$'
+    only_number = '^{}[a-zA-Z0-9_]*.yaml$'.format(prefix)
+    valid_db_file_name = re.compile(only_number)
+    all_files_and_folders = os.listdir(path)
+    valid_db_files = [item for item in all_files_and_folders if valid_db_file_name.match(item)]
+    # only_number_1 = r'(^DB_)(\d{6}).yaml$' this is what is done below
+    # only_number_2 = r'(^{})([0-9]{}).yaml$'.format(prefix, '{' + str(num_digits) + '}')
+    # numbers = [int(re.match(only_number_2, item)[2]) for item in all_files_and_folders if not os.path.isdir(item)]
+    # numbers = [int(re.match(only_number_2, item)[2]) for item in valid_db_files]
+    return valid_db_files, None
 
 
 @timeit
@@ -112,10 +157,16 @@ def identify_trash_db_files(all_db_files,
             cvs_writer = csv.writer(stream)
             cvs_writer.writerow(trash_db_files)
             print(f'I wrote the list of trash db file into file {_cashe_file_name}')
-        trash_db_numbers = make_nums_from_name(names=trash_db_files)
+        try:
+            trash_db_numbers = make_nums_from_name(names=trash_db_files)
+        except TypeError:
+            trash_db_numbers = None
+            print('I am in general mode. db numbers cannot be identified')
         return trash_db_files, trash_db_numbers
 
-def write_list_of_trash_db(list_of_trash_db, list_of_trash_numbers, fname_list_db='trash_db.csv', fname_list_numbers='trash_db_numbers.csv'):
+
+def write_list_of_trash_db(list_of_trash_db, list_of_trash_numbers, fname_list_db='trash_db.csv',
+                           fname_list_numbers='trash_db_numbers.csv'):
     with open(fname_list_db, 'w') as stream:
         csv_writer = csv.writer(stream)
         print(f"Write list of trash db into {fname_list_db}")
@@ -150,7 +201,7 @@ def get_range_and_missing_items(valid_db_files,
                                 fname_missing_db_numbers='missing_num.csv'):
     smallest_number = min(numbers)
     largest_number = max(numbers)
-    wish_list = np.linspace(smallest_number, largest_number, largest_number-smallest_number+1, dtype=int)
+    wish_list = np.linspace(smallest_number, largest_number, largest_number - smallest_number + 1, dtype=int)
     actual_list = numbers
     missing_numbers = list(set(wish_list) - set(actual_list))
     missing_numbers = np.sort(missing_numbers)
@@ -168,6 +219,7 @@ def get_range_and_missing_items(valid_db_files,
 
     return (smallest_number, largest_number), missing_dbs, missing_numbers
 
+
 @timeit
 def get_broken_items(small_large_number, db='dsgdb9nsd'):
     """
@@ -177,7 +229,7 @@ def get_broken_items(small_large_number, db='dsgdb9nsd'):
     min_num, max_num = small_large_number
     broken_num = []
 
-    for number in range(min_num, max_num+1):
+    for number in range(min_num, max_num + 1):
         six_digits_number = make_name_from_number(number, with_prefix=False)
         path_to_orig_xyz_file = f'../{db}/{db}_{six_digits_number}.xyz'
         if exception_found(path_to_orig_xyz_file):
@@ -192,7 +244,7 @@ def get_broken_items(small_large_number, db='dsgdb9nsd'):
     print(f"I wrote the numbers of broken xyz files into {fname_list_numbers}")
 
     return broken_num
-    
+
 
 def exception_found(fin_name):
     """
