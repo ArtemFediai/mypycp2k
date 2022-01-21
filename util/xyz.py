@@ -23,6 +23,9 @@ def main():
     xyz_object_error = XYZ.from_file('test/dsgdb9nsd_104557.xyz')
     print('I have saved to: test/cured_xyzfile.xyz')
     xyz_object_error.write('test/cured_xyzfile.xyz')
+    xyz_object_error.identify_atom_types()
+    print(f'Unqie atom types: {xyz_object_error.unique_atom_types}')
+    print('I am done')
 
 class XYZ:
     @classmethod
@@ -94,6 +97,13 @@ class XYZ:
             for x, atom_type in zip(self.coords.reshape(-1, 3), cycle(self.atom_types)):
                 stream.write("{}   {:.6f}   {:.6f}   {:.6f}\n".format(atom_type, x[0], x[1], x[2]))
 
+    def identify_atom_types(self):
+        """
+        Returns unique atom types
+        @return:
+        set of unique atom types
+        """
+        self.unique_atom_types = set(self.atom_types)
 
 if __name__ == '__main__':
     main()
