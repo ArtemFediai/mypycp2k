@@ -142,9 +142,13 @@ def main():
     # scratch -->
     # this below makes something. look carefully!
     if not dummy_run:
+        print('This is dummy run')
         sim_folder_scratch = f'/{scratch}/{bh5670}/{sim}/{mol_identifier}'
+        print(f'I set a sim_folder_scratch to: {sim_folder_scratch}')
     else:
+        print('This is a productive run')
         sim_folder_scratch = f'{scratch}/{bh5670}/{sim}/{mol_identifier}'
+        print(f'I set a sim_folder_scratch to: {sim_folder_scratch}')
     os.makedirs(sim_folder_scratch, exist_ok=True)
     #<-- scratch
 
@@ -163,6 +167,7 @@ def main():
     # <-- sim
     
     #  xyz object created, normal xyz file is created at scratch
+    # todo: H20.xyz is not relevant anymore
     try:
         my_xyz_file_obj = XYZ.from_file(xyz_file_path)  # object created using the file from home
     except FileNotFoundError:  # test
@@ -180,7 +185,8 @@ def main():
     # last changes to my_input: offsets and xyz_file_name
     my_input['my_abc'] = my_abc
     my_input['xyz_file_name'] = xyz_file_name
-
+    my_xyz_file_obj.identify_atom_types()
+    my_input['elements'] = my_xyz_file_obj.unique_atom_types  # elements identified automatically
     # misc
     wf_corr_num_proc = 0  # 16 in the ref paper; -1 to use all
     inp_file_name = 'test_2344.inp'  # base file name
