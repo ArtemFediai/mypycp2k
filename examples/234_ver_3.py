@@ -142,11 +142,11 @@ def main():
     # scratch -->
     # this below makes something. look carefully!
     if not dummy_run:
-        print('This is dummy run')
+        print('This a productive run')
         sim_folder_scratch = f'/{scratch}/{bh5670}/{sim}/{mol_identifier}'
         print(f'I set a sim_folder_scratch to: {sim_folder_scratch}')
     else:
-        print('This is a productive run')
+        print('This is dummy run')
         sim_folder_scratch = f'{scratch}/{bh5670}/{sim}/{mol_identifier}'
         print(f'I set a sim_folder_scratch to: {sim_folder_scratch}')
     os.makedirs(sim_folder_scratch, exist_ok=True)
