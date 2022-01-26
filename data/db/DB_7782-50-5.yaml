@@ -1,0 +1,109 @@
+7782-50-5:
+  homo:
+  - -7.416814876578444
+  - -7.33111074858697
+  homo_err:
+  - 0.0310343010919755
+  - 0.003635833513011205
+  homo_r2:
+  - 0.989160020059805
+  - 0.9997389352515839
+  homos:
+    2: -6.960712058233787
+    3: -7.218158711393216
+    4: -7.287172501304155
+  lumo:
+  - -4.334133884139712
+  - -4.248340575367777
+  lumo_err:
+  - 0.02070106066887157
+  - 0.011183326006454879
+  lumo_r2:
+  - 0.9950762301998503
+  - 0.9974785507539609
+  lumos:
+    2: -3.8833987010117257
+    3: -4.130353732090152
+    4: -4.2099867654835865
+  num_orb:
+    2: 36
+    3: 74
+    4: 140
+  occ:
+  - null
+  - null
+  occ_0:
+  - null
+  - null
+  occ_0_err:
+  - null
+  - null
+  occ_0_r2:
+  - null
+  - null
+  occ_err:
+  - null
+  - null
+  occ_r2:
+  - null
+  - null
+  occ_scf:
+  - null
+  - null
+  occ_scf_err:
+  - null
+  - null
+  occ_scf_r2:
+  - null
+  - null
+  occs:
+    2: not extracted
+    3: -11.144
+    4: -11.099
+  occs_0:
+    2: not extracted
+    3: -11.144
+    4: -11.099
+  occs_scf:
+    2: not extracted
+    3: -11.721
+    4: -11.723
+  vir:
+  - null
+  - null
+  vir_0:
+  - null
+  - null
+  vir_0_err:
+  - null
+  - null
+  vir_0_r2:
+  - null
+  - null
+  vir_err:
+  - null
+  - null
+  vir_r2:
+  - null
+  - null
+  vir_scf:
+  - null
+  - null
+  vir_scf_err:
+  - null
+  - null
+  vir_scf_r2:
+  - null
+  - null
+  virs:
+    2: not extracted
+    3: -0.58
+    4: -0.886
+  virs_0:
+    2: not extracted
+    3: -0.58
+    4: -0.886
+  virs_scf:
+    2: not extracted
+    3: -0.195
+    4: -0.491
