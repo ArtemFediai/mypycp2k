@@ -27,6 +27,11 @@ def set_nonperiodic_poisson(DFT, solver='MT'):
     POISSON.Periodic = 'NONE'
     POISSON.Poisson_solver = solver
 
+def set_periodic_poisson(DFT, solver='PERIODIC'):
+    POISSON = DFT.POISSON
+    POISSON.Periodic = 'XYZ'
+    POISSON.Poisson_solver = solver
+
 
 def set_cutoff(DFT, cutoff=900, rel_cutoff=60, ngrids=5):
     MGRID = DFT.MGRID
@@ -47,6 +52,18 @@ def print_mo(PRINT, filename='MO', range='1 10'):
     MO.Filename = filename
     MO.Range = range
 
+# v9 means for qp. or for cp2k ver.9.1.
+def set_qs_v9(DFT,
+           method='GAPW',
+           eps_default=1.0E-10,
+           eps_pgf_orb=None):
+    QS = DFT.QS
+    QS.Method = method
+    QS.Eps_default = eps_default  # default: 1E-10. Need higher???
+    if eps_pgf_orb is None:
+        pass  # this will set it to sqrt(eps_default)
+    else:
+        QS.Eps_pgf_orb = eps_pgf_orb  # Overrides SQRT(EPS_DEFAULT) value. No default value. todo: clarify
 
 def set_qs(DFT,
            method='GAPW',
