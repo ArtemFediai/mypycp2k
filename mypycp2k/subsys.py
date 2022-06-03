@@ -24,6 +24,10 @@ def set_unperiodic_cell(subsys, abc):
     CELL.Abc = abc
     CELL.Periodic = 'NONE'
 
+def set_periodic_cell(subsys, abc):
+    CELL = subsys.CELL
+    CELL.Abc = abc
+    CELL.Periodic = 'XYZ'
 
 def set_topology(subsys, xyz_file_name):
     TOPOLOGY = subsys.TOPOLOGY
