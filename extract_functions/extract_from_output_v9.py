@@ -6,10 +6,9 @@ import re
 """
 functions extract something from the out cp2k files using re
 Example of 7.1 gw cp2k output in test
-"""
 
-"""
-    CRASH COURSE ON REGULAR EXPRESSION:
+
+CRASH COURSE ON REGULAR EXPRESSION:
 
     ^       # Match start of string
     [-+]?   # Match a leading + or - (optional)
@@ -215,9 +214,9 @@ def return_gw_energies(path_to_file):
     myiter = iter(all_file.splitlines())
     reason = None
 
-    regex = re.compile("^\s*GW quasiparticle energies")
-    regex1 = re.compile("^\s*[0-9]+ \( occ \)(\s+[-+]?[0-9]*\.[0-9]*\s*)")
-    regex2 = re.compile("^\s*[0-9]+ \( vir \)(\s+[-+]?[0-9]*\.[0-9]*\s*)")
+    regex = re.compile(r"^\s*GW quasiparticle energies")
+    regex1 = re.compile(r"^\s*[0-9]+ \( occ \)(\s+[-+]?[0-9]*\.[0-9]*\s*)")
+    regex2 = re.compile(r"^\s*[0-9]+ \( vir \)(\s+[-+]?[0-9]*\.[0-9]*\s*)")
     # regex1 = re.compile("^\s*[0-9]+\s+\(")
 
     line_occ = None
@@ -318,12 +317,12 @@ def return_gw_energies_advanced(path_to_file, silent=False):
 
     occ, vir, homo, lumo, occ_0, vir_0, occ_scf, vir_scf = None, None, None, None, None, None, None, None
 
-    regex = re.compile("^\s*GW quasiparticle energies")
-    regex1 = re.compile("^\s*[0-9]+ \( occ \)(\s+[-+]?[0-9]*\.[0-9]*\s*)")  # 12 (occ) <one number>
-    reg_occ_groups = re.compile("^\s*([0-9]+) \( (occ) \) ((?:\s*[-+]?[0-9]*\.[0-9]*\s*)*)")
-    reg_vir_groups = re.compile("^\s*([0-9]+) \( (vir) \) ((?:\s*[-+]?[0-9]*\.[0-9]*\s*)*)")
+    regex = re.compile(r"^\s*GW quasiparticle energies")
+    regex1 = re.compile(r"^\s*[0-9]+ \( occ \)(\s+[-+]?[0-9]*\.[0-9]*\s*)")  # 12 (occ) <one number>
+    reg_occ_groups = re.compile(r"^\s*([0-9]+) \( (occ) \) ((?:\s*[-+]?[0-9]*\.[0-9]*\s*)*)")
+    reg_vir_groups = re.compile(r"^\s*([0-9]+) \( (vir) \) ((?:\s*[-+]?[0-9]*\.[0-9]*\s*)*)")
 
-    regex2 = re.compile("^\s*[0-9]+ \( vir \)(\s+[-+]?[0-9]*\.[0-9]*\s*)")
+    regex2 = re.compile(r"^\s*[0-9]+ \( vir \)(\s+[-+]?[0-9]*\.[0-9]*\s*)")
     # regex1 = re.compile("^\s*[0-9]+\s+\(")
 
     num_gw_iter = 0
@@ -459,7 +458,7 @@ def extract_total_energy(path_to_file):
     returns total energy from file path_to_file
     """
     with open(path_to_file, "r") as fin:
-        regex = re.compile(" ENERGY\| Total FORCE_EVAL \( QS \) energy \(a\.u\.\):\s+(.+)\n")
+        regex = re.compile(r" ENERGY\| Total FORCE_EVAL \( QS \) energy \(a\.u\.\):\s+(.+)\n")
         for line in fin:
             match = regex.match(line)
             if match:
@@ -473,7 +472,7 @@ def extract_number_of_independent_orbital_function(path_to_file):
     """
     with open(path_to_file, "r") as fin:
 
-        regex = re.compile(" Number of independent orbital functions:\s+([0-9]+)\n")
+        regex = re.compile(r" Number of independent orbital functions:\s+([0-9]+)\n")
         for line in fin:
             match = regex.match(line)
             if match:
