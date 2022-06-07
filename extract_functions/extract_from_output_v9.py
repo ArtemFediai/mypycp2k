@@ -114,12 +114,12 @@ def return_homo_lumo(path_to_file):
 
     myiter = iter(all_file.splitlines())
 
-    regex = re.compile("^\s*Eigenvalues of the occupied subspace spin\s+(.+)")
-    regex_lumos = re.compile("^\s*Lowest Eigenvalues of the unoccupied subspace spin\s+(.+)")  # version 9.1
+    regex = re.compile(r"^\s*Eigenvalues of the occupied subspace spin\s+(.+)")
+    regex_lumos = re.compile(r"^\s*Lowest Eigenvalues of the unoccupied subspace spin\s+(.+)")  # version 9.1
 
-    f_begin = '(^\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)'  # f = float. expr: any float
-    f_middle = '(\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)*'
-    f_end = '(\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s*$)'
+    f_begin = r'(^\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)'  # f = float. expr: any float
+    f_middle = r'(\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)*'
+    f_end = r'(\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s*$)'
     any_floating_point_numbers = re.compile(f_begin + f_middle + f_end)
 
     homos = []
