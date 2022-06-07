@@ -116,12 +116,12 @@ def add_gw_ver_9(xc,
     """
     WF_CORRELATION1 = xc.WF_CORRELATION_add()
     WF_CORRELATION1.Memory = max_memory_wf
-    INTEGRAL = WF_CORRELATION1.Integral
-    INTEGRAL.Eri_method = 'DEFAULT'
+    # INTEGRAL = WF_CORRELATION1.Integral  # not needed by default. Will be automatically assigned depending on method
+    # INTEGRAL.Eri_method = 'DEFAULT'  # see above
     #todo: not completed because pycp2k version is incompatable.
     # WF_CORRELATION1.Method = 'RI_RPA_GPW'
     # WF_CORRELATION1.Eri_method = 'OS'  # for non-periodic
-    WF_CORRELATION1.Number_proc = wf_corr_num_proc  # -1 to use all; 16 in the ref paper
+    WF_CORRELATION1.Number_proc = wf_corr_num_proc  # -1 to use all; 16 in the ref paper; alies for: GROUP_SIZE
     ##### RI RPA ######
     RI_RPA = WF_CORRELATION1.RI_RPA
     RI_RPA.Rpa_num_quad_points = rpa_num_quad_points
@@ -134,14 +134,15 @@ def add_gw_ver_9(xc,
     RI_RPA_HF.SCREENING.Screen_on_initial_p = 'FALSE'
     RI_RPA_HF.MEMORY.Max_memory = max_memory_hf
     ###### RI_G0W0 ######
-    RI_G0W0 = RI_RPA.RI_G0W0
-    RI_G0W0.Corr_occ = corr_occ
-    RI_G0W0.Corr_virt = corr_virt
-    RI_G0W0.Ev_sc_iter = ev_sc_iter
-    RI_G0W0.Analytic_continuation = 'PADE'
-    RI_G0W0.Fermi_level_offset = 0.03  #  this was a serious problem. put to default
-    RI_G0W0.Crossing_search = 'NEWTON'
-    RI_G0W0.Ri_sigma_x = '.TRUE.'  # x with RI: very important!
+    # RI_G0W0 = RI_RPA.RI_G0W0
+    RI_GW = RI_RPA.GW
+    RI_GW.Corr_occ = corr_occ
+    RI_GW.Corr_virt = corr_virt
+    RI_GW.Ev_gw_iter = ev_sc_iter
+    RI_GW.Analytic_continuation = 'PADE'
+    RI_GW.Fermi_level_offset = 0.03  #  this was a serious problem. put to default
+    RI_GW.Crossing_search = 'NEWTON'
+    RI_GW.Ri_sigma_x = '.TRUE.'  # x with RI: very important!
 
 # def add_b3lyp(xc):
 #
