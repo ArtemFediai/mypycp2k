@@ -1,4 +1,7 @@
-from mypycp2k.util.exceptions import SCQPSolutionNotFound, SCFNotConvergedNotPossibleToRunMP2, NaNInGW, LargeSigc, IterationLimit
+from copy import copy
+
+from mypycp2k.util.exceptions import SCQPSolutionNotFound, SCFNotConvergedNotPossibleToRunMP2, NaNInGW, LargeSigc, \
+    IterationLimit
 import pandas as pd
 import numpy as np
 import re
@@ -266,46 +269,101 @@ def return_gw_energies(path_to_file):
 
 def return_gw_energies_advanced(path_to_file, silent=False):
     """
-  GW quasiparticle energies
-  -------------------------
+    Returns HOMO / LUMO / GW HOMO / GW LUMO / G0W0 HOMO / G0W0 LUMO / "wrong" G0W0 HOMO and LUMO
+    vocabulary:
+
 
   The GW quasiparticle energies are calculated according to:
-  E_GW = E_SCF + Z * ( Sigc(E_SCF) + Sigx - vxc )
 
-  The energy unit of the following table is eV.  Sigc_fit is a very conservative
-  estimate of the statistical error of the fitting.
+                      E_GW = E_SCF + Sigc(E_GW) + Sigx - vxc
 
-            MO      E_SCF       Sigc   Sigc_fit   Sigx-vxc          Z       E_GW
-    20 ( occ )    -12.173      2.843      0.000     -6.007      1.000    -15.338
-    21 ( occ )    -11.506      3.444      0.000     -5.781      1.000    -13.844
-    22 ( occ )    -11.117      3.766      0.000     -6.847      1.000    -14.198
-    23 ( occ )    -10.526      1.933      0.000     -4.335      1.000    -12.928
-    24 ( occ )     -9.587      3.129      0.000     -6.135      1.000    -12.594
-    25 ( occ )     -8.926      2.603      0.000     -5.521      1.000    -11.844
-    26 ( occ )     -8.763      2.142      0.000     -4.872      1.000    -11.494
-    27 ( occ )     -7.568      2.576      0.000     -5.395      1.000    -10.388
-    28 ( occ )     -6.978      0.832      0.000     -3.496      1.000     -9.641
-    29 ( occ )     -6.765      1.888      0.000     -4.853      1.000     -9.730
-    30 ( vir )     -4.257     -2.675      0.000      5.399      1.000     -1.533
-    31 ( vir )     -1.921     -3.047      0.000      5.737      1.000      0.768
-    32 ( vir )     -1.062     -1.351      0.000      3.130      1.000      0.717
-    33 ( vir )     -0.209     -1.072      0.000      2.539      1.000      1.258
-    34 ( vir )      0.196     -3.106      0.000      5.618      1.000      2.708
-    35 ( vir )      0.527     -1.207      0.000      2.765      1.000      2.085
-    36 ( vir )      0.608     -2.120      0.000      3.816      1.000      2.304
-    37 ( vir )      0.726     -2.840      0.000      4.714      1.000      2.599
-    38 ( vir )      0.740     -0.645      0.000      1.805      1.000      1.900
-    39 ( vir )      1.372     -0.587      0.000      1.596      1.000      2.381
-
-  GW HOMO-LUMO gap (eV)                                                     8.20
-
-  PERFORMANCE| PDGEMM flop rate (Gflops / MPI rank):                       26.64
-
-    and it takes HOMO as -6.765, LUMO as -4.257, occ as -9.73 and vir as -1.533.
-
-    return:
+  Upper equation is solved self-consistently for E_GW, see Eq. (12) in J. Phys.
+  Chem. Lett. 9, 306 (2018), doi: 10.1021/acs.jpclett.7b02740
 
 
+  ------------
+  G0W0 results
+  ------------
+
+  Molecular orbital   E_SCF (eV)       Sigc (eV)   Sigx-vxc (eV)       E_GW (eV)
+     1 ( occ )          -510.160          -0.237         -44.087        -554.483
+     2 ( occ )          -269.800          -4.974         -32.182        -306.956
+     3 ( occ )           -25.231           4.214         -11.413         -32.430
+     4 ( occ )           -16.731           2.500          -8.086         -22.317
+     5 ( occ )           -12.336           2.173          -6.269         -16.432
+     6 ( occ )           -10.427           2.071          -6.032         -14.387
+     7 ( occ )           -10.127           1.711          -5.789         -14.205
+     8 ( occ )            -7.372           2.089          -6.159         -11.442
+     9 ( occ )            -5.597           2.519          -6.505          -9.584
+    10 ( vir )             1.617          -1.040           4.960           5.537
+    11 ( vir )             3.152          -1.099           4.879           6.931
+    12 ( vir )             4.019          -1.224           5.258           8.053
+    13 ( vir )             4.223          -1.205           5.163           8.181
+    14 ( vir )             4.945          -1.723           6.136           9.357
+    15 ( vir )            13.605          -3.512           8.156          18.249
+    16 ( vir )            14.499          -1.890           6.662          19.271
+    17 ( vir )            14.749          -2.079           6.581          19.251
+    18 ( vir )            20.404          -2.065           8.375          26.713
+    19 ( vir )            22.145          -4.760           8.775          26.161
+
+  GW HOMO-LUMO gap (eV)                                                    15.12
+
+  INTEG_INFO| Started with Integration point   1 of  16
+  INTEG_INFO| Started with Integration point   2 of  16
+  INTEG_INFO| Started with Integration point   3 of  16
+  INTEG_INFO| Started with Integration point   4 of  16
+  INTEG_INFO| Started with Integration point   5 of  16
+  INTEG_INFO| Started with Integration point   6 of  16
+  INTEG_INFO| Started with Integration point   7 of  16
+  INTEG_INFO| Started with Integration point   8 of  16
+  INTEG_INFO| Started with Integration point   9 of  16
+  INTEG_INFO| Started with Integration point  10 of  16
+  INTEG_INFO| Started with Integration point  11 of  16
+  INTEG_INFO| Started with Integration point  12 of  16
+  INTEG_INFO| Started with Integration point  13 of  16
+  INTEG_INFO| Started with Integration point  14 of  16
+  INTEG_INFO| Started with Integration point  15 of  16
+  INTEG_INFO| Started with Integration point  16 of  16
+  PERFORMANCE| DGEMM flop rate (Gflops / MPI rank):                        16.01
+
+
+  ---------------------------------------
+  Eigenvalue-selfconsistency cycle:    2
+  ---------------------------------------
+
+  Molecular orbital   E_SCF (eV)       Sigc (eV)   Sigx-vxc (eV)       E_GW (eV)
+     1 ( occ )          -554.483          -0.371         -44.087        -554.617
+     2 ( occ )          -306.956          -0.197         -32.182        -302.180
+     3 ( occ )           -32.430           3.461         -11.413         -33.182
+     4 ( occ )           -22.317           2.343          -8.086         -22.474
+     5 ( occ )           -16.432           1.253          -6.269         -17.352
+     6 ( occ )           -14.387           1.103          -6.032         -15.356
+     7 ( occ )           -14.205           1.008          -5.789         -14.908
+     8 ( occ )           -11.442           1.381          -6.159         -12.149
+     9 ( occ )            -9.584           1.743          -6.505         -10.359
+    10 ( vir )             5.537          -0.740           4.960           5.836
+    11 ( vir )             6.931          -0.758           4.879           7.273
+    12 ( vir )             8.053          -0.862           5.258           8.415
+    13 ( vir )             8.181          -0.829           5.163           8.557
+    14 ( vir )             9.357          -1.230           6.136           9.851
+    15 ( vir )            18.249          -2.649           8.156          19.112
+    16 ( vir )            19.271          -1.304           6.662          19.858
+    17 ( vir )            19.251          -1.249           6.581          20.080
+    18 ( vir )            26.713          -1.793           8.375          26.985
+    19 ( vir )            26.161          -2.826           8.775          28.094
+
+  GW HOMO-LUMO gap (eV)                                                    16.20
+    @param silent:
+    @type path_to_file: str
+    @return  occ, vir, homo, lumo, occ_scf, vir_scf, occ_0, vir_0
+    occ: G0W0 HOMO "wrong"
+    vir: G0W0 LUMO "wrong"
+    homo: dft HOMO
+    lumo: dft LUMO
+    occ_scf: ev-GW HOMO
+    vir_scf: ev-GW LUMO
+    occ_0: G0W0 HOMO
+    vir_0: G0W0 LUMO
     """
     with open(path_to_file, "r") as fin:
         all_file = fin.read()
@@ -317,13 +375,16 @@ def return_gw_energies_advanced(path_to_file, silent=False):
 
     occ, vir, homo, lumo, occ_0, vir_0, occ_scf, vir_scf = None, None, None, None, None, None, None, None
 
-    regex = re.compile(r"^\s*GW quasiparticle energies")
-    regex1 = re.compile(r"^\s*[0-9]+ \( occ \)(\s+[-+]?[0-9]*\.[0-9]*\s*)")  # 12 (occ) <one number>
+    regex_g0w0 = re.compile(r"^\s*G0W0 results")
+    regex_gw = re.compile(r"^\s*Eigenvalue-selfconsistency cycle")
+    regex_occ = re.compile(r"^\s*[0-9]+ \( occ \)(\s+[-+]?[0-9]*\.[0-9]*\s*)")  # 12 (occ) <one number>
+    regex_vir = re.compile(r"^\s*[0-9]+ \( vir \)(\s+[-+]?[0-9]*\.[0-9]*\s*)")
     reg_occ_groups = re.compile(r"^\s*([0-9]+) \( (occ) \) ((?:\s*[-+]?[0-9]*\.[0-9]*\s*)*)")
     reg_vir_groups = re.compile(r"^\s*([0-9]+) \( (vir) \) ((?:\s*[-+]?[0-9]*\.[0-9]*\s*)*)")
 
-    regex2 = re.compile(r"^\s*[0-9]+ \( vir \)(\s+[-+]?[0-9]*\.[0-9]*\s*)")
-    # regex1 = re.compile("^\s*[0-9]+\s+\(")
+    header_list_real = ['Molecular orbital', 'E_SCF', 'Sigc',   'Sigx-vxc', 'E_GW']  # this header will be used.
+
+    # regex_occ = re.compile("^\s*[0-9]+\s+\(")
 
     num_gw_iter = 0
 
@@ -333,22 +394,27 @@ def return_gw_energies_advanced(path_to_file, silent=False):
         line = next(myiter, -1)
         if line == -1:
             break
-        if regex.match(line):  # GW header
-            for i in range(0, 8):  # 10 is the number of lines to the actual data
+        # g0w0 comes first, but I will do it differently
+        # if regex_g0w0.match(line):
+        #     pass
+        if regex_gw.match(line) or regex_g0w0.match(line):  # GW header or G0W0 header
+            for i in range(0, 2):  # from the match line to the header of the GW table
                 line = next(myiter)
-            if not header_is_extracted:
+            if not header_is_extracted:  # we need a header
                 header_txt = next(myiter)  # header of the table
-                header_list = header_txt.split()
+                # header_list = header_txt.split()  # this does not work in 9.1. I use predefined list
+                header_list = header_list_real
                 header_list.insert(1, *['occ_or_vir'])  # type of the orbital: virtual or occupied
                 header_list.append(*['num_gw_iter'])  # type of the orbital: virtual or occupied
                 # print(f'this is the header: {header_list}')
-                header_is_extracted = True
+                if header_txt:
+                    header_is_extracted = True
             else:
                 next(myiter)  # all headers are the same
             line = next(myiter)
             occ_line = []
             vir_line = []
-            while regex1.match(line):  # first group (occ)
+            while regex_occ.match(line):  # first group (occ)
                 tmp = re.search(reg_occ_groups, line).groups()
                 list_of_str = ' '.join(tmp).split()
                 # if you check it here, you loose time for "if"
@@ -356,7 +422,7 @@ def return_gw_energies_advanced(path_to_file, silent=False):
                 occ_line.append(single_line)
                 line = next(myiter)
                 # now we check if this line is not vir
-                while regex2.match(line):  # match virs
+                while regex_vir.match(line):  # match virs
                     tmp = re.search(reg_vir_groups, line).groups()
                     list_of_str = ' '.join(tmp).split()
                     single_line = [int(list_of_str[0]), list_of_str[1], *[float(x) for x in list_of_str[2:]],
@@ -479,7 +545,6 @@ def extract_number_of_independent_orbital_function(path_to_file):
                 return int(match.groups()[0])
 
 
-
 # def my_print(x, *args, **kwargs):
 #     my_print(x, *args, **kwargs)
 
@@ -491,6 +556,7 @@ def my_print(x, silent=False, *args, **kwargs):
         print(x, *args, **kwargs)
     else:
         pass
+
 
 if __name__ == '__main__':
     main()

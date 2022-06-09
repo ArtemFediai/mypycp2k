@@ -95,7 +95,7 @@ def add_gw_ver_0(xc,
 #todo: adapt it for cp2k version 9.0
 def add_gw_ver_9(xc,
                  wf_corr_num_proc=1,
-                 rpa_num_quad_points=100,
+                 rpa_num_quad_points=16,
                  size_freq_integ_group=-1,
                  corr_occ=10,
                  corr_virt=10,
@@ -126,7 +126,7 @@ def add_gw_ver_9(xc,
     RI_RPA = WF_CORRELATION1.RI_RPA
     RI_RPA.Rpa_num_quad_points = rpa_num_quad_points
     RI_RPA.Size_freq_integ_group = size_freq_integ_group
-    RI_RPA.Gw = 'TRUE'
+    # RI_RPA.Gw = 'TRUE'
     ###### HF ######
     RI_RPA_HF = RI_RPA.HF_add()
     RI_RPA_HF.Fraction = 1.0
