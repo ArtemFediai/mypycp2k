@@ -1,10 +1,10 @@
-from copy import copy
-
 from mypycp2k.util.exceptions import SCQPSolutionNotFound, SCFNotConvergedNotPossibleToRunMP2, NaNInGW, LargeSigc, \
     IterationLimit
 import pandas as pd
 import numpy as np
 import re
+from scipy.constants import physical_constants
+Ha_to_eV = physical_constants['Hartree energy in eV'][0]
 
 """
 functions extract something from the out cp2k files using re
@@ -521,14 +521,14 @@ def _through_an_exception_if_the_string_is_found(string, exception, all_file):
 def extract_total_energy(path_to_file):
     import re
     """
-    returns total energy from file path_to_file
+    returns total energy from file path_to_file [eV]
     """
     with open(path_to_file, "r") as fin:
-        regex = re.compile(r" ENERGY\| Total FORCE_EVAL \( QS \) energy \(a\.u\.\):\s+(.+)\n")
+        regex = re.compile(r" ENERGY\| Total FORCE_EVAL \( QS \) energy \[a\.u\.\]:\s+(.+)\n")
         for line in fin:
             match = regex.match(line)
             if match:
-                return match.groups()[0]
+                return float(match.groups()[0]) * Ha_to_eV
 
 
 def extract_number_of_independent_orbital_function(path_to_file):

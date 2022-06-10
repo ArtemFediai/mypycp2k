@@ -4,13 +4,8 @@ def set_dft(DFT,
             multiplicity=1,
             charge=0,
             uks=False):
-    # del DFT.Basis_set_file_name
     DFT.Potential_file_name = potential_file_name
-    # if type(basis_set_file_name) == str:
     DFT.Basis_set_file_name = basis_set_file_name
-    # elif type(basis_set_file_name) == list:
-    #     for file_name in basis_set_file_name:
-    #         DFT.Basis_set_file_name = file_name
     DFT.Multiplicity = multiplicity
     DFT.Uks = uks
     DFT.Charge = charge
