@@ -63,6 +63,13 @@ def set_qs_v9(DFT,
         pass  # this will set it to sqrt(eps_default)
     else:
         QS.Eps_pgf_orb = eps_pgf_orb  # Overrides SQRT(EPS_DEFAULT) value. No default value. todo: clarify
+    if method == 'LRIGPW':
+        print('i am here mam')
+        LRIGPW = QS.LRIGPW
+        LRIGPW.Lri_overlap_matrix = 'INVERSE'
+        LRIGPW.Shg_lri_integrals = '.TRUE.'
+        # LRIGPW.Ppl_ri = '.TRUE.'  # Use LRI/RI for local pseudopotential
+        # LRIGPW.Eps_o3_int = 1.00000000E-20  # threashold. may be sensitive
 
 def set_qs(DFT,
            method='GAPW',
