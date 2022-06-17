@@ -121,7 +121,7 @@ def return_homo_lumo(path_to_file):
 
     f_begin = r'(^\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)'  # f = float. expr: any float
     f_middle = r'(\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)*'
-    f_end = r'(\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s*$)'
+    f_end =    r'(\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s*$)'
     any_floating_point_numbers = re.compile(f_begin + f_middle + f_end)
 
     homos = []
@@ -530,6 +530,30 @@ def extract_total_energy(path_to_file):
             if match:
                 return float(match.groups()[0]) * Ha_to_eV
 
+
+def extract_esp_charges_accuracy(path_to_file):
+    import re
+    """
+    returns accuracy of eps fit
+    """
+
+    f_begin = r'(^\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)'  # f = float. expr: any float
+    f_middle = r'(\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)*'
+    f_end =    r'(\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s*$)'
+
+    regex1 = re.compile(r"^\s*[0-9]+ \( occ \)(\s+[-+]?[0-9]*\.[0-9]*\s*)")
+
+    with open(path_to_file, "r") as fin:
+        regex_rms = re.compile(r"^\s*Root-mean-square \(RMS\) error of RESP fit:\s*([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)\s*")
+        regex_rrms = re.compile(r"^\s*Relative root-mean-square \(RRMS\) error of RESP fit:\s*([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)\s*")
+        for line in fin:
+            match_rms = regex_rms.match(line)
+            if match_rms:
+                rms = float(match_rms.groups()[0])  # units are not clear * Ha_to_eV
+            match_rrms = regex_rrms.match(line)
+            if match_rrms:
+                rrms = float(match_rrms.groups()[0])
+    return rms, rrms
 
 def extract_number_of_independent_orbital_function(path_to_file):
     import re
