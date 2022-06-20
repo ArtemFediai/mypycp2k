@@ -64,7 +64,6 @@ def set_qs_v9(DFT,
     else:
         QS.Eps_pgf_orb = eps_pgf_orb  # Overrides SQRT(EPS_DEFAULT) value. No default value. todo: clarify
     if method == 'LRIGPW':
-        print('i am here mam')
         LRIGPW = QS.LRIGPW
         LRIGPW.Lri_overlap_matrix = 'INVERSE'
         LRIGPW.Shg_lri_integrals = '.TRUE.'
