@@ -32,11 +32,12 @@ def set_periodic_poisson(DFT, solver='PERIODIC'):
     POISSON.Poisson_solver = solver
 
 
-def set_cutoff(DFT, cutoff=900, rel_cutoff=60, ngrids=5):
+def set_cutoff(DFT, cutoff=900, rel_cutoff=60, ngrids=5, commensurate='.FALSE.'):
     MGRID = DFT.MGRID
     MGRID.Cutoff = cutoff
     MGRID.Rel_cutoff = rel_cutoff
     MGRID.Ngrids = ngrids
+    MGRID.Commensurate = commensurate
 
 def print_mo_cubes(PRINT, nhomo=5, nlumo=5, filename='=HOMO.txt'):
     MO_CUBES = PRINT.MO_CUBES
