@@ -52,6 +52,14 @@ def print_mo_cubes(PRINT, nhomo=5, nlumo=5, filename='=HOMO.txt'):
     MO_CUBES.Filename = filename
 
 
+def print_moments(PRINT,
+                  max_moment=3,
+                  filename='=moments.txt'):
+    MOMENTS = PRINT.MOMENTS
+    MOMENTS.Periodic = '.FALSE.'
+    MOMENTS.Max_moment = max_moment
+    MOMENTS.Filename = filename
+
 def print_mo(PRINT, filename='MO', range='1 10'):
     MO = PRINT.MO
     MO.Eigenvectors = True
