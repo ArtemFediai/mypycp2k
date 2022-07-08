@@ -54,7 +54,7 @@ def print_mo_cubes(PRINT, nhomo=5, nlumo=5, filename='=HOMO.txt'):
 
 def print_moments(PRINT,
                   max_moment=3,
-                  filename='=moments.txt'):
+                  filename='=moments.mom'):
     MOMENTS = PRINT.MOMENTS
     MOMENTS.Periodic = '.FALSE.'
     MOMENTS.Max_moment = max_moment
