@@ -39,3 +39,11 @@ def center_coordinates(subsys):
     TOPOLOGY = subsys.TOPOLOGY
     CENTER_COORDINATES = TOPOLOGY.CENTER_COORDINATES
     CENTER_COORDINATES.Section_parameters = ''
+
+
+def print_atomic_coordinates(subsys,
+                             filename='=coord'):
+    print('implement below')
+    PRINT = subsys.PRINT
+    ATOMIC_COORDINATES = PRINT.ATOMIC_COORDINATES
+    ATOMIC_COORDINATES.Filename = filename
