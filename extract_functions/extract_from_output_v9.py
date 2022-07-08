@@ -518,13 +518,13 @@ def _through_an_exception_if_the_string_is_found(string, exception, all_file):
     my_print("No, this is not the reason indicated above. ")
 
 
-def extract_total_energy(path_to_file):
+def _extract_total_energy(path_to_file):
     import re
     """
     returns total energy from file path_to_file [eV]
     """
     with open(path_to_file, "r") as fin:
-        regex = re.compile(r" ENERGY\| Total FORCE_EVAL \( QS \) energy \[a\.u\.\]:\s+(.+)\n")
+        regex = re.compile(r" ENERGY\| Total FORCE_EVAL \( \w+ \) energy \[a\.u\.\]:\s+(.+)\n")
         for line in fin:
             match = regex.match(line)
             if match:
