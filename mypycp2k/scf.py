@@ -59,6 +59,7 @@ def add_ot(scf,
     :param minimizer:
     :param preconditioner:
     :param energy_gap:
+    :param stepsize:
     :return:
     """
     OT = scf.OT
