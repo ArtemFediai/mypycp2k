@@ -17,11 +17,13 @@ def set_basis_set_file_name(DFT,
     DFT.Basis_set_file_name = basis_set_file_name
 
 
-def set_scf(DFT, eps_scf=1.0E-6, max_scf=100, scf_guess='RESTART'):
+def set_scf(DFT, eps_scf=1.0E-6, max_scf=100, scf_guess='RESTART', max_iter_lumo=299, eps_lumo=1E-5):
     SCF = DFT.SCF
     SCF.Scf_guess = scf_guess  # atomic will be used if not exist
     SCF.Eps_scf = eps_scf
     SCF.Max_scf = max_scf
+    SCF.Max_iter_lumo = max_iter_lumo
+    SCF.Eps_lumo = eps_lumo
 
 
 def set_nonperiodic_poisson(DFT, solver='MT'):
