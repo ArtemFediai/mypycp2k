@@ -43,7 +43,6 @@ def center_coordinates(subsys):
 
 def print_atomic_coordinates(subsys,
                              filename='=coord'):
-    print('implement below')
     PRINT = subsys.PRINT
     ATOMIC_COORDINATES = PRINT.ATOMIC_COORDINATES
     ATOMIC_COORDINATES.Filename = filename
