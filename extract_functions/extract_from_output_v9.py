@@ -502,7 +502,7 @@ def return_gw_energies_advanced(path_to_file, silent=False):
 
 
 def _through_an_exception_if_the_string_is_found(string, exception, all_file):
-    my_print(f"I will check, if the reason of is: {string}")
+    my_print(f"I will check, if the following bad string not in the output: {string}")
     str_to_find = f"^.*{string}.*$"
     regex = re.compile(str_to_find)
     # with open(path_to_file, "r") as fin:
@@ -515,7 +515,7 @@ def _through_an_exception_if_the_string_is_found(string, exception, all_file):
         if regex.match(line):
             my_print(f'The run crashes because: {string}')
             raise exception
-    # my_print("No, this is not the reason indicated above. ")
+    my_print(f"No, this is no string {string} in the output. ")
 
 
 def _extract_total_energy(path_to_file):
