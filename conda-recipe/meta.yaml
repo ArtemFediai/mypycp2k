@@ -1,0 +1,28 @@
+package:
+  name: mypycp2k 
+  version: "1.0.0"
+about:
+  home: https://github.com/not_yet_existings
+  license: LGPL3
+  summary: 
+source:
+  path: ../
+build:
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed -vv .
+  noarch: python
+requirements:
+  build:
+    - python >=3.8
+    - build
+    - flit
+    - flit-core
+  run:
+    - python >=3.8
+    - pycp2k >=0.2.4
+test:
+  source_files:
+    - tests
+  requires:
+    - pytest
+  commands:
+    - pytest
