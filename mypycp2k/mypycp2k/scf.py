@@ -1,8 +1,6 @@
 def add_ot_never_fail(scf):
     """
     from Jorge. Very stable, very slow
-    :param scf:
-    :return:
     """
     OT = scf.OT
     OT.Minimizer = 'CG'
