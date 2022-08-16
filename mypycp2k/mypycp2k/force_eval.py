@@ -24,7 +24,9 @@ def generate_esp_point_charges(FORCE_EVAL,
         'H': 2.267671,
         'C': 3.212534,
         'N': 2.929075,
-        'O': 2.872383
+        'O': 2.872383,
+        'F': 2.777897,
+        'Al': 3.590479,
     }
 
     from scipy.constants import physical_constants
