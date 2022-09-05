@@ -1,11 +1,12 @@
 def set_global(cp2k_input,
                project_name='my project',
                print_level='LOW',
-               run_type='ENERGY'):
+               run_type='ENERGY',
+               extended_fft_length=False):
     GLOBAL = cp2k_input.GLOBAL
     GLOBAL.Print_level = print_level
     GLOBAL.Project_name = project_name
-    GLOBAL.Extended_fft_lengths = True
+    GLOBAL.Extended_fft_lengths = extended_fft_length
     GLOBAL.Run_type = run_type
 
 
