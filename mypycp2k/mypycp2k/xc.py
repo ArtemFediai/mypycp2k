@@ -150,8 +150,8 @@ def add_gw_ver_9(xc,
 
 
 def add_b3lyp(XC,
-              eps_schwarz=1.0E-11,
-              max_memory=500,
+              eps_schwarz=1.0E-6,
+              max_memory=1500,
               eps_storage_scaling=0.1,
               xc_smooth_rho='NN10',
               xc_deriv='SPLINE2_SMOOTH'
@@ -165,7 +165,6 @@ def add_b3lyp(XC,
     XALPHA.Scale_x = 0.08
     # XC_FUNCTIONAL.XALPHA_add()
     # XC_FUNCTIONAL.XALPHA_list[0].Scale_x = 0.08
-
     HF = XC.HF_add()
     HF.SCREENING.Eps_schwarz = eps_schwarz
     HF.MEMORY.Max_memory = max_memory
@@ -175,3 +174,12 @@ def add_b3lyp(XC,
     XC.XC_GRID.Xc_deriv = xc_deriv
     print('B3LYP was set')
     # HF.SCREENING.Screen_on_initial_p = False
+    # &INTERACTION_POTENTIAL
+    # ! for condensed phase systems
+    # POTENTIAL_TYPE     TRUNCATED
+    # ! should be less than halve the cell
+    # CUTOFF_RADIUS 6.0
+    # ! data file needed with the truncated operator
+    # T_C_G_DATA. / t_c_g.dat
+    # &END
+
