@@ -485,7 +485,7 @@ def extract_number_of_independent_orbital_function(path_to_file):
 
 # todo: this is hard coded. One has to change here silen manually. Set it to False to see the output in out files.
 
-def my_print(x, silent=False, *args, **kwargs):
+def my_print(x, silent=True, *args, **kwargs):
     if not silent:
         print(x, *args, **kwargs)
     else:

@@ -151,7 +151,7 @@ def add_gw_ver_9(xc,
 
 def add_b3lyp(XC,
               eps_schwarz=1.0E-6,
-              max_memory=1500,
+              max_memory=2500,
               eps_storage_scaling=0.1,
               xc_smooth_rho='NN10',
               xc_deriv='SPLINE2_SMOOTH'
