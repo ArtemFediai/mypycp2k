@@ -172,7 +172,7 @@ def add_b3lyp(XC,
     HF.Fraction = 0.2
     XC.XC_GRID.Xc_smooth_rho = xc_smooth_rho
     XC.XC_GRID.Xc_deriv = xc_deriv
-    print('B3LYP was set')
+    # print('B3LYP was set')
     # HF.SCREENING.Screen_on_initial_p = False
     # &INTERACTION_POTENTIAL
     # ! for condensed phase systems
