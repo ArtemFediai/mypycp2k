@@ -8,7 +8,7 @@ def generate_esp_point_charges(FORCE_EVAL,
                                elements=None,
                                use_tm_radii=False,
                                integer_total_charge=True,
-                               restrain_heavies_to_zero: False
+                               restrain_heavies_to_zero=False
                                ):
     """
     fit point charges. by default between 1.4 and 2 vdW radii
