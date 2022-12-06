@@ -6,7 +6,10 @@ def generate_esp_point_charges(FORCE_EVAL,
                                vdw_radii_table='CAMBRIDGE',
                                stride=1,
                                elements=None,
-                               use_tm_radii=False):
+                               use_tm_radii=False,
+                               integer_total_charge=True,
+                               restrain_heavies_to_zero: False
+                               ):
     """
     fit point charges. by default between 1.4 and 2 vdW radii
     @param use_tm_radii: use Turbomole vdW radii defined below
@@ -36,8 +39,8 @@ def generate_esp_point_charges(FORCE_EVAL,
     PROPERTIES = FORCE_EVAL.PROPERTIES
     RESP = PROPERTIES.RESP
 
-    RESP.Integer_total_charge = '.TRUE.'
-    RESP.Restrain_heavies_to_zero = '.FALSE.'
+    RESP.Integer_total_charge = integer_total_charge
+    RESP.Restrain_heavies_to_zero = restrain_heavies_to_zero
     # RESP.Use_repeat_method = use_repeat_method   #<-- only for periodic:(
     RESP.Stride = stride
     SPHERE_SAMPLING = RESP.SPHERE_SAMPLING
