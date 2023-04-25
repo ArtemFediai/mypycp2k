@@ -144,3 +144,24 @@ This, means that the entries in `csv` file at positions 1,2,3,4,5,6,7 are to be 
 3-RESTART.wfn         4-RESTART.wfn.bak-1   dsgdb9nsd_069817.xyz  out_diag_2.out        out_ot_4.out          
 ```
 
+This is how the worflow works
+```mermaid
+graph TD;
+
+subgraph Small Basis
+A[DFT small basis DIIS]-->B[DFT small basis DIAG]-->C[GW small basis];
+end
+
+subgraph Medium Basis
+A1[DFT medium basis DIIS]-->B1[DFT medium basis DIAG]-->C1[GW medium basis];
+end
+
+subgraph Large Basis
+A2[DFT large basis DIIS]-->B2[DFT large basis DIAG]-->C2[GW large basis];
+end
+
+C-->A1;
+C1-->A2;
+```
+
+`DIIS` solver is used to quickly converge the simulation, while the diagonalization (`DIAG`) is used with the `DIIS` wavefunction as an initial guess to return HOMO and LUMO without postprocessing (`DIIS`, an `OT` method needs a postprocessing step to return orbitals). The wavefunction of smaller basis set are used as initial guess for the larger basis sets.
