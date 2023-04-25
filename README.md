@@ -34,7 +34,7 @@ The example (let us say this file is called ```input.yaml```) is below:
 ```yaml
 ---
 # example: 2,3,4 zeta for basis set extrapolation GW
-basis_set_file: BASIS_CC_AUG_RI_NEW
+basis_set_file: BASIS_CC_AUG_RI_NEW  # this is not a standard cp2k basis set file. You have to generate it by your own. It has to contain both auxiliary and actual basis set.
 basis_set_suffix:
   - 2
   - 3
@@ -55,16 +55,16 @@ eps_scf_dft:
   - 1.0E-9
   - 1.0E-9
 folder_names:
-  simulations: sim
-  database: db
-  scratch: bh5670
+  simulations: sim  # here you can change the default name of the simulation folder
+  database: db  # the same for the folder with the output data
+  scratch: bh5670  # the same for scratch
 debug: True
 dummy_run: False
-prefix_xyz_file_name: dsgdb9nsd  # --> {}_{rank}.xyz
-cp2k_exe_path: /home/ws/bh5670/cp2k/cp2k-7.1/exe/local/cp2k.popt
+prefix_xyz_file_name: dsgdb9nsd  # --> {}_{rank}.xyz  # if dsgdb9nsd as in this case, mol_ids will be generated authomatically 
+cp2k_exe_path: /home/ws/bh5670/cp2k/cp2k-7.1/exe/local/cp2k.popt  # version requirements: 7.1, MPI (popt).
 potential_file_name: 'POTENTIAL'
 potential: 'ALL'
-elements: ['H', 'C', 'N', 'O', 'F', 'P', 'S', 'Cl', 'Br', 'B', 'I']
+elements: ['H', 'C', 'N', 'O', 'F', 'P', 'S', 'Cl', 'Br', 'B', 'I']  # for these elements, basis set will be specified
 mpi: openmpi
 
 ```
@@ -130,7 +130,7 @@ Some important points:
 ```
 This, means that the entries in `csv` file at positions 1,2,3,4,5,6,7 are to be simulated. Would we have more comma-separated identifiers in `csv` file, would these ignored. If the list is not continues, the syntax of the SLURM applies. You can set: `1,5-6`, for instance.
 
-#### 1.3 Output structure.
+##### 1.3 Output structure.
  Three folders will be created or filled with generated data as follows:
  * `out`. stdout and stderr are redirected here. If something crashes, you can see the logs there. Filenames generated there will be something like: `out_2461885_87.out` (first number is the job_id, second number is the position of the identifier in the `csv` file). Yes, this is not convinient, yet preserve from clashes.
  * `db`. The output of the GW simulation are saved in these folders under the name `DB_{mol_id}.yaml`, e.g. `DB_061102.yaml`.
