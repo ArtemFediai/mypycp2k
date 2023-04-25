@@ -1,26 +1,24 @@
 # mypycp2k
 
-high level scripts based on pycp2k soft
-allows to set up cp2k input files in several lines of python code
+_Note_: this document describes how to use the software before summer 2022. After this point, the folder structure was changed to make it packagable and the relevant part of the repository became 
 
-**Folders:**
+## Folders
 
-1.
-mypycp2k: high level scripts. every file name corresponds to a cp2k section name and takes the respective pycp2k object as a first argumet.
-for instance:
+### 1. mypycp2k
+High-level scripts. Every file name corresponds to a CP2K section name and takes the respective pycp2k object as the first argument. For instance:
+
+```python
 
 def set_cutoff(DFT, cutoff=900, rel_cutoff=60, ngrids=5):
     MGGRID = DFT.MGRID
     MGGRID.Cutoff = cutoff
     MGGRID.Rel_cutoff = rel_cutoff
     MGGRID.Ngrids = ngrids
+```
 
-is placed in the 'mypycp2k/DFT' folder in the file dft.py.
+This is placed in the ```mypycp2k/DFT``` folder in the file ```dft.py```.
+It takes the DFT ```pycp2k``` object and changes it by adding ```MGGRID``` information.
+It is supposed to be called in custom scripts.
 
-It taked DFT pycp2k object and change it by adding mggrid information.
-
-It is supposed to be called in the custom scripts.
-
-2.
-examples: python files and xyz files that uses mypycp2k function to create, save and run cp2k simulation files from python.
-the input of these files may be to a large extend duplicating.
+### 2. examples.
+Python files and XYZ files that use ```mypycp2k``` functions to create, save, and run CP2K simulation files from Python. For GW in the basis set limit, the most comprehensive file is ```~/mypycp2k/examples/234_ver_3.py```
