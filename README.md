@@ -1,6 +1,6 @@
 # mypycp2k
 
-_Note_: this document describes how to use the software before summer 2022. After this point, the folder structure was changed to make it packagable and the relevant part of the repository became 
+_Note_: this document describes how to use the software before summer 2022. After this point, the folder structure was changed to make it packagable and the relevant part of the repository became mypycp2k/mypycp2k.
 
 ## Folders
 
