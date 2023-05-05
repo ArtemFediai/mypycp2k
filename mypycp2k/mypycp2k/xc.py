@@ -183,3 +183,21 @@ def add_b3lyp(XC,
     # T_C_G_DATA. / t_c_g.dat
     # &END
 
+
+def add_xclib_functional(XC, name='HYB_GGA_XC_B3LYP'):
+    """
+    set functional from the xc lib:
+    https://tddft.org/programs/libxc/functionals/
+    if the functional is not available, the version may be too old.
+    """
+    print('Not implemented yet')
+    pass
+
+def add_cp2k_functional(XC, name='B3LYP'):
+    """
+    set functional from cp2k:
+    https://manual.cp2k.org/trunk/CP2K_INPUT/FORCE_EVAL/DFT/XC/XC_FUNCTIONAL.html
+    if the functional is not available, the version may be too old.
+    """
+    print('Not implemented yet')
+    pass
