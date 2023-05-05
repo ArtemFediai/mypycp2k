@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import rdkit
 import yaml
 from rdkit import Chem
-from util.xyz import XYZ
+from mypycp2k.util.xyz import XYZ
 import os
 from shutil import copyfile
 import numpy as np
