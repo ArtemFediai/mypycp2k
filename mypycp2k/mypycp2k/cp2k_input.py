@@ -10,10 +10,21 @@ def set_global(cp2k_input,
     GLOBAL.Run_type = run_type
 
 
-# def set_force_eval(FORCE_EVAL):
-#     FORCE_EVAL.Method = 'QUICKSTEP'
-#
-#
-# def set_global_and_force_eval(cp2k_input, project_name='my project'):
-#     set_global(cp2k_input, project_name=project_name)
-#     set_force_eval(cp2k_input)
+def set_geo_opt(
+        cp2k_input,
+        optimizer='BFGS',
+        max_geo_opt_iter=200,
+        max_force=4.5e-4,  # turbomole value
+        rms_force=3.0e-4,  # turbomole value
+        max_dr=3.0e-3
+):
+    MOTION = cp2k_input.MOTION
+    GEO_OPT = MOTION.GEO_OPT
+    GEO_OPT.Type = 'MINIMIZATION'
+    GEO_OPT.Optimizer = optimizer
+    GEO_OPT.Max_iter = max_geo_opt_iter
+
+    # Setting convergence criteria
+    GEO_OPT.Max_force = max_force
+    GEO_OPT.Rms_force = rms_force
+    GEO_OPT.Max_dr = max_dr
