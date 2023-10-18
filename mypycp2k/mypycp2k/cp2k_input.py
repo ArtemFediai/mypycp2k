@@ -18,6 +18,21 @@ def set_geo_opt(
         rms_force=3.0e-4,  # turbomole value
         max_dr=3.0e-3
 ):
+    
+    """
+    For the orientation, which parameters to use, below are data from various sources:
+
+    | Setting     | Your Function Default | CP2K Google Group | CP2K Tutorial | CP2K Default    |
+    |-------------|-----------------------|-------------------|---------------|-----------------|
+    | Optimizer   | BFGS                  | CG                | BFGS          | BFGS            |
+    | MAX_DR      | 3.0E-03               | 1.0E-03           | 3.0E-03       | 3.0E-03         |
+    | MAX_FORCE   | 4.5E-04               | 1.0E-03           | 4.5E-04       | 4.5E-04         |
+    | RMS_DR      | Not Specified         | 1.0E-03           | 1.5E-03       | 1.5E-03         |
+    | RMS_FORCE   | 3.0E-04               | 1.0E-03           | 3.0E-04       | 3.0E-04         |
+
+
+    """
+    
     MOTION = cp2k_input.MOTION
     GEO_OPT = MOTION.GEO_OPT
     GEO_OPT.Type = 'MINIMIZATION'
