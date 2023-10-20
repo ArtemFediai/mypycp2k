@@ -62,3 +62,32 @@ def generate_esp_point_charges(FORCE_EVAL,
         RESP_CHARGES_TO_FILE = PRINT.RESP_CHARGES_TO_FILE
         RESP_CHARGES_TO_FILE.Section_parameters = 'LOW'
 
+
+def set_tddft(FORCE_EVAL,
+                               kernel,
+                               roots,
+                               max_iter,
+                               multiplicity):
+    """
+    Set properties for TDDFPT calculation.
+
+    @param FORCE_EVAL: Object containing force evaluation properties.
+    @param kernel: Kernel option for TDDFPT.
+    @param roots: Number of roots for TDDFPT.
+    @param max_iter: Maximum iterations for TDDFPT.
+    @param multiplicity: Multiplicity of the excited state (1 for singlet, 3 for triplet).
+    @return: None
+    """
+
+    PROPERTIES = FORCE_EVAL.PROPERTIES
+    TDDFTPT = PROPERTIES.TDDFPT
+
+    TDDFTPT.Kernel = kernel
+    TDDFTPT.Nstates = roots
+    TDDFTPT.Max_iter = max_iter
+
+    if multiplicity == 3:
+        TDDFTPT.Rks_triplets = 'TRUE'  # triplet
+    elif multiplicity == 1:
+        TDDFTPT.Rks_triplets = 'FALSE'  # singlet
+
